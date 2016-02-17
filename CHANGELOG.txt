@@ -1,0 +1,2 @@
+version 1.0.0 Feb-16-2016
+. [NEW] Ported EKVN from Objective-C to Swift to create SporkVN
