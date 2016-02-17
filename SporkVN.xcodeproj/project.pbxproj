@@ -14,6 +14,20 @@
 		1AB131431C6562A000F5B83A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AB131411C6562A000F5B83A /* Main.storyboard */; };
 		1AB131451C6562A000F5B83A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AB131441C6562A000F5B83A /* Assets.xcassets */; };
 		1AB131481C6562A000F5B83A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AB131461C6562A000F5B83A /* LaunchScreen.storyboard */; };
+		1AB1316D1C6563FA00F5B83A /* DSMultilineLabelNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AB131521C6563FA00F5B83A /* DSMultilineLabelNode.m */; };
+		1AB1316E1C6563FA00F5B83A /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1AB131531C6563FA00F5B83A /* README.txt */; };
+		1AB1316F1C6563FA00F5B83A /* SMRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB131551C6563FA00F5B83A /* SMRecord.swift */; };
+		1AB131701C6563FA00F5B83A /* SMUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB131561C6563FA00F5B83A /* SMUtils.swift */; };
+		1AB131711C6563FA00F5B83A /* VNScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB131581C6563FA00F5B83A /* VNScene.swift */; };
+		1AB131721C6563FA00F5B83A /* VNScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB131591C6563FA00F5B83A /* VNScript.swift */; };
+		1AB131731C6563FA00F5B83A /* VNSystemCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB1315A1C6563FA00F5B83A /* VNSystemCall.swift */; };
+		1AB131741C6563FA00F5B83A /* VNTestScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB1315B1C6563FA00F5B83A /* VNTestScene.swift */; };
+		1AB131751C6563FA00F5B83A /* music01.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1AB1315E1C6563FA00F5B83A /* music01.mp3 */; };
+		1AB131761C6563FA00F5B83A /* roar1.caf in Resources */ = {isa = PBXBuildFile; fileRef = 1AB1315F1C6563FA00F5B83A /* roar1.caf */; };
+		1AB1317E1C6563FA00F5B83A /* demo script.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AB131691C6563FA00F5B83A /* demo script.plist */; };
+		1AB1317F1C6563FA00F5B83A /* main_menu.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AB1316A1C6563FA00F5B83A /* main_menu.plist */; };
+		1AB131801C6563FA00F5B83A /* test script.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AB1316B1C6563FA00F5B83A /* test script.plist */; };
+		1AB131811C6563FA00F5B83A /* vnscene view settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AB1316C1C6563FA00F5B83A /* vnscene view settings.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +40,22 @@
 		1AB131441C6562A000F5B83A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1AB131471C6562A000F5B83A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1AB131491C6562A000F5B83A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1AB131511C6563FA00F5B83A /* DSMultilineLabelNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSMultilineLabelNode.h; sourceTree = "<group>"; };
+		1AB131521C6563FA00F5B83A /* DSMultilineLabelNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DSMultilineLabelNode.m; sourceTree = "<group>"; };
+		1AB131531C6563FA00F5B83A /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		1AB131551C6563FA00F5B83A /* SMRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMRecord.swift; sourceTree = "<group>"; };
+		1AB131561C6563FA00F5B83A /* SMUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMUtils.swift; sourceTree = "<group>"; };
+		1AB131571C6563FA00F5B83A /* SporkVN ObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SporkVN ObjC.h"; sourceTree = "<group>"; };
+		1AB131581C6563FA00F5B83A /* VNScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNScene.swift; sourceTree = "<group>"; };
+		1AB131591C6563FA00F5B83A /* VNScript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNScript.swift; sourceTree = "<group>"; };
+		1AB1315A1C6563FA00F5B83A /* VNSystemCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNSystemCall.swift; sourceTree = "<group>"; };
+		1AB1315B1C6563FA00F5B83A /* VNTestScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNTestScene.swift; sourceTree = "<group>"; };
+		1AB1315E1C6563FA00F5B83A /* music01.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music01.mp3; sourceTree = "<group>"; };
+		1AB1315F1C6563FA00F5B83A /* roar1.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = roar1.caf; sourceTree = "<group>"; };
+		1AB131691C6563FA00F5B83A /* demo script.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "demo script.plist"; sourceTree = "<group>"; };
+		1AB1316A1C6563FA00F5B83A /* main_menu.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = main_menu.plist; sourceTree = "<group>"; };
+		1AB1316B1C6563FA00F5B83A /* test script.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "test script.plist"; sourceTree = "<group>"; };
+		1AB1316C1C6563FA00F5B83A /* vnscene view settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "vnscene view settings.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +88,9 @@
 		1AB131381C6562A000F5B83A /* SporkVN */ = {
 			isa = PBXGroup;
 			children = (
+				1AB1314F1C6563FA00F5B83A /* Other */,
+				1AB131541C6563FA00F5B83A /* VN Classes */,
+				1AB1315C1C6563FA00F5B83A /* VN resources */,
 				1AB131391C6562A000F5B83A /* AppDelegate.swift */,
 				1AB1313B1C6562A000F5B83A /* GameScene.sks */,
 				1AB1313D1C6562A000F5B83A /* GameScene.swift */,
@@ -68,6 +101,67 @@
 				1AB131491C6562A000F5B83A /* Info.plist */,
 			);
 			path = SporkVN;
+			sourceTree = "<group>";
+		};
+		1AB1314F1C6563FA00F5B83A /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				1AB131501C6563FA00F5B83A /* DSMultilineLabelNode */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		1AB131501C6563FA00F5B83A /* DSMultilineLabelNode */ = {
+			isa = PBXGroup;
+			children = (
+				1AB131511C6563FA00F5B83A /* DSMultilineLabelNode.h */,
+				1AB131521C6563FA00F5B83A /* DSMultilineLabelNode.m */,
+				1AB131531C6563FA00F5B83A /* README.txt */,
+			);
+			path = DSMultilineLabelNode;
+			sourceTree = "<group>";
+		};
+		1AB131541C6563FA00F5B83A /* VN Classes */ = {
+			isa = PBXGroup;
+			children = (
+				1AB131551C6563FA00F5B83A /* SMRecord.swift */,
+				1AB131561C6563FA00F5B83A /* SMUtils.swift */,
+				1AB131571C6563FA00F5B83A /* SporkVN ObjC.h */,
+				1AB131581C6563FA00F5B83A /* VNScene.swift */,
+				1AB131591C6563FA00F5B83A /* VNScript.swift */,
+				1AB1315A1C6563FA00F5B83A /* VNSystemCall.swift */,
+				1AB1315B1C6563FA00F5B83A /* VNTestScene.swift */,
+			);
+			path = "VN Classes";
+			sourceTree = "<group>";
+		};
+		1AB1315C1C6563FA00F5B83A /* VN resources */ = {
+			isa = PBXGroup;
+			children = (
+				1AB1315D1C6563FA00F5B83A /* audio resources */,
+				1AB131681C6563FA00F5B83A /* plists */,
+			);
+			path = "VN resources";
+			sourceTree = "<group>";
+		};
+		1AB1315D1C6563FA00F5B83A /* audio resources */ = {
+			isa = PBXGroup;
+			children = (
+				1AB1315E1C6563FA00F5B83A /* music01.mp3 */,
+				1AB1315F1C6563FA00F5B83A /* roar1.caf */,
+			);
+			path = "audio resources";
+			sourceTree = "<group>";
+		};
+		1AB131681C6563FA00F5B83A /* plists */ = {
+			isa = PBXGroup;
+			children = (
+				1AB131691C6563FA00F5B83A /* demo script.plist */,
+				1AB1316A1C6563FA00F5B83A /* main_menu.plist */,
+				1AB1316B1C6563FA00F5B83A /* test script.plist */,
+				1AB1316C1C6563FA00F5B83A /* vnscene view settings.plist */,
+			);
+			path = plists;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -129,9 +223,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AB1313C1C6562A000F5B83A /* GameScene.sks in Resources */,
+				1AB1317F1C6563FA00F5B83A /* main_menu.plist in Resources */,
+				1AB1317E1C6563FA00F5B83A /* demo script.plist in Resources */,
 				1AB131481C6562A000F5B83A /* LaunchScreen.storyboard in Resources */,
 				1AB131451C6562A000F5B83A /* Assets.xcassets in Resources */,
+				1AB131761C6563FA00F5B83A /* roar1.caf in Resources */,
 				1AB131431C6562A000F5B83A /* Main.storyboard in Resources */,
+				1AB131811C6563FA00F5B83A /* vnscene view settings.plist in Resources */,
+				1AB1316E1C6563FA00F5B83A /* README.txt in Resources */,
+				1AB131751C6563FA00F5B83A /* music01.mp3 in Resources */,
+				1AB131801C6563FA00F5B83A /* test script.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,8 +244,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AB1313E1C6562A000F5B83A /* GameScene.swift in Sources */,
+				1AB1316F1C6563FA00F5B83A /* SMRecord.swift in Sources */,
+				1AB131721C6563FA00F5B83A /* VNScript.swift in Sources */,
+				1AB1316D1C6563FA00F5B83A /* DSMultilineLabelNode.m in Sources */,
+				1AB131701C6563FA00F5B83A /* SMUtils.swift in Sources */,
+				1AB131711C6563FA00F5B83A /* VNScene.swift in Sources */,
+				1AB131741C6563FA00F5B83A /* VNTestScene.swift in Sources */,
 				1AB131401C6562A000F5B83A /* GameViewController.swift in Sources */,
 				1AB1313A1C6562A000F5B83A /* AppDelegate.swift in Sources */,
+				1AB131731C6563FA00F5B83A /* VNSystemCall.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,9 +366,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SporkVN/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sporkinthemoon.SporkVN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SporkVN/VN Classes/SporkVN ObjC.h";
 			};
 			name = Debug;
 		};
@@ -269,9 +379,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SporkVN/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sporkinthemoon.SporkVN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SporkVN/VN Classes/SporkVN ObjC.h";
 			};
 			name = Release;
 		};
@@ -294,6 +406,7 @@
 				1AB1314E1C6562A000F5B83A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
