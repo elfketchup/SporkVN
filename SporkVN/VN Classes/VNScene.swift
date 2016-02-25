@@ -103,6 +103,7 @@ let VNSceneViewDefaultBackgroundOpacityKey  = "default background opacity"
 let VNSceneViewMultiplyFontSizeForiPadKey   = "multiply font size for iPad"
 let VNSceneViewButtonUntouchedColorsKey     = "button untouched colors"
 let VNSceneViewButtonsTouchedColorsKey      = "button touched colors"
+let VNSceneViewDoesUseHeightMarginForAdsKey = "does use height margin for ads" // currently does nothing
 
 // Resource dictionary keys
 let VNSceneViewSpeechTextKey                = "speech text"
@@ -125,21 +126,22 @@ let VNSceneViewOverrideSpeakerSizeKey       = "override speaker size from save"
 let VNSceneViewNoSkipUntilTextShownKey      = "no skipping until text is shown" // Prevents skipping until the text is fully shown
 
 // Dictionary keys
-let VNSceneSavedScriptInfoKey       = "script info"
-let VNSceneSavedResourcesKey        = "saved resources"
-let VNSceneMusicToPlayKey           = "music to play"
-let VNSceneMusicShouldLoopKey       = "music should loop"
-let VNSceneSpritesToShowKey         = "sprites to show"
-let VNSceneSoundsToRemoveKey        = "sounds to remove"
-let VNSceneMusicToRemoveKey         = "music to remove"
-let VNSceneBackgroundToShowKey      = "background to show"
-let VNSceneSpeakerNameToShowKey     = "speaker name to show"
-let VNSceneSpeechToDisplayKey       = "speech to display"
-let VNSceneShowSpeechKey            = "show speech"
-let VNSceneBackgroundXKey           = "background x"
-let VNSceneBackgroundYKey           = "background y"
-let VNSceneTypewriterTextCanSkip    = "typewriter text can skip"
-let VNSceneTypewriterTextSpeed      = "typewriter text speed"
+let VNSceneSavedScriptInfoKey           = "script info"
+let VNSceneSavedResourcesKey            = "saved resources"
+let VNSceneMusicToPlayKey               = "music to play"
+let VNSceneMusicShouldLoopKey           = "music should loop"
+let VNSceneSpritesToShowKey             = "sprites to show"
+let VNSceneSoundsToRemoveKey            = "sounds to remove"
+let VNSceneMusicToRemoveKey             = "music to remove"
+let VNSceneBackgroundToShowKey          = "background to show"
+let VNSceneSpeakerNameToShowKey         = "speaker name to show"
+let VNSceneSpeechToDisplayKey           = "speech to display"
+let VNSceneShowSpeechKey                = "show speech"
+let VNSceneBackgroundXKey               = "background x"
+let VNSceneBackgroundYKey               = "background y"
+let VNSceneTypewriterTextCanSkip        = "typewriter text can skip"
+let VNSceneTypewriterTextSpeed          = "typewriter text speed"
+let VNSceneSavedOverriddenSpeechboxKey  = "overridden speechbox" // used to store speechbox sprites modified by .SETSPEECHBOX in saves
 
 // UI "override" keys (used when you change things like font size/font name in the middle of a scene).
 // By default, any changes will be restored when a saved game is loaded, though the "override X from save"
@@ -176,6 +178,9 @@ let VNSceneModeEffectIsRunning      = 201 // An Effect (fade-in/fade-out, sprite
 let VNSceneModeChoiceWithFlag       = 202
 let VNSceneModeChoiceWithJump       = 203
 let VNSceneModeEnded                = 300 // There isn't any more script data to process
+
+// Transition types (currently unused, but can be used to transition to other types of SKScene subclasses)
+let VNSceneTransitionTypeNone       = 00
 
 private var VNSceneSharedInstance:VNScene? = nil
 
@@ -216,54 +221,61 @@ class VNScene : SKScene {
     // View data
     var viewSettings:NSMutableDictionary = NSMutableDictionary()
     
-    var effectIsRunning:Bool = false
-    var isPlayingMusic:Bool = false
-    var noSkippingUntilTextIsShown:Bool = false
-    var backgroundMusic:AVAudioPlayer? = nil
+    var effectIsRunning                 = false
+    var isPlayingMusic                  = false
+    var noSkippingUntilTextIsShown      = false
+    var backgroundMusic:AVAudioPlayer?  = nil
     
-    var soundsLoaded = NSMutableArray()
-    var buttons:NSMutableArray = NSMutableArray()
-    var choices:NSMutableArray = NSMutableArray() // Holds values that will be used when making choices
+    var soundsLoaded                = NSMutableArray()
+    var buttons:NSMutableArray      = NSMutableArray()
+    var choices:NSMutableArray      = NSMutableArray() // Holds values that will be used when making choices
     var choiceExtras:NSMutableArray = NSMutableArray() // Holds extra data that's used when making choices (usually, flag data)
-    var buttonPicked:Int = -1 // Keeps track of the most recently touched button in the menu
+    var buttonPicked:Int            = -1 // Keeps track of the most recently touched button in the menu
     
-    var sprites = NSMutableDictionary()
-    var spritesToRemove = NSMutableArray()
+    var sprites             = NSMutableDictionary()
+    var spritesToRemove     = NSMutableArray()
+    var localSpriteAliases  = NSMutableDictionary()
     
     var speechBox:SKSpriteNode? // Dialogue box
     var speech:DSMultilineLabelNode?  // The text displayed as dialogue
     var speaker:DSMultilineLabelNode? // Name of speaker
     
-    var speechFont = ""; // The name of the font used by the speech text
-    var speakerFont = "Helvetica"; // The name of the font used by the speaker text
-    var fontSizeForSpeech:CGFloat = 17.0
-    var fontSizeForSpeaker:CGFloat = 19.0
+    /* NOTE: Currently heigh margins aren't used or haven't been incorporated */
+    /* (also note that support for ads hasn't really been added, and would probably be
+        an experimental feature if it were) */
+    var heightMarginForAds 	        = CGFloat(0) // affects sprite Y-position when ads are shown
+    var doesUseHeightMarginForAds   = false // determines whether or not ad-based height margins are used
     
-    var spriteTransitionSpeed:Double = 0.5
-    var speechTransitionSpeed:Double = 0.5
-    var speakerTransitionSpeed:Double = 0.5
-    var buttonTouchedColors = UIColor.blueColor()
-    var buttonUntouchedColors = UIColor.blackColor()
+    var speechFont 	                = ""; // The name of the font used by the speech text
+    var speakerFont                 = "Helvetica"; // The name of the font used by the speaker text
+    var fontSizeForSpeech:CGFloat   = 17.0
+    var fontSizeForSpeaker:CGFloat  = 19.0
+    
+    var spriteTransitionSpeed:Double    = 0.5
+    var speechTransitionSpeed:Double    = 0.5
+    var speakerTransitionSpeed:Double   = 0.5
+    var buttonTouchedColors             = UIColor.blueColor()
+    var buttonUntouchedColors           = UIColor.blackColor()
     
     var previousScene:SKScene? = nil
     var allSettings:NSDictionary?
     
-    var isFinished:Bool = false
-    var wasJustLoadedFromSave:Bool = true
-    var popSceneWhenDone:Bool = false
+    var isFinished              = false
+    var wasJustLoadedFromSave   = true
+    var popSceneWhenDone        = false
     
     // Typewriter text
-    var TWModeEnabled = false; // Off by default (standard EKVN text mode)
-    var TWCanSkip = true; // Can the user skip ahead (and cut the text short) by tapping?
-    var TWSpeedInCharacters = 0; // How many characters it should print per second
-    var TWSpeedInFrames = 0
-    var TWTimer = 0; // Used to determine how many characters should be displayed (relative to the time/speed of displaying characters)
-    var TWSpeedInSeconds = 0.0
-    var TWNumberOfCurrentCharacters = 0
-    var TWPreviousNumberOfCurrentChars = 0
-    var TWNumberOfTotalCharacters = 0
-    var TWCurrentText = " "; // What's currently on the screen
-    var TWFullText = " "; // The entire line of text
+    var TWModeEnabled                   = false; // Off by default (standard EKVN text mode)
+    var TWCanSkip                       = true; // Can the user skip ahead (and cut the text short) by tapping?
+    var TWSpeedInCharacters             = 0; // How many characters it should print per second
+    var TWSpeedInFrames                 = 0
+    var TWTimer                         = 0; // Used to determine how many characters should be displayed (relative to the time/speed of displaying characters)
+    var TWSpeedInSeconds                = 0.0
+    var TWNumberOfCurrentCharacters     = 0
+    var TWPreviousNumberOfCurrentChars  = 0
+    var TWNumberOfTotalCharacters       = 0
+    var TWCurrentText                   = " "; // What's currently on the screen
+    var TWFullText                      = " "; // The entire line of text
     // Used to handle SpriteKit's weird text-display quirks
     var TWInvisibleText:DSMultilineLabelNode? = nil
     
@@ -428,7 +440,6 @@ class VNScene : SKScene {
         }
         
         backgroundMusic = SMAudioSoundFromFile(filename)
-        
         if backgroundMusic == nil {
             print("[VNScene] ERROR: Could not load background music from file named: \(filename)")
             return;
@@ -467,15 +478,16 @@ class VNScene : SKScene {
     func loadSavedResources()
     {
         // Load any saved resource information from the dictionary
-        let savedSprites:NSArray?       = record.objectForKey(VNSceneSpritesToShowKey)      as? NSArray
-        let loadedMusic:NSString?       = record.objectForKey(VNSceneMusicToPlayKey)        as? NSString
-        let savedBackground:NSString?   = record.objectForKey(VNSceneBackgroundToShowKey)   as? NSString
-        let savedSpeakerName:NSString?  = record.objectForKey(VNSceneSpeakerNameToShowKey)  as? NSString
-        let savedSpeech:NSString?       = record.objectForKey(VNSceneSpeechToDisplayKey)    as? NSString
-        let showSpeechKey:NSNumber?     = record.objectForKey(VNSceneShowSpeechKey)         as? NSNumber
-        let musicShouldLoop:NSNumber?   = record.objectForKey(VNSceneMusicShouldLoopKey)    as? NSNumber
-        let savedBackgroundX:NSNumber?  = record.objectForKey(VNSceneBackgroundXKey)        as? NSNumber
-        let savedBackgroundY:NSNumber?  = record.objectForKey(VNSceneBackgroundYKey)        as? NSNumber
+        let savedSprites:NSArray?       = record.objectForKey(VNSceneSpritesToShowKey)              as? NSArray
+        let loadedMusic:NSString?       = record.objectForKey(VNSceneMusicToPlayKey)                as? NSString
+        let savedBackground:NSString?   = record.objectForKey(VNSceneBackgroundToShowKey)           as? NSString
+        let savedSpeakerName:NSString?  = record.objectForKey(VNSceneSpeakerNameToShowKey)          as? NSString
+        let savedSpeech:NSString?       = record.objectForKey(VNSceneSpeechToDisplayKey)            as? NSString
+        let savedSpeechbox:NSString?    = record.objectForKey(VNSceneSavedOverriddenSpeechboxKey)   as? NSString
+        let showSpeechKey:NSNumber?     = record.objectForKey(VNSceneShowSpeechKey)                 as? NSNumber
+        let musicShouldLoop:NSNumber?   = record.objectForKey(VNSceneMusicShouldLoopKey)            as? NSNumber
+        let savedBackgroundX:NSNumber?  = record.objectForKey(VNSceneBackgroundXKey)                as? NSNumber
+        let savedBackgroundY:NSNumber?  = record.objectForKey(VNSceneBackgroundYKey)                as? NSNumber
         let screenSize:CGSize           = SMScreenSizeInPoints(); // Screensize is loaded to help position UI elements
     
         // This determines whether or not the speechbox will be shown. By default, the speechbox is hidden
@@ -555,24 +567,70 @@ class VNScene : SKScene {
             // In theory, the process should be fast enough (and the number of sprites FEW enough) that the user shouldn't notice any delays.
             //for( NSDictionary* spriteData in savedSprites ) {
             for spriteData in savedSprites! {
+                
+                var doesHaveAlias = true // default assumption, used for loading sprite alias data
 
                 // Grab sprite data from dictionary
-                let spriteFilename:NSString = spriteData.objectForKey("name") as! NSString
-                print("[VNScene] Restoring saved sprite named: \(spriteFilename)");
-
-                // Load CCSprite object and set its coordinates
-                let spriteXValue = spriteData.objectForKey("x") as! NSNumber
-                let spriteYValue = spriteData.objectForKey("y") as! NSNumber
-                let spriteX:CGFloat = CGFloat(spriteXValue.doubleValue) // Load coordinates from dictionary
-                let spriteY:CGFloat = CGFloat(spriteYValue.doubleValue)
+                let nameOfSprite:NSString = spriteData.objectForKey("name") as! NSString
+                print("[VNScene] Restoring saved sprite named: \(nameOfSprite)");
                 
-                let sprite          = SKSpriteNode(imageNamed: spriteFilename as String)
+                // check for filename
+                var filenameOfSprite:NSString? = spriteData.objectForKey("filename") as? NSString
+                if( filenameOfSprite == nil ) {
+                    doesHaveAlias = false
+                    filenameOfSprite = nameOfSprite
+                }
+               
+                // Load sprite object and set its coordinates
+                let spriteX:CGFloat = CGFloat((spriteData.objectForKey("x") as! NSNumber).doubleValue)
+                let spriteY:CGFloat = CGFloat((spriteData.objectForKey("y") as! NSNumber).doubleValue)
+                let scaleX:CGFloat  = CGFloat((spriteData.objectForKey("scale x") as! NSNumber).doubleValue)
+                let scaleY:CGFloat  = CGFloat((spriteData.objectForKey("scale y") as! NSNumber).doubleValue)
+                
+                // check if this will incorporate height margin for ads
+                if( doesUseHeightMarginForAds == true ) {
+                    //spriteY = spriteY - heightMarginForAds;
+                }
+                
+                let sprite          = SKSpriteNode(imageNamed: filenameOfSprite as! String)
                 sprite.position     = CGPointMake(spriteX, spriteY)
+                sprite.xScale       = scaleX
+                sprite.yScale       = scaleY
                 sprite.zPosition    = VNSceneCharacterLayer
                 addChild(sprite)
                 
-                // Finally, add the sprite to the 'sprites' dictionary
-                sprites.setValue(sprite, forKey: spriteFilename as String);
+                // Finally, add the sprite to the 'sprites' dictionary2
+                sprites.setValue(sprite, forKey: nameOfSprite as String)
+                
+                // copy sprite alias data to local sprite aliases dictionary
+                if doesHaveAlias == true {
+                    localSpriteAliases.setValue(filenameOfSprite, forKey:nameOfSprite as String)
+                }
+            }
+        }
+        
+        if savedSpeechbox != nil {
+            let widthOfScreen               = SMScreenSizeInPoints().width
+            var originalChildren:NSArray?   = nil
+            let boxToBottomMargin           = CGFloat( (viewSettings.objectForKey(VNSceneViewSpeechBoxOffsetFromBottomKey) as! NSNumber).floatValue )
+            
+            if speechBox != nil {
+                originalChildren = speechBox!.children
+                speechBox!.removeFromParent()
+            }
+            
+            speechBox               = SKSpriteNode(imageNamed: savedSpeechbox as! String)
+            speechBox!.position     = CGPointMake( widthOfScreen * 0.5, (speechBox!.frame.size.height * 0.5) + boxToBottomMargin );
+            speechBox!.zPosition    = VNSceneUILayer
+            speechBox!.name         = VNSceneTagSpeechBox
+            
+            self.addChild(speechBox!)
+            
+            // add children from "old" speech box
+            if( originalChildren != nil && originalChildren!.count > 0 ) {
+                for someChild in originalChildren! {
+                    speechBox!.addChild(someChild as! SKNode)
+                }
             }
         }
         
@@ -635,6 +693,8 @@ class VNScene : SKScene {
     // Actually loads images and text for the UI (as opposed to just loading information ABOUT the UI)
     func loadUI() {
         
+        heightMarginForAds = 0
+        
         // Load the default settings if they don't exist yet. If there's custom data, the default settings will be overwritten.
         if( viewSettings.count < 1 ) {
             print("[VNScene] Loading default view settings.");
@@ -678,10 +738,6 @@ class VNScene : SKScene {
         speechBox!.zPosition            = VNSceneUILayer
         speechBox!.name                 = VNSceneTagSpeechBox
         addChild(speechBox!)
-        
-        if speechBox == nil {
-            print("[VNScene] WARNING: Speechbox could not be initialized.");
-        }
     
         // Save speech box position in the settings dictionary; this is useful in case you need to restore it to its default position later
         viewSettings.setValue( NSNumber(double: Double(speechBox!.position.x)), forKey:"speechbox x")
@@ -707,7 +763,6 @@ class VNScene : SKScene {
         // the box it's displayed in.
         let verticalMarginValue     = viewSettings.objectForKey(VNSceneViewSpeechVerticalMarginsKey) as! NSNumber
         let horizontalMarginValue   = viewSettings.objectForKey(VNSceneViewSpeechHorizontalMarginsKey) as! NSNumber
-        
         let verticalMargins     = CGFloat(verticalMarginValue.doubleValue)
         let horizontalMargins   = CGFloat(horizontalMarginValue.doubleValue)
         // Width multiplier is used for creating margins (when displaying the speech text). Due to differences in size,
@@ -756,6 +811,12 @@ class VNScene : SKScene {
         //[speechBox addChild:speech)
         speechBox!.addChild(speech!)
         
+        // determine if the UI will use height margin for ads
+        let numberForDoesUseHeightMarginForAds:NSNumber? = viewSettings.objectForKey(VNSceneViewDoesUseHeightMarginForAdsKey) as? NSNumber
+        if numberForDoesUseHeightMarginForAds != nil {
+            doesUseHeightMarginForAds = numberForDoesUseHeightMarginForAds!.boolValue
+        }
+        
         /** COPY TO TWINVISIBLE TEXT **/
         TWInvisibleText = DSMultilineLabelNode(fontNamed: fontNameValue as String)
         TWInvisibleText!.text = " ";
@@ -765,6 +826,7 @@ class VNScene : SKScene {
         TWInvisibleText!.horizontalAlignmentMode = speech!.horizontalAlignmentMode
         TWInvisibleText!.zPosition = speech!.zPosition
         TWInvisibleText!.alpha = 0.0; // make sure this really is invisible
+        TWInvisibleText!.name = "TWInvisibleText"
         speechBox!.addChild(TWInvisibleText!)
     
         // Part 3: Create speaker label
@@ -781,11 +843,11 @@ class VNScene : SKScene {
             speakerNameOffsets.y = CGFloat(speakerNameOffsetYValue!.doubleValue)
         }
     
-    // Add the speaker to the speech-box. The "name" is just empty text by default, until an actual name is provided later.
-    //speaker = [DSMultilineLabelNode labelNodeWithFontNamed:[viewSettings.objectForKey(VNSceneViewFontNameKey])
+        // Add the speaker to the speech-box. The "name" is just empty text by default, until an actual name is provided later.
+        //speaker = [DSMultilineLabelNode labelNodeWithFontNamed:[viewSettings.objectForKey(VNSceneViewFontNameKey])
         speaker = DSMultilineLabelNode(fontNamed:fontNameValue as String)
         speaker!.text = " ";
-        speaker!.fontSize = CGFloat(fontSize * 1.1)
+        speaker!.fontSize = CGFloat(fontSize * 1.1) // 1.1 is used as a "magic number" because it looks OK
         speaker!.paragraphWidth = speakerSize.width;
         speaker!.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Left;
     
@@ -808,11 +870,6 @@ class VNScene : SKScene {
     
         // Copy values from the dictionary
         if( buttonUntouchedColorsDict != nil ) {
-            //println("[VNScene] Untouched buttons colors settings = %@", buttonUntouchedColorsDict);
-            //UIColor* untouchedColor  = SMColorFromUnsignedCharRGB([[buttonUntouchedColorsDict.objectForKey(@"r"] unsignedCharValue],
-                //[[buttonUntouchedColorsDict.objectForKey(@"g"] unsignedCharValue],
-                //[[buttonUntouchedColorsDict.objectForKey(@"b"] unsignedCharValue]);
-            
             let untouchedR = (buttonUntouchedColorsDict!.objectForKey("r") as! NSNumber).integerValue
             let untouchedG = (buttonUntouchedColorsDict!.objectForKey("g") as! NSNumber).integerValue
             let untouchedB = (buttonUntouchedColorsDict!.objectForKey("b") as! NSNumber).integerValue
@@ -832,13 +889,6 @@ class VNScene : SKScene {
             
             let touchedColor = SMColorFromUnsignedCharRGB(touchedR, g: touchedG, b: touchedB)
             buttonTouchedColors = touchedColor
-            
-            /*
-            UIColor* touchedColor = SMColorFromUnsignedCharRGB([[buttonTouchedColorsDict.objectForKey(@"r"] unsignedCharValue],
-            [[buttonTouchedColorsDict.objectForKey(@"g"] unsignedCharValue],
-            [[buttonTouchedColorsDict.objectForKey(@"b"] unsignedCharValue]);
-            buttonTouchedColors = [touchedColor copy)
-                */
         }
     
         // Part 5: Load transition speeds
@@ -892,14 +942,12 @@ class VNScene : SKScene {
         //for( NSInteger i = (spritesToRemove.count - 1); i >= 0; i-- ) {
         for var i = (spritesToRemove.count - 1); i >= 0; i--  {
     
-            //SKSpriteNode* sprite = [spritesToRemove objectAtIndex:i)
             let sprite:SKSpriteNode = spritesToRemove.objectAtIndex(i) as! SKSpriteNode
     
             // If the sprite has no parent node (and is marked as safe to remove), then it's time to get rid of it
-            //if( sprite.parent != nil && [sprite.name caseInsensitiveCompare:VNSceneSpriteIsSafeToRemove] == NSOrderedSame) {
             if( sprite.parent != nil && sprite.name!.caseInsensitiveCompare(VNSceneSpriteIsSafeToRemove) == NSComparisonResult.OrderedSame ) {
-    
-                spritesToRemove.removeObject(sprite) // Remove from array also
+    	        // remove from array also, before removing from parent node
+                spritesToRemove.removeObject(sprite)
                 sprite.removeFromParent()
             }
         }
@@ -918,7 +966,7 @@ class VNScene : SKScene {
         //for( NSString* spriteName in [sprites allKeys] ) {
         for spriteName in sprites.allKeys {
     
-            let spriteToRelocate  = sprites.objectForKey(spriteName) as! SKSpriteNode    // Grab sprite from active sprites dictionary
+            let spriteToRelocate  	        = sprites.objectForKey(spriteName) as! SKSpriteNode    // Grab sprite from active sprites dictionary
             spriteToRelocate.alpha          = 0.0;                                      // Mark as invisble/inactive (inactive as far as VNScene is concerned)
             spriteToRelocate.name           = VNSceneSpriteIsSafeToRemove;              // Mark as definitely unused
             
@@ -944,14 +992,11 @@ class VNScene : SKScene {
     
         // Unload any music that may be playing.
         if( isPlayingMusic ) {
-            //[[OALSimpleAudio sharedInstance] stopBg)
-            //[self stopBGMusic)
             stopBGMusic()
             isPlayingMusic = false; // Make sure this is set to NO, since the function might be called more than once!
         }
     
         // Now, forcibly get rid of anything that might have been missed
-        //if( self.children && self.children.count > 0 ) {
         if self.children.count > 0 {
             print("[VNScene] Will now forcibly remove all child nodes of this layer.");
             removeAllChildren()
@@ -961,6 +1006,8 @@ class VNScene : SKScene {
     
     // MARK: Misc and Utility
     
+    // Updates data regarding speed (and whether or not typewriter mode should be enabled). This should only get called occasionally,
+    // such as when this speed values are changed.	  
     func updateTypewriterTextSettings() {
         
         if TWSpeedInCharacters <= 0 {
@@ -978,13 +1025,14 @@ class VNScene : SKScene {
             TWSpeedInFrames = Int(speedInFrames)
             TWTimer = 0; // This gets reset
             
-            print("Typewriter Text - speed in seconds: \(TWSpeedInSeconds) | speed in frames: \(TWSpeedInFrames)");
+            print("[VNScene] DIAGNOSTIC: Typewriter Text - speed in seconds: \(TWSpeedInSeconds) | speed in frames: \(TWSpeedInFrames)");
         }
         
         record.setValue(NSNumber(integer: TWSpeedInCharacters), forKey: VNSceneTypewriterTextSpeed)
         record.setValue(NSNumber(bool: TWCanSkip), forKey: VNSceneTypewriterTextCanSkip)
     }
     
+    // This gets called every frame to determine how to display labels when typewriter text is enabled.
     func updateTypewriterTextDisplay()
     {
         if TWSpeedInCharacters < 1 {
@@ -994,10 +1042,10 @@ class VNScene : SKScene {
         var shouldRedrawText = false; // Determines whether or not to go through the trouble of recalculating text node positions
         
         // Used to calculate how many characters to display (in each frame)
-        let currentChars = Double(TWNumberOfCurrentCharacters)
-        let charsPerSecond = Double(TWSpeedInCharacters)
-        let charsPerFrame = (charsPerSecond / 60.0)
-        let c = currentChars + charsPerFrame
+        let currentChars        = Double(TWNumberOfCurrentCharacters)
+        let charsPerSecond      = Double(TWSpeedInCharacters)
+        let charsPerFrame       = (charsPerSecond / 60.0)
+        let c                   = currentChars + charsPerFrame
         
         // Convert back to integer (from the more precise Double)
         TWNumberOfCurrentCharacters = Int(c)
@@ -1044,26 +1092,49 @@ class VNScene : SKScene {
         }
     }
     
+    // just a quick utility function designed to quickly tell if this is portrait mode or not`
+    func viewIsPortrait() -> Bool {
+        let width = self.view!.frame.size.width
+        let height = self.view!.frame.size.height
+        
+        if( width > height ) {
+            return false
+        }
+        
+        return true
+    }
+    
+    // Used to retrieve potential sprite alias names from the local sprite alias dictionary
+    func filenameOfSpriteAlias(someName:String) -> String {
+        let filenameOfSprite:String? = self.localSpriteAliases.objectForKey(someName) as? String
+        
+        // Check if the corresponding filename was NOT found in the alias list
+        if filenameOfSprite == nil {
+            // In this case, just return the original name, which can be assumed to be an actual filename already
+            return String(someName)
+        }
+        
+        // Otherwise, assume that the filename was found
+        return String(filenameOfSprite!)
+    }
+    
     // The set/clear effect-running-flag functions exist so that Cocos2D can call them after certain actions
     // (or sequences of actions) have been run. The "effect is running" flag is important, since it lets VNScene
     // know when it's safe (or unsafe) to do certain things (which might interrupt the effect that's being run).
     func setEffectRunningFlag() {
-        
         print("[VNScene] Effect will be running.");
         effectIsRunning = true;
         mode = VNSceneModeEffectIsRunning;
     }
     
-    func clearEffectRunningFlag()
-    {
+    func clearEffectRunningFlag() {
         effectIsRunning = false;
         print("[VNScene] Effect is no longer running.");
     }
     
     // Update script info. This consists of index data, the script name, and which conversation/section is the current one
     // being displayed (or run) before the player.
-    func updateScriptInfo()
-    {
+    func updateScriptInfo() {
         if( script != nil ) {
             // Save existing script information (indexes, "current" conversation name, etc.) in the record.
             // This overwrites any script information which may already have been stored.
@@ -1072,8 +1143,7 @@ class VNScene : SKScene {
     }
     
     // This saves important information (script info, flags, which resources are being used, etc) to SMRecord.
-    func saveToRecord()
-    {
+    func saveToRecord() {
         print("[VNScene] Saving data to record.");
     
         // Create the default "dictionary to save" that will be passed into SMRecord's "activity dictionary."
@@ -1089,9 +1159,13 @@ class VNScene : SKScene {
             
             let localFlags = safeSave.objectForKey("flags") as! NSDictionary
             let localRecord = safeSave.objectForKey("record") as! NSMutableDictionary
+            let aliasesFromSafeSave = safeSave.objectForKey("aliases") as! NSDictionary
+   
             //let recordedFlags = SMRecord.sharedRecord.flags()
             
             //recordedFlags.addEntriesFromDictionary(localFlags)
+            //SMDictionaryAddEntriesFromAnotherDictionary(SMRecord.sprite)
+            SMRecord.sharedRecord.addExistingSpriteAliases(aliasesFromSafeSave)
             SMRecord.sharedRecord.addExistingFlags(localFlags)
             dictToSave.setValue(localRecord, forKey: SMRecordActivityDataKey)
             SMRecord.sharedRecord.setActivityDict(dictToSave)
@@ -1152,6 +1226,7 @@ class VNScene : SKScene {
         let scriptInfo = script!.info()
         
         safeSave = NSMutableDictionary(dictionary: ["flags":flagsCopy,
+            "aliases":self.localSpriteAliases.copy(),
             "record":record,
             VNSceneSavedScriptInfoKey:scriptInfo])
         
@@ -1194,11 +1269,31 @@ class VNScene : SKScene {
             let actualSprite:SKSpriteNode = sprites.objectForKey(spriteName) as! SKSpriteNode //sprites[spriteName)
             let spriteX = NSNumber(double: Double(actualSprite.position.x) ) // Get coordinates; these will be saved to the dictionary.
             let spriteY = NSNumber(double: Double(actualSprite.position.y) )
+            
+            // store scaling data as well (this is used mostly for inverted sprites)
+            let scaleX = NSNumber(double: Double(actualSprite.xScale))
+            let scaleY = NSNumber(double: Double(actualSprite.yScale))
     
             // Save relevant data (sprite name and coordinates) in a dictionary
-            let savedSpriteData = NSDictionary(dictionary: ["name":spriteName,
+            /*let savedSpriteData = NSDictionary(dictionary: ["name":spriteName,
                 "x":spriteX,
-                "y":spriteY]);
+                "y":spriteY]);*/
+                
+            let tempSpriteDictionary = NSMutableDictionary()
+            tempSpriteDictionary.setValue(spriteName, forKey:"name")
+            tempSpriteDictionary.setValue(spriteX, forKey:"x")
+            tempSpriteDictionary.setValue(spriteY, forKey:"y")
+            tempSpriteDictionary.setValue(scaleX, forKey:"scale x")
+            tempSpriteDictionary.setValue(scaleY, forKey:"scale y")
+            
+            // check if this has a different filename
+            let filenameOfSprite = self.filenameOfSpriteAlias(spriteName as! String)
+            // if the filenames are different, then it means that there is an alias value
+            if filenameOfSprite.caseInsensitiveCompare(spriteName as! String) != NSComparisonResult.OrderedSame {
+                tempSpriteDictionary.setValue(filenameOfSprite, forKey:"filename")
+            }
+            
+            let savedSpriteData = NSDictionary(dictionary: tempSpriteDictionary)
             
             /*let savedSpriteData = NSDictionary(dictionaryLiteral: spriteName, "name",
                                                                spriteX, "x",
@@ -1840,6 +1935,7 @@ class VNScene : SKScene {
     
             //NSString* spriteName = parameter1;
             let spriteName = parameter1String
+            let filenameOfSprite = self.filenameOfSpriteAlias(spriteName)
             //BOOL appearAtOnce = [[command objectAtIndex:2] boolValue) // Should the sprite show up at once, or fade in (like text does)
             let parameter2 = command.objectAtIndex(2) as! NSNumber
             let appearAtOnce = parameter2.boolValue
@@ -1853,9 +1949,9 @@ class VNScene : SKScene {
             // Try to load the sprite from an image in the app bundle
             //CCSprite* createdSprite = [CCSprite spriteWithImageNamed:spriteName) // Loads from file; sprite-sheets not supported
             //SKSpriteNode* createdSprite = [SKSpriteNode spriteNodeWithImageNamed:spriteName)
-            let createdSprite:SKSpriteNode? = SKSpriteNode(imageNamed: spriteName)
+            let createdSprite:SKSpriteNode? = SKSpriteNode(imageNamed: filenameOfSprite)
             if( createdSprite == nil ) {
-                print("[VNScene] ERROR: Could not load sprite named: %@", spriteName);
+                print("[VNScene] ERROR: Could not load sprite named: \(filenameOfSprite)");
                 return;
             }
     
@@ -1888,12 +1984,11 @@ class VNScene : SKScene {
         case VNScriptCommandAlignSprite:
     
             //NSString* spriteName = parameter1;
-            let spriteName = parameter1String
-            let newAlignment = command.objectAtIndex(2) as! String // "left", "center", "right"
-            let duration = command.objectAtIndex(3) as! NSNumber // Default duration is 0.5 seconds; this is stored as an NSNumber (double)
-            let durationAsDouble = duration.doubleValue // For when an actual scalar value has to be passed (instead of NSNumber)
-            
-            var alignmentFactor = CGFloat(0.5) // 0.50 is the center of the screen, 0.25 is left-aligned, and 0.75 is right-aligned
+            let spriteName          = parameter1String
+            let newAlignment        = command.objectAtIndex(2) as! String // "left", "center", "right"
+            let duration            = command.objectAtIndex(3) as! NSNumber // Default duration is 0.5 seconds; this is stored as an NSNumber (double)
+            let durationAsDouble    = duration.doubleValue // For when an actual scalar value has to be passed (instead of NSNumber)
+            var alignmentFactor     = CGFloat(0.5) // 0.50 is the center of the screen, 0.25 is left-aligned, and 0.75 is right-aligned
 
             // STEP ONE: Find the sprite if it exists. If it doesn't, then just stop the function.
             let sprite:SKSpriteNode? = sprites.objectForKey(spriteName) as? SKSpriteNode
@@ -2836,6 +2931,186 @@ class VNScene : SKScene {
             }
             
             self.updateTypewriterTextSettings()
+            
+       /** NEW STUFF HERE **/
+       
+       case VNScriptCommandSetSpeechbox:
+       
+            let duration = (command.objectAtIndex(2) as! NSNumber).doubleValue
+            
+            // prepare positioning data
+            var boxToBottomMargin   = CGFloat(0)
+            let widthOfScreen       = SMScreenSizeInPoints().width
+            boxToBottomMargin       = CGFloat((viewSettings.objectForKey(VNSceneViewSpeechBoxOffsetFromBottomKey) as! NSNumber).floatValue)
+            
+            if speechBox == nil {
+                print("[VNScene] ERROR: .SETSPEECHBOX failed as speechbox node was invalid.")
+                return;
+            }
+            
+            if( duration <= 0.0 ) {
+                
+                let originalChildren = speechBox!.children
+                speechBox?.removeFromParent()
+                
+                speechBox = SKSpriteNode(imageNamed: parameter1String)
+                
+                speechBox!.position = CGPointMake( widthOfScreen * 0.5, (speechBox!.frame.size.height * 0.5) + boxToBottomMargin )
+                speechBox!.alpha = 1.0;
+                speechBox!.zPosition = VNSceneUILayer;
+                speechBox!.name = VNSceneTagSpeechBox;
+                self.addChild( speechBox! )
+                //[self addChild:speechBox];
+                //[self addChild:speechBox z:VNSceneUILayer name:VNSceneTagSpeechBox];
+                
+                /*for( SKNode* aChild in originalChildren ) {
+                    [speechBox addChild:aChild];
+                    //NSLog(@"d: child z is %f and name is %@", aChild.zPosition, aChild.name);
+                }*/
+                
+                if originalChildren.count > 0 {
+                    for aChild in originalChildren {
+                        speechBox!.addChild(aChild)
+                    }
+                }
+                
+            } else {
+                
+                // switch gradually
+                //[self createSafeSave];
+                //[self setEffectRunningFlag];
+                self.createSafeSave()
+                self.setEffectRunningFlag()
+                
+                let speechBoxChildren = speechBox!.children
+                
+                // create fake placeholder speechbox that looks like the original
+                //CCSprite* fakeSpeechbox = [CCSprite spriteWithTexture:speechBox.texture];
+                let fakeSpeechbox = SKSpriteNode(texture: speechBox!.texture)
+                fakeSpeechbox.position = speechBox!.position;
+                fakeSpeechbox.zPosition = speechBox!.zPosition;
+                //[self addChild:fakeSpeechbox];
+                self.addChild(fakeSpeechbox)
+                
+                // get rid of the original speechbox and replace it with a new and invisible speechbox
+                //[speechBox removeFromParent];
+                speechBox!.removeFromParent()
+                speechBox = SKSpriteNode(imageNamed:parameter1String)
+                
+                //speechBox = [SKSpriteNode spriteNodeWithImageNamed:parameter1];
+                speechBox!.position = CGPointMake( widthOfScreen * 0.5, (speechBox!.frame.size.height * 0.5) + boxToBottomMargin );
+                speechBox!.alpha = 0.0;
+                speechBox!.zPosition = VNSceneUILayer;
+                speechBox!.name = VNSceneTagSpeechBox;
+                //[self addChild:speechBox];
+                self.addChild(speechBox!)
+                
+                //for( SKNode* aChild in speechBoxChildren ) {
+                for aChild in speechBoxChildren {
+                    speechBox!.addChild(aChild)
+                    
+                    // cause each child node to gradually fade out and fade back in so it looks like it's doing it in time with the speechboxes.
+                    let fadeOutChild = SKAction.fadeOutWithDuration(duration * 0.5)
+                    let fadeInChild = SKAction.fadeInWithDuration(duration * 0.5)
+                    let sequenceForChild = SKAction.sequence([fadeOutChild, fadeInChild])
+                    
+                    aChild.runAction(sequenceForChild)
+                }
+                
+                // fade out the fake speechbox
+                let fadeOut = SKAction.fadeOutWithDuration(duration * 0.5)
+                fakeSpeechbox.runAction(fadeOut)
+                
+                // fade in the new "real" speechbox
+                let fadeIn = SKAction.fadeOutWithDuration(duration * 0.5)
+                let delay = SKAction.waitForDuration(duration * 0.5)
+                //let callFunc = SKAction.performSelector(@selec)
+                let callFunc = SKAction.runBlock(self.clearEffectRunningFlag)
+                let delayedFadeInSequence = SKAction.sequence([delay, fadeIn, callFunc])
+                
+                speechBox!.runAction(delayedFadeInSequence)
+                
+                /*
+                SKAction* fadeIn = [SKAction fadeOutWithDuration:(duration * 0.5)];
+                SKAction* delay = [SKAction waitForDuration:(duration * 0.5)];
+                SKAction* callFunc = [SKAction performSelector:@selector(clearEffectRunningFlag) onTarget:self];
+                SKAction* delayedFadeInSequence = [SKAction sequence:@[delay, fadeIn, callFunc]];
+                
+                [speechBox runAction:delayedFadeInSequence];*/
+            }
+            
+            //[record setValue:parameter1 forKey:VNSceneSavedOverriddenSpeechboxKey];
+            record.setValue(parameter1String, forKey:VNSceneSavedOverriddenSpeechboxKey)
+            
+        case VNScriptCommandSetSpriteAlias:
+            
+            let aliasParameter = command.objectAtIndex(1) as! NSString
+            let filenameParameter = command.objectAtIndex(2) as! NSString
+            
+            //NSString* aliasParameter = [command objectAtIndex:1];
+            //NSString* filenameParameter = [command objectAtIndex:2];
+            
+            if filenameParameter.caseInsensitiveCompare(VNScriptNilValue) == NSComparisonResult.OrderedSame {
+                localSpriteAliases.removeObjectForKey(aliasParameter) // remove data for this alias
+            } else {
+                localSpriteAliases.setValue(filenameParameter, forKey: aliasParameter as String)
+            }
+            
+        case VNScriptCommandFlipSprite:
+            
+            let spriteName = parameter1String as NSString
+            let durationAsDouble = (command.objectAtIndex(2) as! NSNumber).doubleValue
+            let flipHorizontal = (command.objectAtIndex(3) as! NSNumber).boolValue
+            
+            let sprite:SKSpriteNode? = sprites.objectForKey(spriteName) as? SKSpriteNode
+            if sprite == nil {
+                return;
+            }
+            
+            self.createSafeSave()
+            
+            // If this has a duration of zero, the action will take place instantly and then the function will return
+            if( durationAsDouble <= 0.0 ) {
+                // determine flip style
+                if( flipHorizontal == true ) {
+                    sprite!.xScale = sprite!.xScale * (-1);
+                } else {
+                    sprite!.yScale = sprite!.yScale * (-1);
+                }
+                return;
+            }
+            
+            //[self setEffectRunningFlag];
+            setEffectRunningFlag()
+            
+            var scaleToX = sprite!.xScale;
+            var scaleToY = sprite!.yScale;
+            
+            var scalingAction:SKAction? = nil
+            
+            // determine what kind of action to take (this will determine scaling values)
+            if( flipHorizontal == true ) {
+                scaleToX = scaleToX * (-1);
+                //scalingAction = [SKAction scaleXTo:scaleToX duration:durationAsDouble];
+                scalingAction = SKAction.scaleXTo(scaleToX, duration:durationAsDouble)
+            } else {
+                scaleToY = scaleToY * (-1);
+                //scalingAction = [SKAction scaleYTo:scaleToY duration:durationAsDouble];
+                scalingAction = SKAction.scaleYTo(scaleToY, duration:durationAsDouble)
+            }
+            
+            let clearEffectFlag = SKAction.runBlock(self.clearEffectRunningFlag)
+            let theSequence = SKAction.sequence([scalingAction!, clearEffectFlag])
+            
+            sprite!.runAction(theSequence)
+            
+            //SKAction* clearEffectFlag = [SKAction performSelector:@selector(clearEffectRunningFlag) onTarget:self];
+            //SKAction* theSequence = [SKAction sequence:@[scalingAction, clearEffectFlag]];
+            
+            //CCActionScaleTo* scalingAction = [CCActionScaleTo actionWithDuration:durationAsDouble scaleX:scaleToX scaleY:scaleToY];
+            //CCActionCallFunc* clearEffectFlag = [CCActionCallFunc actionWithTarget:self selector:@selector(clearEffectRunningFlag)];
+            //CCActionSequence* theSequence = [CCActionSequence actions:scalingAction, clearEffectFlag, nil];
+            //[sprite runAction:theSequence];
     
     
         default:

@@ -1563,7 +1563,7 @@ class VNScript {
             //analyzedArray = @[type, aliasParameter, filenameParameter];
             analyzedArray = NSArray(objects: type, aliasParameter, filenameParameter)
             
-        } /*else if action.caseInsensitiveCompare(VNScriptStringSetSpeechbox) == NSComparisonResult.OrderedSame {
+        } else if action.caseInsensitiveCompare(VNScriptStringSetSpeechbox) == NSComparisonResult.OrderedSame {
             
             // Function definition
             //
@@ -1581,17 +1581,19 @@ class VNScript {
             //
             
             // Set default values
-            NSString* duration = [NSString stringWithFormat:@"0"];
+            //NSString* duration = [NSString stringWithFormat:@"0"];
+            var duration = NSString(string: "0")
             
             // Overwrite any default values with any values that have been explicitly written into the script
-            if( command.count >= 3 )
-            duration = [command objectAtIndex:2]; // Optional, default value is 0
+            if command.count >= 3 {
+                duration = command.objectAtIndex(2) as! NSString // optional, default value is zero
+            }
             
-            type = @VNScriptCommandSetSpeechbox;
-            NSNumber* durationToUse = @([duration doubleValue]);
-            analyzedArray = @[type, parameter1, durationToUse];
+            type = VNScriptCommandSetSpeechbox
+            let durationToUse = NSNumber(double: duration.doubleValue)
+            analyzedArray = NSArray(objects: type, parameter1, durationToUse)
             
-        } else if( [action caseInsensitiveCompare:VNScriptStringFlipSprite] == NSOrderedSame ) {
+        } else if( action.caseInsensitiveCompare(VNScriptStringFlipSprite) == NSComparisonResult.OrderedSame ) {
             
             // Function definition
             //
@@ -1610,21 +1612,31 @@ class VNScript {
             //  Example: .FLIPSPRITE:girl.png:0:YES
             //
             
+            var duration = NSString(string: "0")
+            var flipBool = NSString(string: "YES")
+            
             // Set default values
-            NSString* duration = [NSString stringWithFormat:@"0"];
-            NSString* flipBool = [NSString stringWithFormat:@"YES"];
+            //NSString* duration = [NSString stringWithFormat:@"0"];
+            //NSString* flipBool = [NSString stringWithFormat:@"YES"];
             
             // Overwrite any default values with any values that have been explicitly written into the script
-            if( command.count >= 3 )
-            duration = [command objectAtIndex:2];
-            if( command.count >= 4 )
-            flipBool = [command objectAtIndex:3]; // Optional, default value is 0
+            if command.count >= 3 {
+                duration = command.objectAtIndex(2) as! NSString
+            }
+            if command.count >= 4 {
+                flipBool = command.objectAtIndex(3) as! NSString
+            }
             
-            type = @VNScriptCommandFlipSprite;
-            NSNumber* durationToUse = @([duration doubleValue]);
-            NSNumber* numberForFlip = @(flipBool.boolValue);
-            analyzedArray = @[type, parameter1, durationToUse, numberForFlip];
-        }*/
+            type = VNScriptCommandFlipSprite
+            let durationToUse = NSNumber(double: duration.doubleValue)
+            let numberForFlip = NSNumber(bool: flipBool.boolValue)
+            analyzedArray = NSArray(objects: type, parameter1, durationToUse, numberForFlip)
+            
+            //type = @VNScriptCommandFlipSprite;
+            //NSNumber* durationToUse = @([duration doubleValue]);
+            //NSNumber* numberForFlip = @(flipBool.boolValue);
+            //analyzedArray = @[type, parameter1, durationToUse, numberForFlip];
+        }
         
         return analyzedArray
     }

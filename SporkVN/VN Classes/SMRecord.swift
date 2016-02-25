@@ -79,6 +79,7 @@ let SMRecordDataKey                 = "record"               // THe NSData objec
 let SMRecordCurrentScoreKey         = "current score"        // NSUInteger of the player's current score
 let SMRecordFlagsKey                = "flag data"            // Key for a dictionary of "flag" data
 let SMRecordDateSavedAsString       = "date saved as string" // A string with a more human-readable version of the NSDate object
+let SMRecordSpriteAliasesKey	    = "sprite aliases"       // stores all sprite aliases in use by the game 
 
 // Keys for activity data
 let SMRecordCurrentActivityDictKey  = "current activity" // Used to locate the activity data in the User Defaults
@@ -218,6 +219,28 @@ class SMRecord {
         
         // Flags will only get updated if the dictionary is valid
         record.setValue(updatedFlags, forKey: SMRecordFlagsKey)
+    }
+    
+    func spriteAliases() -> NSMutableDictionary {
+        // check if the dictionary already exists, and if so, return it
+        let s:NSMutableDictionary? = record.objectForKey(SMRecordSpriteAliasesKey) as? NSMutableDictionary
+        if s != nil {
+            return s!
+        }
+        
+        // otherwise, the dictionary will have to be created inside of the record
+        let aliasDictionary = NSMutableDictionary()
+        record.setValue(aliasDictionary, forKey:SMRecordSpriteAliasesKey)
+        
+        return aliasDictionary
+    }
+    
+    func setSpriteAliases(updatedAliases:NSMutableDictionary) {
+        if record.count < 0 {
+           self.startNewRecord()
+        }
+        
+        record.setValue(updatedAliases, forKey:SMRecordSpriteAliasesKey)
     }
     
     /** Slots tracking **/
@@ -456,6 +479,43 @@ class SMRecord {
         }
     }
     
+    /*
+ 	   Opens a PLIST file and copies all items in it to EKRecord as flags.
+ 
+       Can choose whether or not to overwrite existing flags that have the same names.
+    */
+    func addFlagsFromFile(filename:String, overrideExistingFlags:Bool) {
+        let rootDictionary = SMDictionaryFromFile(filename)
+        if rootDictionary == nil {
+            print("[EKRecord] WARNING: Could not load flags as the dictionary file could not be loaded.")
+            return;
+        }
+    
+        if overrideExistingFlags == true {
+            print("[EKRecord] DIAGNOSTIC: Will forcibly overwrite existing flags with flags from file: \(filename)")
+        } else {
+            print("[EKRecord] DIAGNOSTIC: Will add flags (without overwriting) from file named: \(filename)")
+        }
+        
+        for key in rootDictionary!.allKeys {
+            
+            let value = rootDictionary!.objectForKey(key)
+            
+            //let value = rootDictionary!.objectForKey(key) as? AnyObject
+            
+            if overrideExistingFlags == true {
+                self.setFlagValue(value!, nameOfFlag: key as! String)
+                //self.setFlagValue(value!, forFlagNamed:key)
+            } else {
+                let existingFlag = self.flagNamed(key as! String)
+                if existingFlag == nil {
+                    //self.setValue(value!, forFlagNamed:key as! String)
+                    setFlagValue(value!, nameOfFlag: key as! String)
+                }
+            }
+        }
+    } // end function
+    
     /** SAVING DATA **/
     
     // Create an NSData object from a game record
@@ -586,6 +646,41 @@ class SMRecord {
                 print("[SMRecord] Failed to initialize saved game data.");
             }
         }
+    }
+    
+    /** SPRITE ALIASES **/
+    
+    func resetAllSpriteAliases() {
+        let dummyAliases = NSMutableDictionary()
+        dummyAliases.setValue("dummy sprite alias value", forKey:"dummy alias key");
+        self.setSpriteAliases(dummyAliases)
+    }
+    
+    func addExistingSpriteAliases(existingAliases:NSDictionary) {
+        if existingAliases.count > 0 {
+            let spriteAliasDictionary = self.spriteAliases()
+            SMDictionaryAddEntriesFromAnotherDictionary(spriteAliasDictionary, source: existingAliases)
+        }
+    }
+    
+    func setSpriteAlias(nameOfAlias:String, updatedValue:String) {
+        if SMStringLength(nameOfAlias) < 1 || SMStringLength(updatedValue) < 1 {
+            return
+        }
+        
+        let s = self.spriteAliases()
+        s.setValue(updatedValue, forKey:nameOfAlias)
+    }
+    
+    func spriteAliasNamed(nameOfAlias:String) -> String? {
+        if record.count < 1 {
+            return nil
+        }
+        
+        let s = self.spriteAliases()
+        let a = s.objectForKey(nameOfAlias) as? String
+        
+        return a
     }
     
     /** FLAGS **/

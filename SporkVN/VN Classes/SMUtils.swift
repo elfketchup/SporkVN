@@ -371,7 +371,42 @@ func SMAudioSoundFromFile( filename:String ) -> AVAudioPlayer?
     every version of Swift. To make it easier -- or try to -- Ive just made some simple utility functions for things that I do a lot,
     but which seem to require being rewritten everytime Swift is updated.
 */
- 
+
+func SMDictionaryFromFile(plistFilename:String) -> NSDictionary? {
+    // check for invalid filename
+    if SMStringLength(plistFilename) < 1 {
+        print("[SMDictionaryFromFile] ERROR: Filename was invalid; could not load.")
+        return nil
+    }
+    
+    let filepath = NSBundle.mainBundle().pathForResource(plistFilename, ofType: "plist")
+    if filepath == nil {
+        print("[EKDictionaryFromFile] ERROR: Could not find property list named: \(plistFilename)")
+        return nil;
+    }
+    
+    //let rootDictionary:NSDictionary? = NSDictionary(contentsOfFile:filepath)
+    let rootDictionary:NSDictionary? = NSDictionary(contentsOfFile: filepath!)
+    if rootDictionary == nil  {
+        print("[EKDictionaryFromFile] ERROR: Could not load root dictionary from file named: \(plistFilename)")
+        return nil
+    }
+    
+    return rootDictionary
+}
+
+// adds data from an existing NSDictionary to another NSDictionary
+func SMDictionaryAddEntriesFromAnotherDictionary(dest:NSMutableDictionary, source:NSDictionary) {
+    if source.count > 0 {
+        for key in source.allKeys {
+            let someValue = source.objectForKey(key)
+            if someValue != nil {
+                dest.setValue(someValue!, forKey: key as! String)
+            }
+        }
+    }
+}
+
 // Retrieve String from dictionary
 func SMStringFromDictionary( dict:NSDictionary, nameOfObject:String) -> String
 {
@@ -381,6 +416,16 @@ func SMStringFromDictionary( dict:NSDictionary, nameOfObject:String) -> String
     }
     
     return str!
+}
+
+// Retrieve NSArray from dictionary
+func SMArrayFromDictionary(dict:NSDictionary, nameOfObject:String) -> NSArray? {
+    let a = dict.objectForKey(nameOfObject) as? NSArray
+    if a != nil {
+        return a
+    }
+    
+    return nil
 }
 
 // Retrieve NSNumber from dictionary
