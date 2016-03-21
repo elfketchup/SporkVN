@@ -212,7 +212,7 @@ func SMColorFromRGB( r:Int, g:Int, b:Int ) -> UIColor
     return SMColorFromRGBA(r, g: g, b: b, a: 255)
 }
 
-func SMColorFromUnsignedCharRGBA( r:Int, g:Int, b:Int, a:Int ) -> UIColor
+/*func SMColorFromUnsignedCharRGBA( r:Int, g:Int, b:Int, a:Int ) -> UIColor
 {
     return SMColorFromRGBA(r, g: g, b: b, a: a)
 }
@@ -220,7 +220,7 @@ func SMColorFromUnsignedCharRGBA( r:Int, g:Int, b:Int, a:Int ) -> UIColor
 func SMColorFromUnsignedCharRGB( r:Int, g:Int, b:Int ) -> UIColor
 {
     return SMColorFromUnsignedCharRGBA(r, g: g, b: b, a: 255);
-}
+}*/
 
 /** STRINGS **/
 

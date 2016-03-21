@@ -115,7 +115,7 @@ class VNTestScene : SKScene
         playLabel = DSMultilineLabelNode(fontNamed: startFont as String)
         playLabel!.text = startText as String
         playLabel!.fontSize = startFontSize
-        playLabel!.color = SMColorFromUnsignedCharRGB(startColorR, g: startColorG, b: startColorB)
+        playLabel!.color = SMColorFromRGB(startColorR, g: startColorG, b: startColorB)
         playLabel!.position = SMPositionWithNormalizedCoordinates(startLabelX, normalizedY: startLabelY)
         playLabel!.zPosition = VNTestSceneZForLabels
         
@@ -141,7 +141,7 @@ class VNTestScene : SKScene
         loadLabel!.fontSize = continueFontSize
         loadLabel!.text = continueText as String
         loadLabel!.position = SMPositionWithNormalizedCoordinates( continueLabelX, normalizedY: continueLabelY );
-        loadLabel!.color = SMColorFromUnsignedCharRGB(continueColorR, g: continueColorG, b: continueColorB);
+        loadLabel!.color = SMColorFromRGB(continueColorR, g: continueColorG, b: continueColorB);
         loadLabel!.zPosition = VNTestSceneZForLabels
         self.addChild(loadLabel!)
         

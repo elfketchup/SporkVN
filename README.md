@@ -25,7 +25,7 @@ Still busy updating
 Contact
 -------
 
-Twitter: http://twitter.com/sporkinthemoon
+Twitter: http://twitter.com/elfketchup
 
 Getting Started
 ===============

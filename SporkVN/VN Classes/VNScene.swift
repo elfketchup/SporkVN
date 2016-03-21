@@ -104,6 +104,9 @@ let VNSceneViewMultiplyFontSizeForiPadKey   = "multiply font size for iPad"
 let VNSceneViewButtonUntouchedColorsKey     = "button untouched colors"
 let VNSceneViewButtonsTouchedColorsKey      = "button touched colors"
 let VNSceneViewDoesUseHeightMarginForAdsKey = "does use height margin for ads" // currently does nothing
+let VNSceneViewButtonTextColorKey           = "button text color"    // color of the text in buttons
+let VNSceneViewSpeechboxColorKey            = "speechbox color"      // color speech box
+let VNSceneViewSpeechboxTextColorKey        = "speechbox text color" // color of text in speech box (both dialogue and speaker name)
 
 // Resource dictionary keys
 let VNSceneViewSpeechTextKey                = "speech text"
@@ -239,6 +242,8 @@ class VNScene : SKScene {
     var speechBox:SKSpriteNode? // Dialogue box
     var speech:DSMultilineLabelNode?  // The text displayed as dialogue
     var speaker:DSMultilineLabelNode? // Name of speaker
+    var speechBoxColor              = UIColor.whiteColor()
+    var speechBoxTextColor          = UIColor.whiteColor()
     
     /* NOTE: Currently heigh margins aren't used or haven't been incorporated */
     /* (also note that support for ads hasn't really been added, and would probably be
@@ -256,6 +261,7 @@ class VNScene : SKScene {
     var speakerTransitionSpeed:Double   = 0.5
     var buttonTouchedColors             = UIColor.blueColor()
     var buttonUntouchedColors           = UIColor.blackColor()
+    var buttonTextColor                 = UIColor.whiteColor()
     
     var previousScene:SKScene? = nil
     var allSettings:NSDictionary?
@@ -755,6 +761,23 @@ class VNScene : SKScene {
         if( widthOfSpeechBox > widthOfScreen ) {
             widthOfSpeechBox = widthOfScreen; // Limit the width to whatever the screen's width is
         }
+        
+        // load speechbox color
+        let speechBoxColorDictionary = viewSettings.objectForKey(VNSceneViewSpeechboxColorKey) as? NSDictionary
+        if speechBoxColorDictionary != nil  {
+            let colorR = (speechBoxColorDictionary!.objectForKey("r") as! NSNumber).integerValue
+            let colorG = (speechBoxColorDictionary!.objectForKey("g") as! NSNumber).integerValue
+            let colorB = (speechBoxColorDictionary!.objectForKey("b") as! NSNumber).integerValue
+            
+            //let untouchedColor = SMColorFromRGB(untouchedR, g: untouchedG, b: untouchedB)
+            let theColor = SMColorFromRGB(colorR, g: colorG, b: colorB)
+            
+            speechBoxColor = theColor
+            print("[VNScene] Speech box color set to \(theColor)")
+            
+            speechBox!.colorBlendFactor = 1.0;
+            speechBox!.color = theColor;
+        }
     
         // Part 2: Create the speech label.
         // The "margins" part is tricky. When generating the size for the CCLabelTTF object, it's important to pretend
@@ -811,6 +834,23 @@ class VNScene : SKScene {
         //[speechBox addChild:speech)
         speechBox!.addChild(speech!)
         
+        // load speech text colors
+        let speechBoxTextColorDict = viewSettings.objectForKey(VNSceneViewSpeechboxTextColorKey) as? NSDictionary
+        if speechBoxTextColorDict != nil  {
+            let colorR = (speechBoxTextColorDict!.objectForKey("r") as! NSNumber).integerValue
+            let colorG = (speechBoxTextColorDict!.objectForKey("g") as! NSNumber).integerValue
+            let colorB = (speechBoxTextColorDict!.objectForKey("b") as! NSNumber).integerValue
+            
+            //let untouchedColor = SMColorFromRGB(untouchedR, g: untouchedG, b: untouchedB)
+            let theColor = SMColorFromRGB(colorR, g: colorG, b: colorB)
+            
+            speechBoxTextColor = theColor
+            print("[VNScene] Speech box color set to \(theColor)")
+            
+            speech!.colorBlendFactor = 1.0
+            speech!.color = theColor
+        }
+        
         // determine if the UI will use height margin for ads
         let numberForDoesUseHeightMarginForAds:NSNumber? = viewSettings.objectForKey(VNSceneViewDoesUseHeightMarginForAdsKey) as? NSNumber
         if numberForDoesUseHeightMarginForAds != nil {
@@ -858,6 +898,10 @@ class VNScene : SKScene {
         speaker!.zPosition = VNSceneTextLayer;
         speaker!.name = VNSceneTagSpeakerName;
         speechBox!.addChild(speaker!);
+        
+        // set speaker color value
+        speaker!.color = speechBoxTextColor
+        speaker!.colorBlendFactor = 1.0
     
         // Part 4: Load the button colors
         // First load the default colors
@@ -867,6 +911,8 @@ class VNScene : SKScene {
         // Grab dictionaries from view settings
         let buttonUntouchedColorsDict:NSDictionary? = viewSettings.objectForKey(VNSceneViewButtonUntouchedColorsKey) as? NSDictionary
         let buttonTouchedColorsDict:NSDictionary? = viewSettings.objectForKey(VNSceneViewButtonsTouchedColorsKey) as? NSDictionary
+        let buttonTextColorDict:NSDictionary? = viewSettings.objectForKey(VNSceneViewButtonTextColorKey) as? NSDictionary
+
     
         // Copy values from the dictionary
         if( buttonUntouchedColorsDict != nil ) {
@@ -874,7 +920,7 @@ class VNScene : SKScene {
             let untouchedG = (buttonUntouchedColorsDict!.objectForKey("g") as! NSNumber).integerValue
             let untouchedB = (buttonUntouchedColorsDict!.objectForKey("b") as! NSNumber).integerValue
             
-            let untouchedColor = SMColorFromUnsignedCharRGB(untouchedR, g: untouchedG, b: untouchedB)
+            let untouchedColor = SMColorFromRGB(untouchedR, g: untouchedG, b: untouchedB)
             
             buttonUntouchedColors = untouchedColor
             print("[VNScene] Button untouched colors set to \(buttonUntouchedColors)")
@@ -887,9 +933,20 @@ class VNScene : SKScene {
             let touchedG = (buttonTouchedColorsDict!.objectForKey("g") as! NSNumber).integerValue
             let touchedB = (buttonTouchedColorsDict!.objectForKey("b") as! NSNumber).integerValue
             
-            let touchedColor = SMColorFromUnsignedCharRGB(touchedR, g: touchedG, b: touchedB)
+            let touchedColor = SMColorFromRGB(touchedR, g: touchedG, b: touchedB)
             buttonTouchedColors = touchedColor
         }
+        
+        if buttonTextColorDict != nil {
+            let R = (buttonTextColorDict!.objectForKey("r") as! NSNumber).integerValue
+            let G = (buttonTextColorDict!.objectForKey("g") as! NSNumber).integerValue
+            let B = (buttonTextColorDict!.objectForKey("b") as! NSNumber).integerValue
+            
+            let theColor = SMColorFromRGB(R, g: G, b: B)
+            buttonTextColor = theColor
+        }
+        
+        
     
         // Part 5: Load transition speeds
         spriteTransitionSpeed   = (viewSettings.objectForKey(VNSceneViewSpriteTransitionSpeedKey) as! NSNumber).doubleValue
@@ -2384,6 +2441,11 @@ class VNScene : SKScene {
                 buttonLabel.position = CGPointMake(0.0, buttonLabelYPos)
                 buttonLabel.zPosition = VNSceneButtonTextLayer
                 
+                // set button text color
+                buttonLabel.color = buttonTextColor;
+                buttonLabel.colorBlendFactor = 1.0;
+                buttonLabel.fontColor = buttonTextColor;
+                
                 button.addChild(buttonLabel)
                 button.colorBlendFactor = 1.0 // Needed to "color" the sprite; it wouldn't have any color-blending otherwise
                 
@@ -2767,6 +2829,11 @@ class VNScene : SKScene {
                 buttonLabel.zPosition = VNSceneButtonsLayer
                 buttonLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Center
                 
+                // set button text color
+                buttonLabel.color = buttonTextColor;
+                buttonLabel.colorBlendFactor = 1.0;
+                buttonLabel.fontColor = buttonTextColor;
+                
                 // Position Y coordinate
                 var buttonLabelY:CGFloat = 0 - (button.size.height * 0.20)
                 
@@ -2974,6 +3041,10 @@ class VNScene : SKScene {
                     }
                 }
                 
+                // set speechbox color
+                speechBox!.colorBlendFactor = 1.0;
+                speechBox!.color = speechBoxColor;
+                
             } else {
                 
                 // switch gradually
@@ -3004,6 +3075,10 @@ class VNScene : SKScene {
                 speechBox!.name = VNSceneTagSpeechBox;
                 //[self addChild:speechBox];
                 self.addChild(speechBox!)
+                
+                // set speechbox color
+                speechBox!.colorBlendFactor = 1.0;
+                speechBox!.color = speechBoxColor;
                 
                 //for( SKNode* aChild in speechBoxChildren ) {
                 for aChild in speechBoxChildren {
