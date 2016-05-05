@@ -994,12 +994,18 @@ class VNScene : SKScene {
         }
     
         print("[VNScene] Will now remove unused sprites - \(spritesToRemove.count) found.")
+        
+        //for var part = 1; part < command.count; part += 1 {
+        //for part in 1 ..< command.count {
     
         // Get all the CCSprite objects in the array and then remove them, starting from the last item and ending with the first.
         //for( NSInteger i = (spritesToRemove.count - 1); i >= 0; i-- ) {
-        for var i = (spritesToRemove.count - 1); i >= 0; i--  {
-    
-            let sprite:SKSpriteNode = spritesToRemove.objectAtIndex(i) as! SKSpriteNode
+        //for var i = (spritesToRemove.count - 1); i >= 0; i -= 1  {
+        //for i in (spritesToRemove.count - 1) ..>= 0 {
+        
+        while spritesToRemove.count > 0 {
+        
+            let sprite:SKSpriteNode = spritesToRemove.objectAtIndex(0) as! SKSpriteNode
     
             // If the sprite has no parent node (and is marked as safe to remove), then it's time to get rid of it
             if( sprite.parent != nil && sprite.name!.caseInsensitiveCompare(VNSceneSpriteIsSafeToRemove) == NSComparisonResult.OrderedSame ) {
@@ -1493,7 +1499,7 @@ class VNScene : SKScene {
                 if( buttons.count > 0 ) {
     
                     //for( int currentButton = 0; currentButton < buttons.count; currentButton++ ) {
-                    for var currentButton = 0; currentButton < buttons.count; currentButton++ {
+                    for currentButton in 0 ..< buttons.count {
     
                         //SKSpriteNode* button = [buttons objectAtIndex:currentButton)
                         let button:SKSpriteNode = buttons.objectAtIndex(currentButton) as! SKSpriteNode
@@ -1573,7 +1579,7 @@ class VNScene : SKScene {
                 }*/
                 
                 if TWNumberOfCurrentCharacters < TWNumberOfTotalCharacters {
-                    TWTimer++
+                    TWTimer += 1
                     self.updateTypewriterTextDisplay()
                 }
             }
@@ -1783,7 +1789,7 @@ class VNScene : SKScene {
             //[self processCommand:currentCommand)   // Handle whatever line was just taken from the script
             processCommand(currentCommand!)
             //script.indexesDone++;                   // Tell the script that it's handled yet another line
-            script!.indexesDone++
+            script!.indexesDone += 1
         }
     }
     
@@ -1981,7 +1987,7 @@ class VNScene : SKScene {
         // Advance the script's index to make sure that commands run one after the other. Otherwise, they will only run one at a time
         // and the user would have to keep touching the screen each time in order for the next command to be run. Except for the
         // "display a line of text" command, most of the commands are designed to run one after the other seamlessly.
-        script!.currentIndex++;
+        script!.currentIndex += 1;
     
         // Now, figure out what type of command this is!
         switch( type ) {
@@ -2364,7 +2370,7 @@ class VNScene : SKScene {
     
             // If the conversation actually exists, then just switch to it
             script!.changeConversationTo(updatedConversationName)
-            script!.indexesDone--
+            script!.indexesDone -= 1
     
         // This command presents a choice menu to the player, and after the player chooses, then VNScene switches conversations.
         case VNScriptCommandJumpOnChoice:
@@ -2383,7 +2389,7 @@ class VNScene : SKScene {
             let screenWidth = self.frame.size.width
             let screenHeight = self.frame.size.height
             
-            for var i = 0; i < numberOfChoices; i++  {
+            for i in 0 ..< numberOfChoices  {
                 
                 let buttonImageName     = SMStringFromDictionary(viewSettings, nameOfObject: VNSceneViewButtonFilenameKey) //viewSettings.objectForKey(VNSceneViewButtonFilenameKey) as! NSString
                 let button:SKSpriteNode = SKSpriteNode(imageNamed: buttonImageName)
@@ -2682,7 +2688,7 @@ class VNScene : SKScene {
             let secondaryCommandType = (secondaryCommand.objectAtIndex(0) as! NSNumber).integerValue
             // Make sure that things don't get knocked out of order by the secondary command (if it involves switching conversations)
             if secondaryCommandType != VNScriptCommandChangeConversation {
-                script!.currentIndex--
+                script!.currentIndex -= 1
             }
     
         // This checks if a particular flag is GREATER THAN a certain value. If it does, then it executes ANOTHER command (which starts
@@ -2708,7 +2714,7 @@ class VNScene : SKScene {
             
             let secondaryCommandType = (secondaryCommand.objectAtIndex(0) as! NSNumber).integerValue
             if( secondaryCommandType != VNScriptCommandChangeConversation ) {
-                script!.currentIndex--
+                script!.currentIndex -= 1
             }
             
             
@@ -2734,7 +2740,7 @@ class VNScene : SKScene {
             
             let secondaryCommandType = (secondaryCommand.objectAtIndex(0) as! NSNumber).integerValue
             if( secondaryCommandType != VNScriptCommandChangeConversation ) {
-                script!.currentIndex--;
+                script!.currentIndex -= 1;
             }
     
         // This checks if a particular flag is between two values (a lesser value and a greater value). If thie is the case,
@@ -2761,7 +2767,7 @@ class VNScene : SKScene {
     
             let secondaryCommandType = (secondaryCommand.objectAtIndex(0) as! NSNumber).integerValue
             if( secondaryCommandType != VNScriptCommandChangeConversation ) {
-                script!.currentIndex--;
+                script!.currentIndex -= 1;
             }
     
         // This command presents the user with a choice menu. When the user makes a choice, it results in the value of a flag
@@ -2786,7 +2792,7 @@ class VNScene : SKScene {
             
             // The following loop creates the buttons (and their label "child nodes") and adds them to an array. It also
             // loads the flag modification data into their own arrays.
-            for var i = 0; i < numberOfChoices; i++ {
+            for i in 0 ..< numberOfChoices {
                 
                 let loopIndex = CGFloat( i )
                 let choiceCount = CGFloat( numberOfChoices )
@@ -2881,7 +2887,7 @@ class VNScene : SKScene {
             }
             
             script!.changeConversationTo(targetedConversation as String)
-            script!.indexesDone--;
+            script!.indexesDone -= 1;
             
     
         // This command is used in conjuction with the VNSystemCall class, and is used to create certain game-specific effects.
@@ -2913,7 +2919,7 @@ class VNScene : SKScene {
                 return;
             }
             
-            script!.indexesDone--;
+            script!.indexesDone -= 1;
             print("[VNScene] Script object replaced.");
             
     

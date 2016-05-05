@@ -274,7 +274,9 @@ class SMRecord {
         }
         
         // The following loop checks every single index in the array and examines if the NSNumber stored within holds the value as the slot number we're checking for.
-        for( var i = 0; i < slotsUsed!.count; i++ ) {
+        //for( var i = 0; i < slotsUsed!.count; i += 1 ) {
+        //for( var i = 0; i < slotsUsed!.count; i += 1 ) {
+        for i in 0 ..< slotsUsed!.count {
             
             let currentNumber:NSNumber = slotsUsed!.objectAtIndex(i) as! NSNumber
             let valueOfCurrentNumber:Int = currentNumber.integerValue

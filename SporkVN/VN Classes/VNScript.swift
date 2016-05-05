@@ -308,7 +308,7 @@ class VNScript {
     }
     
     func advanceIndex() {
-        currentIndex++
+        currentIndex += 1
     }
     
     func currentLine() -> NSArray? {
@@ -335,7 +335,8 @@ class VNScript {
             var fixedString = "\(thatFirstStr)"
             if( command.count > 1 ) {
                 
-                for var part = 1; part < command.count; part++ {
+                //for var part = 1; part < command.count; part += 1 {
+                for part in 1 ..< command.count {
                     
                     let str:NSString = command.objectAtIndex(part) as! NSString
                     let currentPart = str as String
@@ -761,7 +762,7 @@ class VNScript {
             
             // After determining the number of choices that exist, use a loop to match each choice text with the
             // name of the conversation that each choice would correspond to. Then add both to the appropriate arrays.
-            for var i = 0; i < numberOfChoices; i++ { //for( int i = 0; i < numberOfChoices; i++ ) {
+            for i in 0 ..< numberOfChoices { //for( int i = 0; i < numberOfChoices; i++ ) {
                 
                 // This variable will hold 1 and then every odd number after. It starts at one because index "zero"
                 // is where the actual .JUMPONCHOICE string is stored.
@@ -1014,7 +1015,7 @@ class VNScript {
             
             // This loop starts at the command index where the "secondary command" is and then goes through each
             // parameter of the second command.
-            for var i = 3; i < command.count; i++  {
+            for i in 3 ..< command.count  {
                 
                 // Extract the secondary/"extra" command and put it in its own array
                 let partOfCommand:NSString = command.objectAtIndex(i) as! NSString // 3rd parameter and everything afterwards
@@ -1067,7 +1068,7 @@ class VNScript {
             
             let extraCommand:NSMutableArray = NSMutableArray(capacity: extraCount)
             
-            for var i = 3; i < command.count; i++  {
+            for i in 3 ..< command.count  {
                 let partOfCommand:NSString = command.objectAtIndex(i) as! NSString
                 extraCommand.addObject(partOfCommand)
             }
@@ -1119,7 +1120,7 @@ class VNScript {
             
             let extraCommand:NSMutableArray = NSMutableArray(capacity: extraCount)
             
-            for var i = 3; i < command.count; i++  {
+            for i in 3 ..< command.count  {
                 
                 let partOfCommand:NSString = command.objectAtIndex(i) as! NSString
                 extraCommand.addObject(partOfCommand)
@@ -1188,7 +1189,7 @@ class VNScript {
             
             let extraCommand:NSMutableArray = NSMutableArray(capacity: extraCount)
             
-            for( var i = 4; i < command.count; i++ ) {
+            for i in 4 ..< command.count  {
                 let partOfCommand:NSString = command.objectAtIndex(i) as! NSString
                 extraCommand.addObject(partOfCommand)
             }
@@ -1243,7 +1244,7 @@ class VNScript {
             let variableNames:NSMutableArray    = NSMutableArray(capacity: numberOfChoices) //[[NSMutableArray alloc] initWithCapacity:numberOfChoices];
             let variableValues:NSMutableArray   = NSMutableArray(capacity: numberOfChoices) //[[NSMutableArray alloc] initWithCapacity:numberOfChoices];
             
-            for( var i = 0; i < numberOfChoices; i++ ) {
+            for i in 0 ..< numberOfChoices  {
                 
                 // This is used as an offset in order to get the right index numbers for the 'command' array.
                 // It starts at 1 and then jumps to every third number thereafter (from 1 to 4, 7, 10, 13, etc).
