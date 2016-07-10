@@ -8,9 +8,9 @@ built-in autosave features, and a customizable user interface.
 
 To start projects with SporkVN, you'll need:
 
-   1. A Mac, running OS X 10.9 or newer
-   2. Xcode 7 or newer - http://developer.apple.com/xcode
-   3. iOS 9 
+   1. A Mac, running OS X 10.11 or newer
+   2. Xcode 8 or newer - http://developer.apple.com/xcode
+   3. iOS 10 
    
 (And if you want to distribute games on the App Store, you'll also need to be a part of Apple's
 iOS Developer Program! -> https://developer.apple.com/devcenter/ios/ )
@@ -19,8 +19,6 @@ iOS Developer Program! -> https://developer.apple.com/devcenter/ios/ )
 SporkVN uses the DSMultilineLabelNode project to have text that auto-wraps. The GitHub
 page for that can be found at: https://github.com/downrightsimple/DSMultilineLabelNode )
 
-[DEVELOPER NOTES: February 17 2016
-Still busy updating 
 
 Contact
 -------
