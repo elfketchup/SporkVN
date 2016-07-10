@@ -27,7 +27,7 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = true
         
         /* Set the scale mode to scale to fit the window */
-        scene.scaleMode = .AspectFill
+        scene.scaleMode = .aspectFill
         
         skView.presentScene(scene)
         //}
@@ -44,7 +44,7 @@ class GameViewController: UIViewController {
             return .All
         }*/
         
-        return .Landscape
+        return .landscape
     }
 
     override func didReceiveMemoryWarning() {

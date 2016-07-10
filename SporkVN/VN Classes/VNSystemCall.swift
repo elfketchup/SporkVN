@@ -24,26 +24,26 @@ modify/extend this class for their own purposes.
 class VNSystemCall {
     
     //- (void)sendCall:(NSArray*)callData
-    func sendCall(callData:NSArray) {
+    func sendCall(_ callData:NSArray) {
         
         if( callData.count < 2 ) {
             return
         }
         
     
-        let typeString:NSString = callData.objectAtIndex(0) as! NSString // = [callData objectAtIndex:0];
-        let extras:NSArray = callData.objectAtIndex(1) as! NSArray //[callData objectAtIndex:1];
+        let typeString:NSString = callData.object(at: 0) as! NSString // = [callData objectAtIndex:0];
+        let extras:NSArray = callData.object(at: 1) as! NSArray //[callData objectAtIndex:1];
     
         // Check what kind TYPE parameter is
         
-        if typeString.caseInsensitiveCompare("nslog") == NSComparisonResult.OrderedSame {
+        if typeString.caseInsensitiveCompare("nslog") == ComparisonResult.orderedSame {
     
             // Use NSLog to record whatever diagnostic data may have been sent from the VN system
             //NSLog(@"[VNSystemCall] %@", [extras objectAtIndex:0]);
-            let printout:NSString = extras.objectAtIndex(0) as! NSString
+            let printout:NSString = extras.object(at: 0) as! NSString
             print("[VNSystemCall] \(printout)")
     
-        } else if typeString.caseInsensitiveCompare("autosave") == NSComparisonResult.OrderedSame {
+        } else if typeString.caseInsensitiveCompare("autosave") == ComparisonResult.orderedSame {
     
             // Do a basic autosave of the VN system
             //[self autosave];

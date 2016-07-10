@@ -17,7 +17,7 @@ var SMScreenHeightInPoints:CGFloat  = 320.0;
 /** SCREEN DIMENSIONS **/
 
 //void SMSetScreenSizeInPoints( CGFloat width, CGFloat height )
-func SMSetScreenSizeInPoints(width:CGFloat, height:CGFloat)
+func SMSetScreenSizeInPoints(_ width:CGFloat, height:CGFloat)
 {
     SMScreenWidthInPoints = fabs( width );
     SMScreenHeightInPoints = fabs( height );
@@ -30,11 +30,11 @@ func SMScreenSizeInPoints() -> CGSize {
     let w = SMScreenWidthInPoints
     let h = SMScreenHeightInPoints
     
-    return CGSizeMake(w, h)
+    return CGSize(width: w, height: h)
 }
 
 //void SMSetScreenDataFromView( SKView* view )
-func SMSetScreenDataFromView(view:SKView)
+func SMSetScreenDataFromView(_ view:SKView)
 {
     let viewSizeInPoints:CGSize = view.frame.size;
     
@@ -47,23 +47,23 @@ func SMSetScreenDataFromView(view:SKView)
 /** POSITIONS **/
 
 //CGPoint SMPositionWithNormalizedCoordinates( CGFloat normalizedX, CGFloat normalizedY )
-func SMPositionWithNormalizedCoordinates( normalizedX:CGFloat, normalizedY:CGFloat ) -> CGPoint
+func SMPositionWithNormalizedCoordinates( _ normalizedX:CGFloat, normalizedY:CGFloat ) -> CGPoint
 {
     let x = (SMScreenWidthInPoints) * (normalizedX)
     let y = (SMScreenHeightInPoints) * (normalizedY)
     
-    return CGPointMake( x, y );
+    return CGPoint( x: x, y: y );
 }
 
-func SMPositionAddTwoPositions( first:CGPoint, second:CGPoint ) -> CGPoint
+func SMPositionAddTwoPositions( _ first:CGPoint, second:CGPoint ) -> CGPoint
 {
     let x = first.x + second.x;
     let y = first.y + second.y;
     
-    return CGPointMake( x, y );
+    return CGPoint( x: x, y: y );
 }
 
-func SMPositionOfBottomLeftCornerOfParentNode( parentNode:SKNode ) -> CGPoint
+func SMPositionOfBottomLeftCornerOfParentNode( _ parentNode:SKNode ) -> CGPoint
 {
     let widthOfParent = parentNode.frame.size.width;
     let heightOfParent = parentNode.frame.size.height;
@@ -71,14 +71,14 @@ func SMPositionOfBottomLeftCornerOfParentNode( parentNode:SKNode ) -> CGPoint
     let xPos = (widthOfParent * (-0.5));
     let yPos = (heightOfParent * (-0.5));
     
-    return CGPointMake(xPos, yPos);
+    return CGPoint(x: xPos, y: yPos);
 }
 
 /** MATH **/
 
-func SMMathDistanceBetweenPoints( first:CGPoint, second:CGPoint ) -> CGFloat
+func SMMathDistanceBetweenPoints( _ first:CGPoint, second:CGPoint ) -> CGFloat
 {
-    let subtractedValue         = CGPointMake( first.x - second.x, first.y - second.y );
+    let subtractedValue         = CGPoint( x: first.x - second.x, y: first.y - second.y );
     let p1:CGPoint              = subtractedValue;
     let p2:CGPoint              = subtractedValue;
     let lengthSquared:CGFloat   = ( p1.x * p2.x + p1.y * p2.y );
@@ -89,17 +89,17 @@ func SMMathDistanceBetweenPoints( first:CGPoint, second:CGPoint ) -> CGFloat
 
 /** COLLISION **/
 
-func SMBoundingBoxOfSprite( sprite:SKSpriteNode ) -> CGRect
+func SMBoundingBoxOfSprite( _ sprite:SKSpriteNode ) -> CGRect
 {
     let rectX:CGFloat = sprite.position.x - (sprite.size.width * sprite.anchorPoint.x);
     let rectY:CGFloat = sprite.position.y - (sprite.size.height * sprite.anchorPoint.y);
     let width:CGFloat = sprite.size.width;
     let height:CGFloat = sprite.size.height;
     
-    return CGRectMake(rectX, rectY, width, height);
+    return CGRect(x: rectX, y: rectY, width: width, height: height);
 }
 
-func SMCollisionBetweenSpriteCircles( first:SKSpriteNode, second:SKSpriteNode ) -> Bool
+func SMCollisionBetweenSpriteCircles( _ first:SKSpriteNode, second:SKSpriteNode ) -> Bool
 {
     // Returns "averaged out" values for distance: (width + height) / 2
     let radiusOfFirst   = ((first.size.width*0.5) + (first.size.height*0.5)) * 0.5;
@@ -114,50 +114,50 @@ func SMCollisionBetweenSpriteCircles( first:SKSpriteNode, second:SKSpriteNode ) 
     return false;
 }
 
-func SMCollisionBetweenSpriteBoundingBoxes( first:SKSpriteNode, second:SKSpriteNode ) ->Bool
+func SMCollisionBetweenSpriteBoundingBoxes( _ first:SKSpriteNode, second:SKSpriteNode ) ->Bool
 {
     let firstPos    = first.position;
     let firstWidth  = first.size.width;
     let firstHeight = first.size.height;
     let firstX      = firstPos.x - (firstWidth * first.anchorPoint.x);
     let firstY      = firstPos.y - (firstHeight * first.anchorPoint.y);
-    let firstBox    = CGRectMake(firstX , firstY, firstWidth, firstHeight);
+    let firstBox    = CGRect(x: firstX , y: firstY, width: firstWidth, height: firstHeight);
     
     let secondPos       = second.position;
     let secondWidth     = second.size.width;
     let secondHeight    = second.size.height;
     let secondX         = secondPos.x - (secondWidth * second.anchorPoint.x);
     let secondY         = secondPos.y - (secondHeight * second.anchorPoint.y);
-    let secondBox       = CGRectMake(secondX, secondY, secondWidth, secondHeight);
+    let secondBox       = CGRect(x: secondX, y: secondY, width: secondWidth, height: secondHeight);
     
-    return CGRectIntersectsRect( firstBox, secondBox );
+    return firstBox.intersects(secondBox );
 }
 
 /** TYPE CONVERSION **/
 
-func SMNumberToFloat(someNumber:NSNumber) -> Float
+func SMNumberToFloat(_ someNumber:NSNumber) -> Float
 {
     return someNumber.floatValue
 }
 
-func SMNumberToDouble(someNumber:NSNumber) -> Double
+func SMNumberToDouble(_ someNumber:NSNumber) -> Double
 {
     return someNumber.doubleValue
 }
 
-func SMNumberToCGFloat(someNumber:NSNumber) -> CGFloat
+func SMNumberToCGFloat(_ someNumber:NSNumber) -> CGFloat
 {
     return CGFloat(someNumber.doubleValue)
 }
 
-func SMNumberToInt(someNumber:NSNumber) -> Int
+func SMNumberToInt(_ someNumber:NSNumber) -> Int
 {
-    return someNumber.integerValue
+    return someNumber.intValue
 }
 
-func SMNumberInDictionaryToCGFloat(someDictionary:NSDictionary, objectNamed:String) -> CGFloat
+func SMNumberInDictionaryToCGFloat(_ someDictionary:NSDictionary, objectNamed:String) -> CGFloat
 {
-    let someNumber:NSNumber? = someDictionary.objectForKey(objectNamed) as? NSNumber
+    let someNumber:NSNumber? = someDictionary.object(forKey: objectNamed) as? NSNumber
     if someNumber != nil {
         return CGFloat(someNumber!.doubleValue)
     }
@@ -166,9 +166,9 @@ func SMNumberInDictionaryToCGFloat(someDictionary:NSDictionary, objectNamed:Stri
     return 0;
 }
 
-func SMNumberInDictionaryToDouble(someDictionary:NSDictionary, objectNamed:String) -> Double
+func SMNumberInDictionaryToDouble(_ someDictionary:NSDictionary, objectNamed:String) -> Double
 {
-    let someNumber:NSNumber? = someDictionary.objectForKey(objectNamed) as? NSNumber
+    let someNumber:NSNumber? = someDictionary.object(forKey: objectNamed) as? NSNumber
     if someNumber != nil {
         return someNumber!.doubleValue
     }
@@ -177,11 +177,11 @@ func SMNumberInDictionaryToDouble(someDictionary:NSDictionary, objectNamed:Strin
     return 0;
 }
 
-func SMNumberInDictionaryToInt(someDictionary:NSDictionary, objectNamed:String) -> Int
+func SMNumberInDictionaryToInt(_ someDictionary:NSDictionary, objectNamed:String) -> Int
 {
-    let someNumber:NSNumber? = someDictionary.objectForKey(objectNamed) as? NSNumber
+    let someNumber:NSNumber? = someDictionary.object(forKey: objectNamed) as? NSNumber
     if someNumber != nil {
-        return someNumber!.integerValue
+        return someNumber!.intValue
     }
     
     print("[Could not find number named \(objectNamed) - could not convert to Int]")
@@ -190,7 +190,7 @@ func SMNumberInDictionaryToInt(someDictionary:NSDictionary, objectNamed:String) 
 
 /** COLOR **/
 
-func SMColorFromRGBA( r:Int, g:Int, b:Int, a:Int ) -> UIColor
+func SMColorFromRGBA( _ r:Int, g:Int, b:Int, a:Int ) -> UIColor
 {
     var fR = CGFloat(r)
     var fG = CGFloat(g)
@@ -207,7 +207,7 @@ func SMColorFromRGBA( r:Int, g:Int, b:Int, a:Int ) -> UIColor
     return UIColor(red: fR, green: fG, blue: fB, alpha: fA)
 }
 
-func SMColorFromRGB( r:Int, g:Int, b:Int ) -> UIColor
+func SMColorFromRGB( _ r:Int, g:Int, b:Int ) -> UIColor
 {
     return SMColorFromRGBA(r, g: g, b: b, a: 255)
 }
@@ -230,14 +230,14 @@ func SMColorFromUnsignedCharRGB( r:Int, g:Int, b:Int ) -> UIColor
  
  Before it changes again, I just made a function to encapsulate it and will just call this function instead
 */
-func SMStringLength( theString:String ) -> Int{
+func SMStringLength( _ theString:String ) -> Int{
     let theLength = theString.characters.count
     
     return theLength
 }
 
-func SMStringCharacterAtIndex( theString:String, indexPosition:Int ) -> Character {
-    let index = theString.characters.startIndex.advancedBy(indexPosition)
+func SMStringCharacterAtIndex( _ theString:String, indexPosition:Int ) -> Character {
+    let index = theString.characters.index(theString.characters.startIndex, offsetBy: indexPosition)
     let theCharacter = theString.characters[index]
     
     return theCharacter
@@ -253,7 +253,7 @@ func SMStringCharacterAtIndex( theString:String, indexPosition:Int ) -> Characte
  input - string with filename
  extension - OPTIONAL extension (such as ".png" or ".jpg") ... you can just pass in "" if you don't want to bother
  */
-func SMStringFilenameWithoutExtension( input:String, theExtension:String ) -> String {
+func SMStringFilenameWithoutExtension( _ input:String, theExtension:String ) -> String {
     
     if SMStringLength(input) < 5 { // needs 4 characters minimum for filename + extension (example: "a.png")
         return ""
@@ -276,7 +276,7 @@ func SMStringFilenameWithoutExtension( input:String, theExtension:String ) -> St
     
     if theCharacter == "." {
         let inputAsNSString = input as NSString
-        let substring = inputAsNSString.substringToIndex(expectedPositionOfPeriod)
+        let substring = inputAsNSString.substring(to: expectedPositionOfPeriod)
         
         return (substring as String)
     }
@@ -288,13 +288,13 @@ func SMStringFilenameWithoutExtension( input:String, theExtension:String ) -> St
 Pass in a filename; the filename is separated into the "name" and the extension. For example, if you pass in
 "image.jpg" then you get an array where index 0 is "image" and index 1 is "jpg"
 */
-func SMStringArrayWithFilenameAndExtension( filename:String ) -> [String]
+func SMStringArrayWithFilenameAndExtension( _ filename:String ) -> [String]
 {
     if SMStringLength(filename) < 1 {
         return [""]
     }
     
-    let theArray = filename.componentsSeparatedByString(".")
+    let theArray = filename.components(separatedBy: ".")
     
     // the number of indexes should be exactly 2
     if theArray.count < 2 {
@@ -309,7 +309,7 @@ func SMStringArrayWithFilenameAndExtension( filename:String ) -> [String]
 /*
 Pass in filename, get the URL for the resource stored in NSBundle.
 */
-func SMStringURLFromFilename( filename:String ) -> NSURL?
+func SMStringURLFromFilename( _ filename:String ) -> URL?
 {
     if SMStringLength(filename) < 1 {
         return nil
@@ -324,7 +324,7 @@ func SMStringURLFromFilename( filename:String ) -> NSURL?
     let nameForFile         = filenameComponents[0]
     let extensionForFile    = filenameComponents[1]
     
-    let theURL = NSBundle.mainBundle().URLForResource(nameForFile, withExtension: extensionForFile)
+    let theURL = Bundle.main.urlForResource(nameForFile, withExtension: extensionForFile)
     
     return theURL
 }
@@ -337,7 +337,7 @@ func SMStringURLFromFilename( filename:String ) -> NSURL?
 Enter filename for audio file, get an AVAudioPlayer object (can be played as a sound effect,
 or set to infinite loop (-1) for use as background music.
 */
-func SMAudioSoundFromFile( filename:String ) -> AVAudioPlayer?
+func SMAudioSoundFromFile( _ filename:String ) -> AVAudioPlayer?
 {
     if SMStringLength(filename) < 1 {
         print("[SMAudioSoundFromFile] ERROR: Invalid filename was passed in.")
@@ -353,7 +353,7 @@ func SMAudioSoundFromFile( filename:String ) -> AVAudioPlayer?
     var audio:AVAudioPlayer? = nil
     
     do {
-        try audio = AVAudioPlayer(contentsOfURL: url!)
+        try audio = AVAudioPlayer(contentsOf: url!)
     } catch{
         print("[SMAudioSoundFromFile] ERROR: Could not load audio data for file named [\(filename)]to AVAudioPlayer object.")
         return nil
@@ -372,14 +372,14 @@ func SMAudioSoundFromFile( filename:String ) -> AVAudioPlayer?
     but which seem to require being rewritten everytime Swift is updated.
 */
 
-func SMDictionaryFromFile(plistFilename:String) -> NSDictionary? {
+func SMDictionaryFromFile(_ plistFilename:String) -> NSDictionary? {
     // check for invalid filename
     if SMStringLength(plistFilename) < 1 {
         print("[SMDictionaryFromFile] ERROR: Filename was invalid; could not load.")
         return nil
     }
     
-    let filepath = NSBundle.mainBundle().pathForResource(plistFilename, ofType: "plist")
+    let filepath = Bundle.main.pathForResource(plistFilename, ofType: "plist")
     if filepath == nil {
         print("[EKDictionaryFromFile] ERROR: Could not find property list named: \(plistFilename)")
         return nil;
@@ -396,10 +396,10 @@ func SMDictionaryFromFile(plistFilename:String) -> NSDictionary? {
 }
 
 // adds data from an existing NSDictionary to another NSDictionary
-func SMDictionaryAddEntriesFromAnotherDictionary(dest:NSMutableDictionary, source:NSDictionary) {
+func SMDictionaryAddEntriesFromAnotherDictionary(_ dest:NSMutableDictionary, source:NSDictionary) {
     if source.count > 0 {
         for key in source.allKeys {
-            let someValue = source.objectForKey(key)
+            let someValue = source.object(forKey: key)
             if someValue != nil {
                 dest.setValue(someValue!, forKey: key as! String)
             }
@@ -408,9 +408,9 @@ func SMDictionaryAddEntriesFromAnotherDictionary(dest:NSMutableDictionary, sourc
 }
 
 // Retrieve String from dictionary
-func SMStringFromDictionary( dict:NSDictionary, nameOfObject:String) -> String
+func SMStringFromDictionary( _ dict:NSDictionary, nameOfObject:String) -> String
 {
-    let str:String? = dict.objectForKey(nameOfObject) as? String
+    let str:String? = dict.object(forKey: nameOfObject) as? String
     if( str == nil ) {
         return ""
     }
@@ -419,8 +419,8 @@ func SMStringFromDictionary( dict:NSDictionary, nameOfObject:String) -> String
 }
 
 // Retrieve NSArray from dictionary
-func SMArrayFromDictionary(dict:NSDictionary, nameOfObject:String) -> NSArray? {
-    let a = dict.objectForKey(nameOfObject) as? NSArray
+func SMArrayFromDictionary(_ dict:NSDictionary, nameOfObject:String) -> NSArray? {
+    let a = dict.object(forKey: nameOfObject) as? NSArray
     if a != nil {
         return a
     }
@@ -429,27 +429,27 @@ func SMArrayFromDictionary(dict:NSDictionary, nameOfObject:String) -> NSArray? {
 }
 
 // Retrieve NSNumber from dictionary
-func SMNumberFromDictionary( dict:NSDictionary, nameOfObject:String ) -> NSNumber
+func SMNumberFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> NSNumber
 {
-    let number:NSNumber? = dict.objectForKey(nameOfObject) as? NSNumber
+    let number:NSNumber? = dict.object(forKey: nameOfObject) as? NSNumber
     if( number == nil ) {
-        return NSNumber(integer: 0);
+        return NSNumber(value: 0);
     }
     
     return number!
 }
 
 
-func SMIntFromDictionary( dict:NSDictionary, nameOfObject:String ) -> Int {
-    return SMNumberFromDictionary(dict, nameOfObject: nameOfObject).integerValue
+func SMIntFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> Int {
+    return SMNumberFromDictionary(dict, nameOfObject: nameOfObject).intValue
 }
-func SMBoolFromDictionary( dict:NSDictionary, nameOfObject:String ) -> Bool {
+func SMBoolFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> Bool {
     return SMNumberFromDictionary(dict, nameOfObject: nameOfObject).boolValue
 }
-func SMFloatFromDictionary( dict:NSDictionary, nameOfObject:String ) -> Float {
+func SMFloatFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> Float {
     return SMNumberFromDictionary(dict, nameOfObject: nameOfObject).floatValue
 }
-func SMDoubleFromDictionary( dict:NSDictionary, nameOfObject:String ) -> Double {
+func SMDoubleFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> Double {
     return SMNumberFromDictionary(dict, nameOfObject: nameOfObject).doubleValue
 }
 
