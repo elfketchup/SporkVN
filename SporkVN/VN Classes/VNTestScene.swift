@@ -79,7 +79,7 @@ class VNTestScene : SKScene
         var customSettings:NSDictionary? = nil
         
         // Load the custom settings stored in a file
-        let dictionaryFilePath:String? = Bundle.main.pathForResource("main_menu", ofType: "plist")
+        let dictionaryFilePath:String? = Bundle.main.path(forResource: "main_menu", ofType: "plist")
         if dictionaryFilePath != nil {
             customSettings = NSDictionary(contentsOfFile: dictionaryFilePath!)
             

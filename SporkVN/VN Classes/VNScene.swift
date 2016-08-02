@@ -242,8 +242,8 @@ class VNScene : SKScene {
     var speechBox:SKSpriteNode? // Dialogue box
     var speech:DSMultilineLabelNode?  // The text displayed as dialogue
     var speaker:DSMultilineLabelNode? // Name of speaker
-    var speechBoxColor              = UIColor.white()
-    var speechBoxTextColor          = UIColor.white()
+    var speechBoxColor              = UIColor.white
+    var speechBoxTextColor          = UIColor.white
     
     /* NOTE: Currently heigh margins aren't used or haven't been incorporated */
     /* (also note that support for ads hasn't really been added, and would probably be
@@ -259,9 +259,9 @@ class VNScene : SKScene {
     var spriteTransitionSpeed:Double    = 0.5
     var speechTransitionSpeed:Double    = 0.5
     var speakerTransitionSpeed:Double   = 0.5
-    var buttonTouchedColors             = UIColor.blue()
-    var buttonUntouchedColors           = UIColor.black()
-    var buttonTextColor                 = UIColor.white()
+    var buttonTouchedColors             = UIColor.blue
+    var buttonUntouchedColors           = UIColor.black
+    var buttonTextColor                 = UIColor.white
     
     var previousScene:SKScene? = nil
     var allSettings:NSDictionary?
@@ -386,7 +386,7 @@ class VNScene : SKScene {
     
         // Load any "extra" view settings that may exist in a certain Property List file ("VNScene View Settings.plist")
         //NSString* filePath = [[NSBundle mainBundle] pathForResource:VNSceneViewSettingsFileName ofType:@"plist")
-        let filePath:NSString? = Bundle.main.pathForResource(VNSceneViewSettingsFileName, ofType: "plist")
+        let filePath:NSString? = Bundle.main.path(forResource: VNSceneViewSettingsFileName, ofType: "plist")
         if filePath != nil {
             
             let manualSettings:NSDictionary? = NSDictionary(contentsOfFile: filePath! as String)
@@ -712,7 +712,7 @@ class VNScene : SKScene {
     
         // Check if this is on an iPad, and if the default font size should be adjusted to compensate for the larger screen size
         //if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
-        if( UIDevice.current().userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
+        if( UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
     
             let multiplyFontSizeForiPadFactor:NSNumber? = viewSettings.object(forKey: VNSceneViewMultiplyFontSizeForiPadKey) as? NSNumber // Default is 1.5x
             let standardFontSize:NSNumber? = viewSettings.object(forKey: VNSceneViewFontSizeKey) as? NSNumber // Default value is 17.0
@@ -792,7 +792,7 @@ class VNScene : SKScene {
         // the exact value changes between the iPhone and the iPad.
         var widthMultiplierValue:CGFloat = 4.0;
         //if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
-        if UIDevice.current().userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+        if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
             widthMultiplierValue = 6.0;
         }
     
@@ -813,7 +813,7 @@ class VNScene : SKScene {
     
         // Adjust for iPad size differences
         //if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
-        if( UIDevice.current().userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
+        if( UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
             speech!.paragraphWidth = (speechSize.width * 0.94) - (horizontalMargins * widthMultiplierValue);
         }
     
@@ -2426,7 +2426,7 @@ class VNScene : SKScene {
                 // Determine where the text should be positioned inside the button
                 var labelWithinButtonPos = CGPoint( x: button.frame.size.width * 0.5, y: button.frame.size.height * 0.35 );
                 
-                if( UIDevice.current().userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
+                if( UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
                     
                     // The position of the text inside the button has to be adjusted, since the actual font size on the iPad isn't exactly
                     // twice as large, but modified with some custom code. This results in having to do some custom positioning as well!
@@ -2450,7 +2450,7 @@ class VNScene : SKScene {
                 // Handle positioning for the text
                 var buttonLabelYPos = 0 - (button.size.height * 0.20)
                 
-                if UIDevice.current().userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+                if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
                     buttonLabelYPos = 0 - (button.size.height * 0.20)
                 }
                 
@@ -2830,7 +2830,7 @@ class VNScene : SKScene {
     
                 // Determine where the text should be positioned inside the button
                 var labelWithinButtonPos = CGPoint( x: button.frame.size.width * 0.5, y: button.frame.size.height * 0.35 );
-                if UIDevice.current().userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+                if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
                     labelWithinButtonPos.y = button.frame.size.height * 0.31;
                 }
                 
@@ -2853,7 +2853,7 @@ class VNScene : SKScene {
                 // Position Y coordinate
                 var buttonLabelY:CGFloat = 0 - (button.size.height * 0.20)
                 
-                if( UIDevice.current().userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
+                if( UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
                     buttonLabelY = 0 - (button.size.height * 0.20)
                 }
                 

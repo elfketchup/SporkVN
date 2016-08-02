@@ -157,7 +157,7 @@ class VNScript {
     // For example, if the script is stored as "ThisScript.plist" in the bundle, just pass in "ThisScript" as the parameter.
     func didLoadFile( _ nameOfFile:String, convoName:String) -> Bool {
         
-        let filepath:String? = Bundle.main.pathForResource(nameOfFile, ofType: "plist")
+        let filepath:String? = Bundle.main.path(forResource: nameOfFile, ofType: "plist")
         if filepath == nil {
             print("[VNScript] ERROR: Cannot load file; filepath was invalid.")
             return false

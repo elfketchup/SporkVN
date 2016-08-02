@@ -33,10 +33,15 @@ class GameViewController: UIViewController {
         //}
     }
 
+    /*
     override func shouldAutorotate() -> Bool {
+        return true
+    }*/
+    override var shouldAutorotate: Bool {
         return true
     }
 
+    /*
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
         /*if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
             return .AllButUpsideDown
@@ -45,6 +50,10 @@ class GameViewController: UIViewController {
         }*/
         
         return .landscape
+    }*/
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .landscape
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,7 +61,11 @@ class GameViewController: UIViewController {
         // Release any cached data, images, etc that aren't in use.
     }
 
-    override func prefersStatusBarHidden() -> Bool {
+    /*override func prefersStatusBarHidden() -> Bool {
+        return true
+    }*/
+    
+    override var prefersStatusBarHidden: Bool {
         return true
     }
 }

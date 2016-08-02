@@ -1,5 +1,8 @@
+version 1.0.3.1 Aug-02-2016
+. [MISC] Updated to run on Xcode 8 beta 4.
+
 version 1.0.3 Jul-09-2016
-. [MISC] Updated to run on Spork v3.0. Currently using Xcode 8 beta 2, which is meant for iOS 10 beta 2. This code might need to be updated for later betas (and the final version of iOS 10).
+. [MISC] Updated to run on Swift v3.0. Currently using Xcode 8 beta 2, which is meant for iOS 10 beta 2. This code might need to be updated for later betas (and the final version of iOS 10).
 
 version 1.0.2 May-05-2016
 . [FIX] Rewrote "for loops," since Xcode kept showing warnings that C-style "for loops" would be deprecated in future versions of Swift.

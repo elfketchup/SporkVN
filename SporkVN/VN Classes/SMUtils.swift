@@ -324,7 +324,8 @@ func SMStringURLFromFilename( _ filename:String ) -> URL?
     let nameForFile         = filenameComponents[0]
     let extensionForFile    = filenameComponents[1]
     
-    let theURL = Bundle.main.urlForResource(nameForFile, withExtension: extensionForFile)
+    //let theURL = Bundle.main.urlForResource(nameForFile, withExtension: extensionForFile)
+    let theURL = Bundle.main.url(forResource: nameForFile, withExtension: extensionForFile)
     
     return theURL
 }
@@ -379,7 +380,7 @@ func SMDictionaryFromFile(_ plistFilename:String) -> NSDictionary? {
         return nil
     }
     
-    let filepath = Bundle.main.pathForResource(plistFilename, ofType: "plist")
+    let filepath = Bundle.main.path(forResource: plistFilename, ofType: "plist")
     if filepath == nil {
         print("[EKDictionaryFromFile] ERROR: Could not find property list named: \(plistFilename)")
         return nil;
