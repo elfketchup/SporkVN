@@ -187,32 +187,32 @@ class VNTestScene : SKScene
         let whiteColorDict = NSDictionary(dictionary: ["r":255, "g":255, "b":255])
     
         // Create settings for the "start new game" button
-        resourcesDict.setObject(0.5, forKey: VNTestSceneStartNewGameLabelX)
-        resourcesDict.setObject(0.3, forKey: VNTestSceneStartNewGameLabelY)
-        resourcesDict.setObject("Helvetica", forKey: VNTestSceneStartNewGameFont)
-        resourcesDict.setObject(18, forKey: VNTestSceneStartNewGameSize)
-        resourcesDict.setObject(whiteColorDict.copy(), forKey: VNTestSceneStartNewGameColorDict)
+        resourcesDict.setObject(0.5, forKey: VNTestSceneStartNewGameLabelX as NSCopying)
+        resourcesDict.setObject(0.3, forKey: VNTestSceneStartNewGameLabelY as NSCopying)
+        resourcesDict.setObject("Helvetica", forKey: VNTestSceneStartNewGameFont as NSCopying)
+        resourcesDict.setObject(18, forKey: VNTestSceneStartNewGameSize as NSCopying)
+        resourcesDict.setObject(whiteColorDict.copy(), forKey: VNTestSceneStartNewGameColorDict as NSCopying)
         
         // Create settings for "continue" button
-        resourcesDict.setObject(0.5, forKey: VNTestSceneContinueLabelX)
-        resourcesDict.setObject(0.2, forKey: VNTestSceneContinueLabelX)
-        resourcesDict.setObject("Helvetica", forKey: VNTestSceneContinueFont)
-        resourcesDict.setObject(18, forKey: VNTestSceneContinueSize)
-        resourcesDict.setObject(whiteColorDict.copy(), forKey: VNTestSceneContinueColor)
+        resourcesDict.setObject(0.5, forKey: VNTestSceneContinueLabelX as NSCopying)
+        resourcesDict.setObject(0.2, forKey: VNTestSceneContinueLabelX as NSCopying)
+        resourcesDict.setObject("Helvetica", forKey: VNTestSceneContinueFont as NSCopying)
+        resourcesDict.setObject(18, forKey: VNTestSceneContinueSize as NSCopying)
+        resourcesDict.setObject(whiteColorDict.copy(), forKey: VNTestSceneContinueColor as NSCopying)
         
         // Set up title data
-        resourcesDict.setObject(0.5, forKey: VNTestSceneTitleX)
-        resourcesDict.setObject(0.75, forKey: VNTestSceneTitleY)
-        resourcesDict.setObject("title.png", forKey: VNTestSceneTitleImage)
+        resourcesDict.setObject(0.5, forKey: VNTestSceneTitleX as NSCopying)
+        resourcesDict.setObject(0.75, forKey: VNTestSceneTitleY as NSCopying)
+        resourcesDict.setObject("title.png", forKey: VNTestSceneTitleImage as NSCopying)
         
         // Set up background image
-        resourcesDict.setObject("skyspace.png", forKey: VNTestSceneBackgroundImage)
+        resourcesDict.setObject("skyspace.png", forKey: VNTestSceneBackgroundImage as NSCopying)
     
         // Set up script data
-        resourcesDict.setObject("demo script", forKey: VNTestSceneScriptToLoad)
+        resourcesDict.setObject("demo script", forKey: VNTestSceneScriptToLoad as NSCopying)
     
         // Set default music data
-        resourcesDict.setObject("nil", forKey: VNTestSceneMenuMusic)
+        resourcesDict.setObject("nil", forKey: VNTestSceneMenuMusic as NSCopying)
         
         return NSDictionary(dictionary: resourcesDict)
     }
@@ -225,7 +225,7 @@ class VNTestScene : SKScene
         // Create a blank dictionary with no real data, except for the name of which script file to load.
         // You can pass this in to VNLayer with nothing but that information, and it will load a new game
         // (or at least, a new VNLayer scene!)
-        let settingsForScene = NSDictionary(object: nameOfScript!, forKey: VNSceneToPlayKey)
+        let settingsForScene = NSDictionary(object: nameOfScript!, forKey: VNSceneToPlayKey as NSCopying)
     
         // Create an all-new scene and add VNLayer to it
         let scene = VNScene(size: self.size, settings: settingsForScene)

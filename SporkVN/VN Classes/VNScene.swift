@@ -386,7 +386,7 @@ class VNScene : SKScene {
     
         // Load any "extra" view settings that may exist in a certain Property List file ("VNScene View Settings.plist")
         //NSString* filePath = [[NSBundle mainBundle] pathForResource:VNSceneViewSettingsFileName ofType:@"plist")
-        let filePath:NSString? = Bundle.main.path(forResource: VNSceneViewSettingsFileName, ofType: "plist")
+        let filePath:NSString? = Bundle.main.path(forResource: VNSceneViewSettingsFileName, ofType: "plist") as NSString?
         if filePath != nil {
             
             let manualSettings:NSDictionary? = NSDictionary(contentsOfFile: filePath! as String)
@@ -577,21 +577,21 @@ class VNScene : SKScene {
                 var doesHaveAlias = true // default assumption, used for loading sprite alias data
 
                 // Grab sprite data from dictionary
-                let nameOfSprite:NSString = spriteData.object(forKey: "name") as! NSString
+                let nameOfSprite:NSString = (spriteData as AnyObject).object(forKey: "name") as! NSString
                 print("[VNScene] Restoring saved sprite named: \(nameOfSprite)");
                 
                 // check for filename
-                var filenameOfSprite:NSString? = spriteData.object(forKey: "filename") as? NSString
+                var filenameOfSprite:NSString? = (spriteData as AnyObject).object(forKey: "filename") as? NSString
                 if( filenameOfSprite == nil ) {
                     doesHaveAlias = false
                     filenameOfSprite = nameOfSprite
                 }
                
                 // Load sprite object and set its coordinates
-                let spriteX:CGFloat = CGFloat((spriteData.object(forKey: "x") as! NSNumber).doubleValue)
-                let spriteY:CGFloat = CGFloat((spriteData.object(forKey: "y") as! NSNumber).doubleValue)
-                let scaleX:CGFloat  = CGFloat((spriteData.object(forKey: "scale x") as! NSNumber).doubleValue)
-                let scaleY:CGFloat  = CGFloat((spriteData.object(forKey: "scale y") as! NSNumber).doubleValue)
+                let spriteX:CGFloat = CGFloat(((spriteData as AnyObject).object(forKey: "x") as! NSNumber).doubleValue)
+                let spriteY:CGFloat = CGFloat(((spriteData as AnyObject).object(forKey: "y") as! NSNumber).doubleValue)
+                let scaleX:CGFloat  = CGFloat(((spriteData as AnyObject).object(forKey: "scale x") as! NSNumber).doubleValue)
+                let scaleY:CGFloat  = CGFloat(((spriteData as AnyObject).object(forKey: "scale y") as! NSNumber).doubleValue)
                 
                 // check if this will incorporate height margin for ads
                 if( doesUseHeightMarginForAds == true ) {
@@ -621,7 +621,7 @@ class VNScene : SKScene {
             let boxToBottomMargin           = CGFloat( (viewSettings.object(forKey: VNSceneViewSpeechBoxOffsetFromBottomKey) as! NSNumber).floatValue )
             
             if speechBox != nil {
-                originalChildren = speechBox!.children
+                originalChildren = speechBox!.children as NSArray?
                 speechBox!.removeFromParent()
             }
             
@@ -722,7 +722,7 @@ class VNScene : SKScene {
                 let fontFactor = multiplyFontSizeForiPadFactor!.doubleValue //[multiplyFontSizeForiPadFactor floatValue)
                 let fontSize = (standardFontSize!.doubleValue) * fontFactor; // Default is standardFontSize * 1.5
     
-                viewSettings.setObject(NSNumber(value: fontSize), forKey:VNSceneViewFontSizeKey)
+                viewSettings.setObject(NSNumber(value: fontSize), forKey:VNSceneViewFontSizeKey as NSCopying)
     
                 // The value for the offset key is reset because the font size may have changed, and offsets are affected by this.
                 viewSettings.setValue(NSNumber(value: (fontSize * 2)), forKey:VNSceneViewSpeechOffsetYKey)
@@ -1399,7 +1399,7 @@ class VNScene : SKScene {
                         let currentButton = button as! SKSpriteNode
     
                         //if( CGRectContainsPoint(button.frame, touchPos) ) {
-                        if (button.frame).contains(touchPos) == true {
+                        if ((button as AnyObject).frame).contains(touchPos) == true {
                             currentButton.color = buttonTouchedColors // Turn blue
                         } else {
                             currentButton.color = buttonUntouchedColors // Turn black
@@ -1903,7 +1903,7 @@ class VNScene : SKScene {
         // Extract some data from the command
         let commandTypeNumber       = command.object(at: 0) as! NSNumber // Command type, always stored as 'int'
         let type:Int                = commandTypeNumber.intValue
-        let param1:AnyObject?       = command.object(at: 1) // Get the first parameter (which might be a string, number, etc)
+        let param1:AnyObject?       = command.object(at: 1) as AnyObject? // Get the first parameter (which might be a string, number, etc)
         
         // Check for an invalid parameter
         if param1 == nil {
@@ -1938,7 +1938,7 @@ class VNScene : SKScene {
                 // instead of instantly appearing, since an instant appearance can be visually jarring to players.
                 speech!.alpha = 0.0;
                 //[speech setText:parameter1) // Copy over the text (while the text label is "invisble")
-                speech!.text = String( command.object(at: 1))
+                speech!.text = String(describing: command.object(at: 1))
                 //[record.setValue:parameter1 forKey:VNSceneSpeechToDisplayKey) // Copy text to save-game record
                 record.setValue(param1, forKey: VNSceneSpeechToDisplayKey) // Copy text to save-game record
         
@@ -1966,7 +1966,7 @@ class VNScene : SKScene {
                 
                 // Reset counter
                 TWTimer                     = 0;
-                TWFullText                  = String(command.object(at: 1))//parameter1AsString as String
+                TWFullText                  = String(describing: command.object(at: 1))//parameter1AsString as String
                 TWCurrentText               = "";
                 TWNumberOfCurrentCharacters = 0;
                 TWNumberOfTotalCharacters   = NSString(string: TWFullText).length//Int( parameter1AsString.length )
@@ -1981,7 +1981,7 @@ class VNScene : SKScene {
                 speech!.anchorPoint = CGPoint(x: 0, y: 1.0)
                 speech!.position = updatedTextPosition()
                 
-                TWInvisibleText!.text = String(command.object(at: 1)) //parameter1AsString as String
+                TWInvisibleText!.text = String(describing: command.object(at: 1)) //parameter1AsString as String
                 TWInvisibleText!.anchorPoint = CGPoint(x: 0, y: 1.0)
                 TWInvisibleText!.position = updatedTextPosition()
                 TWInvisibleText!.alpha = 0.0
@@ -2003,7 +2003,7 @@ class VNScene : SKScene {
         case VNScriptCommandAddSprite:
     
             //NSString* spriteName = parameter1;
-            let spriteName = String(command.object(at: 1))
+            let spriteName = String(describing: command.object(at: 1))
             let filenameOfSprite = self.filenameOfSpriteAlias(spriteName)
             //BOOL appearAtOnce = [[command objectAtIndex:2] boolValue) // Should the sprite show up at once, or fade in (like text does)
             let parameter2 = command.object(at: 2) as! NSNumber
@@ -2053,7 +2053,7 @@ class VNScene : SKScene {
         case VNScriptCommandAlignSprite:
     
             //NSString* spriteName = parameter1;
-            let spriteName          = String(command.object(at: 1))
+            let spriteName          = String(describing: command.object(at: 1))
             let newAlignment        = command.object(at: 2) as! String // "left", "center", "right"
             let duration            = command.object(at: 3) as! NSNumber // Default duration is 0.5 seconds; this is stored as an NSNumber (double)
             let durationAsDouble    = duration.doubleValue // For when an actual scalar value has to be passed (instead of NSNumber)
@@ -2129,7 +2129,7 @@ class VNScene : SKScene {
         // jarring for players) or it can gradually fade from sight.
         case VNScriptCommandRemoveSprite:
     
-            let spriteName = String(command.object(at: 1))
+            let spriteName = String(describing: command.object(at: 1))
             let spriteVanishesImmediately = (command.object(at: 2) as! NSNumber).boolValue //[[command objectAtIndex:2] boolValue)
         
             // Check if the sprite even exists. If it doesn't, just stop the function
@@ -2197,8 +2197,8 @@ class VNScene : SKScene {
             // then the background will be where it should be (that is, where it will be once the CCAction has finished).
             let finishedX = background.position.x + CGFloat(moveByX.floatValue)
             let finishedY = background.position.y + CGFloat(moveByY.floatValue)
-            record.setObject(NSNumber(value: Double(finishedX)), forKey: VNSceneBackgroundXKey)
-            record.setObject(NSNumber(value: Double(finishedY)), forKey: VNSceneBackgroundYKey)
+            record.setObject(NSNumber(value: Double(finishedX)), forKey: VNSceneBackgroundXKey as NSCopying)
+            record.setObject(NSNumber(value: Double(finishedY)), forKey: VNSceneBackgroundYKey as NSCopying)
             
             // Updates sprites to move along with the background
             for currentName in sprites.allKeys {
@@ -2228,7 +2228,7 @@ class VNScene : SKScene {
         // is really just a "wrapper" of sorts for the CCMoveBy action in Cocos2D.
         case VNScriptCommandEffectMoveSprite:
             
-            let spriteName = String(command.object(at: 1))
+            let spriteName = String(describing: command.object(at: 1))
             let moveByXNumber = command.object(at: 2) as! NSNumber
             let moveByYNumber = command.object(at: 3) as! NSNumber
             let durationNumber:NSNumber? = command.object(at: 4) as? NSNumber
@@ -2273,7 +2273,7 @@ class VNScene : SKScene {
         // While instant movement can look strange, there are some situations it can be useful.
         case VNScriptCommandSetSpritePosition:
             
-            let spriteName = String(command.object(at: 1))
+            let spriteName = String(describing: command.object(at: 1))
             let updatedXNumber = command.object(at: 2) as! NSNumber
             let updatedYNumber = command.object(at: 3) as! NSNumber
             let updatedX = CGFloat( updatedXNumber.doubleValue )
@@ -2288,7 +2288,7 @@ class VNScene : SKScene {
         // Change the background image. If the name parameter is set to "nil" then this command just removes the background image.
         case VNScriptCommandSetBackground:
     
-            let backgroundName = String(command.object(at: 1));
+            let backgroundName = String(describing: command.object(at: 1));
     
             // Get rid of the old background
             let background:SKSpriteNode? = self.childNode(withName: VNSceneTagBackground) as? SKSpriteNode
@@ -2329,16 +2329,16 @@ class VNScene : SKScene {
                 let bgYNumber = NSNumber( value: backgroundYDouble )
                 
                 // Update record
-                record.setObject(backgroundName, forKey: VNSceneBackgroundToShowKey)
-                record.setObject(bgXNumber, forKey: VNSceneBackgroundXKey)
-                record.setObject(bgYNumber, forKey: VNSceneBackgroundYKey)
+                record.setObject(backgroundName, forKey: VNSceneBackgroundToShowKey as NSCopying)
+                record.setObject(bgXNumber, forKey: VNSceneBackgroundXKey as NSCopying)
+                record.setObject(bgYNumber, forKey: VNSceneBackgroundYKey as NSCopying)
             }
     
         // Sets the "speaker name," so that the player knows which character is speaking. The name usually appears above and to the
         // left of the actual dialogue text. The value of the speaker name can be set to "nil" to hide the label.
         case VNScriptCommandSetSpeaker:
     
-            let updatedSpeakerName = String(command.object(at: 1))
+            let updatedSpeakerName = String(describing: command.object(at: 1))
     
             speaker!.alpha = 0; // Make the label invisible so that it can fade in
             speaker!.text = " "; // Default value is to not have any speaker name in the label's text string
@@ -2366,7 +2366,7 @@ class VNScene : SKScene {
         case VNScriptCommandChangeConversation:
     
             //NSString* updatedConversationName = parameter1;
-            let updatedConversationName = String(command.object(at: 1))
+            let updatedConversationName = String(describing: command.object(at: 1))
             
             let convo:NSArray? = script!.data!.object(forKey: updatedConversationName) as? NSArray
             if convo == nil {
@@ -2600,7 +2600,7 @@ class VNScene : SKScene {
         // but I've never gotten around to implementing it.
         case VNScriptCommandPlaySound:
             
-            let soundName = String(command.object(at: 1))
+            let soundName = String(describing: command.object(at: 1))
             
             self.playSoundEffect(soundName)
 
@@ -2613,7 +2613,7 @@ class VNScene : SKScene {
         // VNScene to stop all music.
         case VNScriptCommandPlayMusic:
             
-            let musicName = String(command.object(at: 1))
+            let musicName = String(describing: command.object(at: 1))
             let musicShouldLoop = (command.object(at: 2) as! NSNumber)
             
             print("[VNScene] Should now stop background music.")
@@ -2640,8 +2640,8 @@ class VNScene : SKScene {
         // SMRecord's own flags dictionary (and stored in device memory).
         case VNScriptCommandSetFlag:
             
-            let flagName = String(command.object(at: 1))
-            let flagValue:AnyObject = command.object(at: 2)
+            let flagName = String(describing: command.object(at: 1))
+            let flagValue:AnyObject = command.object(at: 2) as AnyObject
             
             //NSLog("[VNScene] Setting flag named [%@] to a value of [%@]", flagName, flagValue);
     
@@ -2654,10 +2654,10 @@ class VNScene : SKScene {
         // while a negative "subtracts). If no flag actually exists, then a new flag is created with whatever value was passed in.
         case VNScriptCommandModifyFlagValue:
             
-            let flagName = String(command.object(at: 1))
+            let flagName = String(describing: command.object(at: 1))
             let modifyWithValue = (command.object(at: 2) as! NSNumber).intValue
             
-            let originalObject:AnyObject? = flags.object(forKey: flagName)
+            let originalObject:AnyObject? = flags.object(forKey: flagName) as AnyObject?
             if originalObject == nil {
                 // Set a new value based on the parameter
                 flags.setValue( NSNumber(value: modifyWithValue), forKey: flagName)
@@ -2677,7 +2677,7 @@ class VNScene : SKScene {
         // at the third parameter and continues to whatever comes afterwards).
         case VNScriptCommandIfFlagHasValue:
             
-            let flagName = String(command.object(at: 1))
+            let flagName = String(describing: command.object(at: 1))
             let expectedValue = (command.object(at: 2) as! NSNumber).intValue
             let secondaryCommand:NSArray = command.object(at: 3) as! NSArray // Secondary command, which runs if the actual and expected values are the same
             
@@ -2705,7 +2705,7 @@ class VNScene : SKScene {
         // at the third parameter and continues to whatever comes afterwards).
         case VNScriptCommandIsFlagMoreThan:
             
-            let flagName = String(command.object(at: 1))
+            let flagName = String(describing: command.object(at: 1))
             let expectedValue = (command.object(at: 2) as! NSNumber).intValue
             let secondaryCommand = command.object(at: 3) as! NSArray
             
@@ -2732,7 +2732,7 @@ class VNScene : SKScene {
         // at the third parameter and continues to whatever comes afterwards).
         case VNScriptCommandIsFlagLessThan:
             
-            let flagName = String(command.object(at: 1))
+            let flagName = String(describing: command.object(at: 1))
             let expectedValue = (command.object(at: 2) as! NSNumber).intValue
             let secondaryCommand = command.object(at: 3) as! NSArray
             
@@ -2757,7 +2757,7 @@ class VNScene : SKScene {
         // then a secondary command is run.
         case VNScriptCommandIsFlagBetween:
             
-            let flagName = String(command.object(at: 1))
+            let flagName = String(describing: command.object(at: 1))
             let lesserValue = (command.object(at: 2) as! NSNumber).intValue
             let greaterValue = (command.object(at: 3) as! NSNumber).intValue
             let secondaryCommand = command.object(at: 4) as! NSArray
@@ -2876,7 +2876,7 @@ class VNScene : SKScene {
         // This command will cause VNScene to switch conversations if a certain flag holds a particular value.
         case VNScriptCommandJumpOnFlag:
             
-            let flagName = String(command.object(at: 1))
+            let flagName = String(describing: command.object(at: 1))
             let expectedValue = (command.object(at: 2) as! NSNumber).intValue
             let targetedConversation = command.object(at: 3) as! NSString
             
@@ -2938,23 +2938,23 @@ class VNScene : SKScene {
     
         case VNScriptCommandSetSpeechFont:
             
-            speechFont = String(command.object(at: 1))
+            speechFont = String(describing: command.object(at: 1))
             
             // This will only change the font if the font name is of a "proper" length; no supported font on iOS
             // is shorter than 4 characters (as far as I know).
             //if countElements(speechFont) > 3 {
             if SMStringLength(speechFont) > 3 {
                 
-                speech!.fontName = String(command.object(at: 1))
+                speech!.fontName = String(describing: command.object(at: 1))
                 
                 // Update record with override
-                record.setObject(speechFont, forKey: VNSceneOverrideSpeechFontKey)
+                record.setObject(speechFont, forKey: VNSceneOverrideSpeechFontKey as NSCopying)
             }
             
             
         case VNScriptCommandSetSpeechFontSize:
             
-            let foundationString = String(command.object(at: 1)) as NSString
+            let foundationString = String(describing: command.object(at: 1)) as NSString
             let convertedSize = CGFloat( foundationString.floatValue )
         
             fontSizeForSpeech = convertedSize
@@ -2973,7 +2973,7 @@ class VNScene : SKScene {
     
         case VNScriptCommandSetSpeakerFont:
             
-            speakerFont = String(command.object(at: 1))
+            speakerFont = String(describing: command.object(at: 1))
             
             if SMStringLength(speakerFont) > 3 {
                 
@@ -2989,7 +2989,7 @@ class VNScene : SKScene {
     
         case VNScriptCommandSetSpeakerFontSize:
             
-            let convertedString = String(command.object(at: 1)) as NSString
+            let convertedString = String(describing: command.object(at: 1)) as NSString
             
             fontSizeForSpeaker = CGFloat( convertedString.floatValue )
             
@@ -3039,7 +3039,7 @@ class VNScene : SKScene {
                 let originalChildren = speechBox!.children
                 speechBox?.removeFromParent()
                 
-                speechBox = SKSpriteNode(imageNamed: String(command.object(at: 1)))
+                speechBox = SKSpriteNode(imageNamed: String(describing: command.object(at: 1)))
                 
                 speechBox!.position = CGPoint( x: widthOfScreen * 0.5, y: (speechBox!.frame.size.height * 0.5) + boxToBottomMargin )
                 speechBox!.alpha = 1.0;
@@ -3085,7 +3085,8 @@ class VNScene : SKScene {
                 // get rid of the original speechbox and replace it with a new and invisible speechbox
                 //[speechBox removeFromParent];
                 speechBox!.removeFromParent()
-                speechBox = SKSpriteNode(imageNamed:String(command.object(at: 1)))
+                let spriteNodeName = String(describing: command.object(at: 1))
+                speechBox = SKSpriteNode(imageNamed: spriteNodeName)
                 
                 //speechBox = [SKSpriteNode spriteNodeWithImageNamed:parameter1];
                 speechBox!.position = CGPoint( x: widthOfScreen * 0.5, y: (speechBox!.frame.size.height * 0.5) + boxToBottomMargin );
@@ -3134,7 +3135,7 @@ class VNScene : SKScene {
             }
             
             //[record setValue:parameter1 forKey:VNSceneSavedOverriddenSpeechboxKey];
-            record.setValue(String(command.object(at: 1)), forKey:VNSceneSavedOverriddenSpeechboxKey)
+            record.setValue(String(describing: command.object(at: 1)), forKey:VNSceneSavedOverriddenSpeechboxKey)
             
         case VNScriptCommandSetSpriteAlias:
             
@@ -3152,7 +3153,7 @@ class VNScene : SKScene {
             
         case VNScriptCommandFlipSprite:
             
-            let spriteName = String(command.object(at: 1)) as NSString
+            let spriteName = String(describing: command.object(at: 1)) as NSString
             let durationAsDouble = (command.object(at: 2) as! NSNumber).doubleValue
             let flipHorizontal = (command.object(at: 3) as! NSNumber).boolValue
             

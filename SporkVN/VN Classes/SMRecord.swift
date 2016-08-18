@@ -124,7 +124,7 @@ class SMRecord {
         
         //format.dateFormat = "h:mm a',' yyyy'-'MM'-'dd" // Example: "12:34 AM, 2013-02-10"
         format.dateFormat = "yyyy'-'MM'-'dd',' h:mm a" // Example: "2014-11-11, 12:29 PM"
-        let formattedDate:NSString = format.string(from: dateObject)
+        let formattedDate:NSString = format.string(from: dateObject) as NSString
         
         return formattedDate
     }
@@ -157,7 +157,7 @@ class SMRecord {
         resetActivityInformationInDict(tempRecord)              // Fill the activity dictionary with dummy data
         
         // Create a flags dictionary with some default "dummy" data in it
-        let tempFlags:NSMutableDictionary = NSMutableDictionary(object: "dummy value", forKey: "dummy key")
+        let tempFlags:NSMutableDictionary = NSMutableDictionary(object: "dummy value", forKey: "dummy key" as NSCopying)
         tempRecord.setValue(tempFlags, forKey:SMRecordFlagsKey) // Load the flags dictionary into the record
         
         return tempRecord // Used to be something like NSDictionary(dictionary: tempRecord) ... dunno if that works better
@@ -204,7 +204,7 @@ class SMRecord {
         }
         
         // In this case, there are no flags at all, so create a new dictionary and just return that
-        let emptyFlags = NSMutableDictionary(object: "dummy value", forKey: "dummy key")
+        let emptyFlags = NSMutableDictionary(object: "dummy value", forKey: "dummy key" as NSCopying)
         record.setValue(emptyFlags, forKey: SMRecordFlagsKey)
         return emptyFlags
     }
@@ -506,13 +506,13 @@ class SMRecord {
             //let value = rootDictionary!.objectForKey(key) as? AnyObject
             
             if overrideExistingFlags == true {
-                self.setFlagValue(value!, nameOfFlag: key as! String)
+                self.setFlagValue(value! as AnyObject, nameOfFlag: key as! String)
                 //self.setFlagValue(value!, forFlagNamed:key)
             } else {
                 let existingFlag = self.flagNamed(key as! String)
                 if existingFlag == nil {
                     //self.setValue(value!, forFlagNamed:key as! String)
-                    setFlagValue(value!, nameOfFlag: key as! String)
+                    setFlagValue(value! as AnyObject, nameOfFlag: key as! String)
                 }
             }
         }
@@ -748,7 +748,7 @@ class SMRecord {
             let flagsDict:NSDictionary? = flags()
             if( flagsDict != nil ) {
                 
-                return flagsDict!.object(forKey: nameOfFlag)
+                return flagsDict!.object(forKey: nameOfFlag) as AnyObject?
             }
         }
         
@@ -889,9 +889,9 @@ class SMRecord {
     func resetActivityInformationInDict(_ dict:NSDictionary)
     {
         // Fill out the activity information with useless "dummy data." Later, this data can (and should) be overwritten there's actual data to use
-        let informationAboutCurrentActivity = NSMutableDictionary(object: "nil", forKey: "scene to play")
+        let informationAboutCurrentActivity = NSMutableDictionary(object: "nil", forKey: "scene to play" as NSCopying)
         let activityDict = NSMutableDictionary(objects: ["nil", informationAboutCurrentActivity],
-                                               forKeys: [SMRecordActivityTypeKey, SMRecordActivityDataKey])
+                                               forKeys: [SMRecordActivityTypeKey as NSCopying, SMRecordActivityDataKey as NSCopying])
         //NSMutableDictionary(objectsAndKeys: "nil", SMRecordActivityTypeKey,
         //    informationAboutCurrentActivity, SMRecordActivityDataKey)
         

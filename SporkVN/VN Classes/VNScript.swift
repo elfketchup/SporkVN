@@ -351,7 +351,7 @@ class VNScript {
                 }
             }
             
-            type = VNScriptCommandSayLine
+            type = VNScriptCommandSayLine as NSNumber
             analyzedArray = NSArray(objects: type, fixedString)
             return analyzedArray // Return at once, instead of doing more processing
         }
@@ -394,7 +394,7 @@ class VNScript {
             // Convert the second parameter to a Boolean value (stored as a Boolean NSNumber object)
             let appearParameter:NSNumber = NSNumber(value: parameter2.boolValue)
             
-            type = VNScriptCommandAddSprite
+            type = VNScriptCommandAddSprite as NSNumber
             analyzedArray = NSArray(objects: type, parameter1, appearParameter)
             
         } else if action.caseInsensitiveCompare(VNScriptStringAlignSprite) == ComparisonResult.orderedSame {
@@ -440,7 +440,7 @@ class VNScript {
                 duration = command.object(at: 3) as! NSString // Optional, default value is 0.5
             }
             
-            type = VNScriptCommandAlignSprite;
+            type = VNScriptCommandAlignSprite as NSNumber
             let durationToUse:NSNumber = NSNumber(value: duration.doubleValue) // Convert to NSNumber
             analyzedArray = NSArray(objects: type, parameter1, newAlignment, durationToUse)
             
@@ -477,7 +477,7 @@ class VNScript {
             let vanishParameter:NSNumber = NSNumber(value: vanishAtOnce)
             
             // Example: .removesprite:bob:NO
-            type = VNScriptCommandRemoveSprite;
+            type = VNScriptCommandRemoveSprite as NSNumber
             analyzedArray = NSArray(objects: type, parameter1, vanishParameter)
             
         } else if action.caseInsensitiveCompare(VNScriptStringEffectMoveSprite) == ComparisonResult.orderedSame {
@@ -521,7 +521,7 @@ class VNScript {
             let duration:NSNumber = NSNumber(value: durationParameter.doubleValue);
             
             // syntax = command:sprite:xcoord:ycoord:duration
-            type = VNScriptCommandEffectMoveSprite;
+            type = VNScriptCommandEffectMoveSprite as NSNumber
             analyzedArray = NSArray(objects: type, parameter1, moveByX, moveByY, duration)
             
         } else if action.caseInsensitiveCompare(VNScriptStringEffectMoveBackground) == ComparisonResult.orderedSame {
@@ -602,7 +602,7 @@ class VNScript {
             let parallaxing:NSNumber    = NSNumber(value: parallaxFactor.floatValue);
             
             // syntax = command:xcoord:ycoord:duration:parallaxing
-            type = VNScriptCommandEffectMoveBackground;
+            type = VNScriptCommandEffectMoveBackground as NSNumber
             analyzedArray = NSArray(objects: type, moveByX, moveByY, duration, parallaxing);
             
         } else if action.caseInsensitiveCompare(VNScriptStringSetSpritePosition) == ComparisonResult.orderedSame {
@@ -636,7 +636,7 @@ class VNScript {
             let coordinateX:NSNumber = NSNumber(value: xParameter.floatValue);
             let coordinateY:NSNumber = NSNumber(value: yParameter.floatValue);
             
-            type = VNScriptCommandSetSpritePosition;
+            type = VNScriptCommandSetSpritePosition as NSNumber
             analyzedArray = NSArray(objects: type, parameter1, coordinateX, coordinateY)
             
         } else if action.caseInsensitiveCompare(VNScriptStringSetBackground) == ComparisonResult.orderedSame {
@@ -661,7 +661,7 @@ class VNScript {
             
             //type = @VNScriptCommandSetBackground;
             //analyzedArray = @[type, parameter1];
-            type = VNScriptCommandSetBackground;
+            type = VNScriptCommandSetBackground as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
             
         //} else if ( [action caseInsensitiveCompare:VNScriptStringSetSpeaker] == NSOrderedSame ) {
@@ -683,7 +683,7 @@ class VNScript {
             
             //type = @VNScriptCommandSetSpeaker;
             //analyzedArray = @[type, parameter1];
-            type = VNScriptCommandSetSpeaker
+            type = VNScriptCommandSetSpeaker as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
             
         //} else if ( [action caseInsensitiveCompare:VNScriptStringChangeConversation] == NSOrderedSame ) {
@@ -705,7 +705,7 @@ class VNScript {
             
             //type = @VNScriptCommandChangeConversation;
             //analyzedArray = @[type, parameter1];
-            type = VNScriptCommandChangeConversation
+            type = VNScriptCommandChangeConversation as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
             
         //} else if ( [action caseInsensitiveCompare:VNScriptStringJumpOnChoice] == NSOrderedSame ) {
@@ -778,7 +778,7 @@ class VNScript {
                 destinations.add( command.object(at: indexOfChoice+1) )
             }
             
-            type = VNScriptCommandJumpOnChoice;
+            type = VNScriptCommandJumpOnChoice as NSNumber
             analyzedArray = NSArray(objects: type, choiceText, destinations)
             
         } else if action.caseInsensitiveCompare(VNScriptStringShowSpeechOrNot) == ComparisonResult.orderedSame {
@@ -806,7 +806,7 @@ class VNScript {
             
             let parameterObject = NSNumber(value: parameter1.boolValue)
 
-            type = VNScriptCommandShowSpeechOrNot
+            type = VNScriptCommandShowSpeechOrNot as NSNumber
             analyzedArray = NSArray(objects: type, parameterObject)
             
         } else if action.caseInsensitiveCompare(VNScriptStringEffectFadeIn) == ComparisonResult.orderedSame {
@@ -834,7 +834,7 @@ class VNScript {
             analyzedArray = @[type, durationObject];*/
             
             let durationObject  = NSNumber(value: parameter1.doubleValue)
-            type                = VNScriptCommandEffectFadeIn
+            type                = VNScriptCommandEffectFadeIn as NSNumber
             analyzedArray       = NSArray(objects: type, durationObject)
             
         } else if action.caseInsensitiveCompare(VNScriptStringEffectFadeOut) == ComparisonResult.orderedSame {
@@ -861,7 +861,7 @@ class VNScript {
             analyzedArray = @[type, durationObject];*/
             
             let durationObject  = NSNumber(value: parameter1.doubleValue)
-            type                = VNScriptCommandEffectFadeOut
+            type                = VNScriptCommandEffectFadeOut as NSNumber
             analyzedArray       = NSArray(objects: type, durationObject)
             
         } else if action.caseInsensitiveCompare(VNScriptStringPlaySound) == ComparisonResult.orderedSame {
@@ -881,7 +881,7 @@ class VNScript {
             
             //type = @VNScriptCommandPlaySound;
             //analyzedArray = @[type, parameter1];
-            type = VNScriptCommandPlaySound
+            type = VNScriptCommandPlaySound as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
             
         } else if action.caseInsensitiveCompare(VNScriptStringPlayMusic) == ComparisonResult.orderedSame {
@@ -915,7 +915,7 @@ class VNScript {
             let musicLoopsForever:Bool = parameter2.boolValue
             let loopParameter:NSNumber = NSNumber(value: musicLoopsForever)
             
-            type = VNScriptCommandPlayMusic;
+            type = VNScriptCommandPlayMusic as NSNumber
             analyzedArray = NSArray(objects: type, parameter1, loopParameter)
 
         } else if action.caseInsensitiveCompare(VNScriptStringSetFlag) == ComparisonResult.orderedSame {
@@ -944,7 +944,7 @@ class VNScript {
             // Convert the second parameter to an NSNumber (it was originally an NSString)
             let value:NSNumber = NSNumber(value: parameter2.integerValue)
             
-            type = VNScriptCommandSetFlag;
+            type = VNScriptCommandSetFlag as NSNumber
             analyzedArray = NSArray(objects: type, parameter1, value)
             
         } else if action.caseInsensitiveCompare(VNScriptStringModifyFlagValue) == ComparisonResult.orderedSame {
@@ -973,7 +973,7 @@ class VNScript {
             
             let modifyWithValue = NSNumber(value: parameter2.integerValue) // Converts from string to integer NSNumber
             
-            type = VNScriptCommandModifyFlagValue;
+            type = VNScriptCommandModifyFlagValue as NSNumber
             analyzedArray = NSArray(objects: type, parameter1, modifyWithValue)
             
         } else if action.caseInsensitiveCompare(VNScriptStringIfFlagHasValue) == ComparisonResult.orderedSame {
@@ -1034,7 +1034,7 @@ class VNScript {
                 return nil;
             }
             
-            type = VNScriptCommandIfFlagHasValue;
+            type = VNScriptCommandIfFlagHasValue as NSNumber
             //analyzedArray = NSArray(objects: type, variableName!, expectedValue!, secondaryCommand!)
             analyzedArray = NSArray(objects: type, variableName!, expectedValueAsNumber, secondaryCommand!)
             
@@ -1087,7 +1087,7 @@ class VNScript {
             // Convert to numerical types
             let expectedValueAsNumber = NSNumber(value: expectedValue!.integerValue)
             
-            type = VNScriptCommandIsFlagMoreThan;
+            type = VNScriptCommandIsFlagMoreThan as NSNumber
             //analyzedArray = NSArray(objects: type, variableName!, expectedValue!, secondaryCommand!)
             analyzedArray = NSArray(objects: type, variableName!, expectedValueAsNumber, secondaryCommand!)
             
@@ -1138,7 +1138,7 @@ class VNScript {
             }
             
             let expectedValueAsNumber = NSNumber(value: expectedValue!.integerValue)
-            type = VNScriptCommandIsFlagLessThan;
+            type = VNScriptCommandIsFlagLessThan as NSNumber
             //analyzedArray = NSArray(objects: type, variableName!, expectedValue!, secondaryCommand!)
             analyzedArray = NSArray(objects: type, variableName!, expectedValueAsNumber, secondaryCommand!)
             
@@ -1212,7 +1212,7 @@ class VNScript {
             let lesserValueNumber = NSNumber(value: lesserValue)
             let greaterValueNumber = NSNumber(value: greaterValue)
             
-            type = VNScriptCommandIsFlagBetween;
+            type = VNScriptCommandIsFlagBetween as NSNumber
             //analyzedArray = NSArray(objects: type, variableName!, lesserValueString, greaterValueString, secondaryCommand!)
             analyzedArray = NSArray(objects: type, variableName!, lesserValueNumber, greaterValueNumber, secondaryCommand!)
             
@@ -1269,7 +1269,7 @@ class VNScript {
                 variableValues.add(convertedToNumber)
             }
             
-            type = VNScriptCommandModifyFlagOnChoice;
+            type = VNScriptCommandModifyFlagOnChoice as NSNumber
             analyzedArray = NSArray(objects: type, choiceText, variableNames, variableValues)
             
         } else if action.caseInsensitiveCompare(VNScriptStringJumpOnFlag) == ComparisonResult.orderedSame {
@@ -1306,7 +1306,7 @@ class VNScript {
             }
             
             let expectedValueAsNumber = NSNumber(value: expectedValue!.integerValue)
-            type = VNScriptCommandJumpOnFlag;
+            type = VNScriptCommandJumpOnFlag as NSNumber
             //analyzedArray = NSArray(objects: type, variableName!, expectedValue!, newLocation!)
             analyzedArray = NSArray(objects: type, variableName!, expectedValueAsNumber, newLocation!)
             
@@ -1348,7 +1348,7 @@ class VNScript {
                 extraParameters.add(NSString(string: "nil"))
             }
             
-            type = VNScriptCommandSystemCall;
+            type = VNScriptCommandSystemCall as NSNumber
             analyzedArray = NSArray(objects: type, callString, extraParameters)
             
         } else if action.caseInsensitiveCompare(VNScriptStringCallCode) == ComparisonResult.orderedSame {
@@ -1394,7 +1394,7 @@ class VNScript {
             let callingArray:NSMutableArray = NSMutableArray(array: command)
             callingArray.removeObject(at: 0) // Removes the string ".callcode"
             
-            type = VNScriptCommandCallCode;
+            type = VNScriptCommandCallCode as NSNumber
             analyzedArray = NSArray(objects: type, callingArray)
             
         } else if( action.caseInsensitiveCompare(VNScriptStringSwitchScript) == ComparisonResult.orderedSame ) {
@@ -1420,7 +1420,7 @@ class VNScript {
             }
             
             let scriptName:NSString?    = command.object(at: 1) as? NSString
-            var startingPoint:NSString  = VNScriptStartingPoint; // Default value
+            var startingPoint:NSString  = VNScriptStartingPoint as NSString; // Default value
             
             // Check if the script name is missing
             if( scriptName == nil ) {
@@ -1432,7 +1432,7 @@ class VNScript {
                 startingPoint = command.object(at: 2) as! NSString
             }
             
-            type = VNScriptCommandSwitchScript
+            type = VNScriptCommandSwitchScript as NSNumber
             analyzedArray = NSArray(objects: type, scriptName!, startingPoint)
             
         } else if( action.caseInsensitiveCompare(VNScriptStringSetSpeakerFont) == ComparisonResult.orderedSame ) {
@@ -1450,7 +1450,7 @@ class VNScript {
             //  Example: .SETSPEAKERFONT:Helvetica
             //
             
-            type = VNScriptCommandSetSpeakerFont;
+            type = VNScriptCommandSetSpeakerFont as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
             
         } else if( action.caseInsensitiveCompare(VNScriptStringSetSpeakerFontSize) == ComparisonResult.orderedSame ) {
@@ -1470,7 +1470,7 @@ class VNScript {
             
             //let sizeAsNumber = NSNumber( double: parameter1.doubleValue )
             
-            type = VNScriptCommandSetSpeakerFontSize;
+            type = VNScriptCommandSetSpeakerFontSize as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
             //analyzedArray = NSArray(objects: type, sizeAsNumber)
             
@@ -1489,7 +1489,7 @@ class VNScript {
             //  Example: .SETSPEECHFONT:Courier New
             //
             
-            type = VNScriptCommandSetSpeechFont;
+            type = VNScriptCommandSetSpeechFont as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
             
         } else if( action.caseInsensitiveCompare(VNScriptStringSetSpeechFontSize) == ComparisonResult.orderedSame ) {
@@ -1507,7 +1507,7 @@ class VNScript {
             //  Example: .SETSPEECHFONTSIZE:18.0
             //
             
-            type = VNScriptCommandSetSpeechFontSize;
+            type = VNScriptCommandSetSpeechFontSize as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
             
         } else if action.caseInsensitiveCompare(VNScriptStringSetTypewriterText) == ComparisonResult.orderedSame {
@@ -1542,7 +1542,7 @@ class VNScript {
         
             let skipNumber = NSNumber(value: canSkip)
             
-            type = VNScriptCommandSetTypewriterText;
+            type = VNScriptCommandSetTypewriterText as NSNumber
             analyzedArray = NSArray(objects:type, timeNumber, skipNumber)
             
         } else if action.caseInsensitiveCompare(VNScriptStringSetSpriteAlias) == ComparisonResult.orderedSame {
@@ -1565,7 +1565,7 @@ class VNScript {
             let aliasParameter = command.object(at: 1) as! NSString
             let filenameParameter = command.object(at: 2) as! NSString
             
-            type = VNScriptCommandSetSpriteAlias;
+            type = VNScriptCommandSetSpriteAlias as NSNumber
             //analyzedArray = @[type, aliasParameter, filenameParameter];
             analyzedArray = NSArray(objects: type, aliasParameter, filenameParameter)
             
@@ -1595,7 +1595,7 @@ class VNScript {
                 duration = command.object(at: 2) as! NSString // optional, default value is zero
             }
             
-            type = VNScriptCommandSetSpeechbox
+            type = VNScriptCommandSetSpeechbox as NSNumber
             let durationToUse = NSNumber(value: duration.doubleValue)
             analyzedArray = NSArray(objects: type, parameter1, durationToUse)
             
@@ -1633,7 +1633,7 @@ class VNScript {
                 flipBool = command.object(at: 3) as! NSString
             }
             
-            type = VNScriptCommandFlipSprite
+            type = VNScriptCommandFlipSprite as NSNumber
             let durationToUse = NSNumber(value: duration.doubleValue)
             let numberForFlip = NSNumber(value: flipBool.boolValue)
             analyzedArray = NSArray(objects: type, parameter1, durationToUse, numberForFlip)
