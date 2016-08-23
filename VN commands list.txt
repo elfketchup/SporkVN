@@ -494,3 +494,100 @@ Example: .addsprite:girl.png:NO
       #1: Font size (float)
 
   Example: .SETSPEECHFONTSIZE:18.0
+
+================
+
+  Name: .SETCINEMATICTEXT
+
+  Sets (or disables) "cinematic text," in which text or dialogue proceeds without any input
+  from the player.
+
+  Parameters:
+
+      #1: The time it takes (in seconds) to get to the next line of text/dialogue. (double)
+          (Setting this to zero (or less) DISABLES cinematic text mode.)
+
+      #2: Whether the user can still skip ahead by tapping the screen (BOOL) (OPTIONAL)
+          (default value is NO)
+
+  Example: .SETCINEMATICTEXT:5.0:YES
+
+================
+
+  Name: .SETTYPEWRITERTEXT
+
+  Sets or disables "typewriter text" mode, in which each character of text/dialogue appears
+  one at a time (though usually still very quickly).
+
+  Parameters:
+
+      #1: How many characters it should print per second (Integer)
+          (setting this to zero disables typewriter text mode)
+
+      #2: Whether the user can still skip ahead by tapping the screen (BOOL) (default value is NO)
+
+  Example: .SETTYPEWRITERTEXT:30:NO
+
+================
+
+  Name: .SETSPEECHBOX
+
+  Dynamically switches to a different speechbox sprite.
+
+  Parameters:
+
+      #1: Name of speechbox sprite to use (string)
+
+      #2: (OPTIONAL) Duration of transition, in seconds) (double)
+          (default is 0, which is instant)
+
+  Example: .SETSPEECHBOX:alternate_box.png:1.0
+================
+
+  Name: .FLIPSPRITE
+
+  Flips the sprite left/right or upside-down/right-side-up.
+
+  Parameters:
+
+      #1: Name of sprite (string)
+
+      #2: (OPTIONAL) Duration in seconds. Duration of zero is instantaneous. (double)
+
+      #3: (OPTIONAL) Whether to flip horizontally or not (BOOL)
+          (YES means horizontal flip, NO means vertical flip)
+
+  Example: .FLIPSPRITE:girl.png:0:YES
+
+================
+
+  Name: .ROLLDICE
+
+  Rolls dice to get random result, stores value in a flag named DICEROLL. A flag (holding an integer value)
+  can be added as a "modifier." Whatever the value the flag has is added to the final result of the dice roll.
+
+  Parameters:
+
+      #1: Maximum value of roll; possible results = from 1 to (max value) (int)
+
+      #2: (OPTIONAL) Number of dice, default is 1 (int)
+
+      #3: (OPTIONAL) Name of flag, adds integer value in flag to final result (string)
+          (default is ".nil")
+
+  Example: .ROLLDICE:20:1:luck_modifier
+
+================
+
+  Name: .MODIFYCHOICEBOXOFFSET
+
+  Modifies button offsets during choices, in case you don't want them to show up in the middle of the screen.
+
+  Parameters:
+
+      #1: X coordinate (in points) (double)
+
+      #2: Y coordinate (in points) (double)
+
+  Example: .MODIFYCHOICEBOXOFFSET:10:10
+

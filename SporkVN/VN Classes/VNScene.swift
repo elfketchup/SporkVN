@@ -68,6 +68,7 @@ let VNSceneToPlayKey                = "scene to play"
 let VNSceneViewFontSize             = 17
 let VNSceneSpriteIsSafeToRemove     = "sprite is safe to remove" // Used for sprite removal (to free up memory and remove unused sprite)
 let VNScenePopSceneWhenDoneKey      = "pop scene when done" // Ask CCDirector to pop the  scene when the script finishes?
+let VNSceneDiceRollResultFlag       = "DICEROLL" // flag that stores results of dice rolls
 
 // Sprite alignment strings (used for commands)
 let VNSceneViewSpriteAlignmentLeftString                = "left"             // 25% of screen width
@@ -107,6 +108,8 @@ let VNSceneViewDoesUseHeightMarginForAdsKey = "does use height margin for ads" /
 let VNSceneViewButtonTextColorKey           = "button text color"    // color of the text in buttons
 let VNSceneViewSpeechboxColorKey            = "speechbox color"      // color speech box
 let VNSceneViewSpeechboxTextColorKey        = "speechbox text color" // color of text in speech box (both dialogue and speaker name)
+let VNSceneViewChoiceButtonOffsetX          = "choicebox offset x"
+let VNSceneViewChoiceButtonOffsetY          = "choicebox offset y"
 
 // Resource dictionary keys
 let VNSceneViewSpeechTextKey                = "speech text"
@@ -262,6 +265,8 @@ class VNScene : SKScene {
     var buttonTouchedColors             = UIColor.blue
     var buttonUntouchedColors           = UIColor.black
     var buttonTextColor                 = UIColor.white
+    var choiceButtonOffsetX             = CGFloat(0)
+    var choiceButtonOffsetY             = CGFloat(0)
     
     var previousScene:SKScene? = nil
     var allSettings:NSDictionary?
@@ -648,6 +653,14 @@ class VNScene : SKScene {
             TWCanSkip = TWValueForSkip.boolValue
         }
         self.updateTypewriterTextSettings()
+        
+        // choicebox effects
+        if let valueForChoiceboxOffsetX = record.object(forKey: VNSceneViewChoiceButtonOffsetX) as? NSNumber {
+            choiceButtonOffsetX = CGFloat(valueForChoiceboxOffsetX.doubleValue)
+        }
+        if let valueForChoiceboxOffsetY = record.object(forKey: VNSceneViewChoiceButtonOffsetY) as? NSNumber {
+            choiceButtonOffsetY = CGFloat(valueForChoiceboxOffsetY.doubleValue)
+        }
     }
     
     // Loads the default, hard-coded values for the view / UI settings dictionary.
@@ -975,6 +988,14 @@ class VNScene : SKScene {
         }
         if( shouldOverrideSpeechSize && overrideSpeechSize != nil ) {
             speech!.fontSize = CGFloat(overrideSpeechSize!.doubleValue)
+        }
+        
+        // load choicebox/choice-button offsets
+        if let valueForChoiceboxOffsetX = viewSettings.object(forKey: VNSceneViewChoiceButtonOffsetX) as? NSNumber {
+            choiceButtonOffsetX = CGFloat(valueForChoiceboxOffsetX.doubleValue)
+        }
+        if let valueForChoiceboxOffsetY = viewSettings.object(forKey: VNSceneViewChoiceButtonOffsetY) as? NSNumber {
+            choiceButtonOffsetY = CGFloat(valueForChoiceboxOffsetY.doubleValue)
         }
     
         // Part 7: Load extra features
@@ -2410,11 +2431,11 @@ class VNScene : SKScene {
                 let spaceBetweenButtons:CGFloat   = button.frame.size.height * 0.2;
                 let buttonHeight:CGFloat          = button.frame.size.height;
                 let totalButtonSpace:CGFloat      = buttonHeight + spaceBetweenButtons;
-                let startingPosition:CGFloat      = (screenHeight * 0.5) + ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace );
+                let startingPosition:CGFloat      = (screenHeight * 0.5) + ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
                 let buttonY:CGFloat               = startingPosition + ( CGFloat(i) * totalButtonSpace );
     
                 // Set button position
-                button.position = CGPoint( x: screenWidth * 0.5, y: buttonY );
+                button.position = CGPoint( x: (screenWidth * 0.5) + choiceButtonOffsetX, y: buttonY );
                 button.zPosition = VNSceneButtonsLayer;
                 button.name = "\(i)" //button.name = [NSString stringWithFormat:@"%d", i)
                 self.addChild(button)
@@ -2816,11 +2837,11 @@ class VNScene : SKScene {
                 let spaceBetweenButtons   = button.frame.size.height * 0.2; // 20% of button sprite height
                 let buttonHeight          = button.frame.size.height;
                 let totalButtonSpace      = buttonHeight + spaceBetweenButtons; // total used-up space = 120% of button height
-                let startingPosition      = (screenHeight * 0.5) + ( ( choiceCount * 0.5 ) * totalButtonSpace );
+                let startingPosition      = (screenHeight * 0.5) + ( ( choiceCount * 0.5 ) * totalButtonSpace ) + choiceButtonOffsetY
                 let buttonY               = startingPosition + ( loopIndex * totalButtonSpace ); // This button's position
         
                 // Set button position and other attributes
-                button.position     = CGPoint( x: screenWidth * 0.5, y: buttonY );
+                button.position     = CGPoint( x: (screenWidth * 0.5) + choiceButtonOffsetX, y: buttonY );
                 //button.color        = [[CCColor alloc] initWithCcColor3b:buttonUntouchedColors)
                 button.color        = buttonUntouchedColors;
                 button.zPosition    = VNSceneButtonsLayer;
@@ -3196,18 +3217,116 @@ class VNScene : SKScene {
             
             let clearEffectFlag = SKAction.run(self.clearEffectRunningFlag)
             let theSequence = SKAction.sequence([scalingAction!, clearEffectFlag])
-            
             sprite!.run(theSequence)
             
-            //SKAction* clearEffectFlag = [SKAction performSelector:@selector(clearEffectRunningFlag) onTarget:self];
-            //SKAction* theSequence = [SKAction sequence:@[scalingAction, clearEffectFlag]];
+        case VNScriptCommandRollDice:
             
-            //CCActionScaleTo* scalingAction = [CCActionScaleTo actionWithDuration:durationAsDouble scaleX:scaleToX scaleY:scaleToY];
-            //CCActionCallFunc* clearEffectFlag = [CCActionCallFunc actionWithTarget:self selector:@selector(clearEffectRunningFlag)];
-            //CCActionSequence* theSequence = [CCActionSequence actions:scalingAction, clearEffectFlag, nil];
-            //[sprite runAction:theSequence];
+            let maximumNumber   = command.object(at: 1) as! NSNumber
+            let numberOfDice    = command.object(at: 2) as! NSNumber
+            let flagName        = command.object(at: 3) as! NSString
+            
+            var flagModifier = 0
+            let theMax = maximumNumber.intValue
+            let diceNumber = numberOfDice.intValue
+            
+            let theFlag:NSNumber? = flags.object(forKey: flagName) as? NSNumber
+            if( theFlag != nil ) {
+                flagModifier = theFlag!.intValue
+            }
+            
+            let roll = SMRollDice(diceNumber, maximumRollValue: theMax, plusModifier: flagModifier)
+            // Store results of roll in DICEROLL flag
+            let diceRollResult = NSNumber(integerLiteral: roll)
+            flags.setValue(diceRollResult, forKey: VNSceneDiceRollResultFlag)
+            //print("[VNScene] Dice roll results of \(roll) stored in flag named: DICEROLL");
+            
+        case VNScriptCommandModifyChoiceboxOffset:
+            
+            let xOffset = command.object(at: 1) as! NSNumber;
+            let yOffset = command.object(at: 2) as! NSNumber;
+            
+            choiceButtonOffsetX = CGFloat(xOffset.doubleValue);
+            choiceButtonOffsetY = CGFloat(yOffset.doubleValue);
+            
+            // save offset data to record
+            let xSave = NSNumber(value: xOffset.doubleValue);
+            let ySave = NSNumber(value: yOffset.doubleValue);
+            record.setValue(xSave, forKey: VNSceneViewChoiceButtonOffsetX);
+            record.setValue(ySave, forKey: VNSceneViewChoiceButtonOffsetY);
     
-    
+        /*
+         NOTE: For some really weird reason, including the following code causes a buildtime linker error, which I've
+               isolated to the "let sequence = SKAction.sequence" lines. There's no reason any of these should be acting
+               up, but I still get a weird linker error. So for now, the following functionality isn't included
+        */
+            
+            /*
+             
+        case VNScriptCommandScaleBackground:
+            
+            // get the background sprite
+            let backgroundSprite:SKSpriteNode? = self.childNode(withName: VNSceneTagBackground) as? SKSpriteNode
+            if( backgroundSprite == nil ) {
+                return
+            }
+            
+            let scaleNumber = command.object(at: 1) as! NSNumber
+            let durationNumber = command.object(at: 2) as! NSNumber
+            let theDuration = durationNumber.doubleValue
+            
+            if theDuration <= 0.0 {
+                backgroundSprite!.setScale(CGFloat(scaleNumber.doubleValue))
+            } else {
+                self.createSafeSave()
+                self.setEffectRunningFlag()
+                
+                let scaleAction     = SKAction.scale(to: CGFloat(scaleNumber.doubleValue), duration: theDuration);
+                let callClearFlag   = SKAction.run(self.clearEffectRunningFlag);
+                let sequence        = SKAction.sequence([scaleAction, callClearFlag]);
+                backgroundSprite!.run(sequence);
+            }
+            
+        case VNScriptCommandScaleSprite:
+            
+            let spriteName = command.object(at: 1) as! NSString
+            let scaleNumber = command.object(at: 2) as! NSNumber
+            let durationNumber = command.object(at: 3) as! NSNumber
+            
+            let sprite:SKSpriteNode? = sprites.object(forKey: spriteName) as? SKSpriteNode
+            if sprite == nil {
+                return;
+            }
+            
+            let theScale = CGFloat(scaleNumber.doubleValue)
+            let theDuration = durationNumber.doubleValue
+            var xScale = theScale
+            var yScale = theScale
+            
+            // invert x/y-scale values when dealing with flipped sprites
+            if sprite!.xScale < 0.0 {
+                xScale = xScale * (-1)
+            }
+            if sprite!.yScale < 0.0 {
+                yScale = yScale * (-1)
+            }
+            
+            if theDuration <= 0.0 {
+                sprite!.xScale = xScale
+                sprite!.yScale = yScale
+            } else {
+                self.createSafeSave()
+                self.setEffectRunningFlag()
+                
+                let scaleAction = SKAction.scaleX(to: xScale, y: yScale, duration: theDuration)
+                let callClearFlag = SKAction.run(self.clearEffectRunningFlag)
+                let sequence = SKAction.sequence([scaleAction, callClearFlag])
+                
+                sprite!.run(sequence)
+            }
+ */
+            
+            
+            
         default:
             print("[VNScene] WARNING: Unknown command found in script. The command's NSArray is: %@", command);
         } // switch

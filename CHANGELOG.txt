@@ -1,3 +1,6 @@
+version 1.0.4 Aug-22-2016
+. [NEW] Added .ROLLDICE and .MODIFYCHOICEBOXOFFSET script commands.
+
 version 1.0.3.2 Aug-17-2016
 . [MISC] Updated to run on Xcode 8 beta 6.
 

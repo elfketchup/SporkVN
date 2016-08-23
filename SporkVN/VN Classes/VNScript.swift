@@ -63,6 +63,10 @@ let VNScriptCommandSetTypewriterText        = 132
 let VNScriptCommandSetSpeechbox             = 133
 let VNScriptCommandSetSpriteAlias           = 134
 let VNScriptCommandFlipSprite               = 135
+let VNScriptCommandRollDice                 = 136
+let VNScriptCommandModifyChoiceboxOffset    = 137
+let VNScriptCommandScaleBackground          = 138
+let VNScriptCommandScaleSprite              = 139
 
 // The command strings. Each one starts with a dot (the parser will only check treat a line as a command if it starts
 // with a dot), and is followed by some parameters, separated by colons.
@@ -100,6 +104,10 @@ let VNScriptStringSetTypewriterText         = ".settypewritertext"   // Typewrit
 let VNScriptStringSetSpriteAlias            = ".setspritealias"      // Assigns a filename to a sprite alias
 let VNScriptStringSetSpeechbox              = ".setspeechbox"        // dynamically change speechbox sprite
 let VNScriptStringFlipSprite                = ".flipsprite"          // flips sprite around (left/right or upside-down)
+let VNScriptStringRollDice                  = ".rolldice"            // rolls dice, retrieves value and stores in flag
+let VNScriptStringModifyChoiceboxOffset     = ".modifychoiceboxoffset" // adds X/Y offset to button coordinates during choices (default = 0,0)
+let VNScriptStringScaleBackground           = ".scalebackground"     // changes background scale
+let VNScriptStringScaleSprite               = ".scalesprite"         // changes sprite scale
 
 // Script syntax
 let VNScriptSeparationString               = ":"
@@ -1555,9 +1563,9 @@ class VNScript {
             //
             //  Parameters:
             //
-            //      #1: The sprite alias.
+            //      #1: The sprite alias. (string)
             //
-            //      #2: The filename to use.
+            //      #2: The filename to use. (string)
             //
             //  Example: .SETSPRITEALIAS:hero:harry.png
             //
@@ -1581,7 +1589,8 @@ class VNScript {
             //
             //      #1: Name of speechbox sprite to use (string)
             //
-            //      #2: Duration of transition (in seconds) (default is 0, which is instant)
+            //      #2: (OPTIONAL) Duration of transition, in seconds) (double)
+            //          (default is 0, which is instant)
             //
             //  Example: .SETSPEECHBOX:alternate_box.png:1.0
             //
@@ -1609,11 +1618,12 @@ class VNScript {
             //
             //  Parameters:
             //
-            //      #1: Name of sprite
+            //      #1: Name of sprite (string)
             //
-            //      #2: Duration (in seconds). Duration of zero is instantaneous.
+            //      #2: (OPTIONAL) Duration in seconds. Duration of zero is instantaneous. (double)
             //
-            //      #3: Whether to flip horizontally or not (YES means horizontal flip, NO means vertical flip)
+            //      #3: (OPTIONAL) Whether to flip horizontally or not (BOOL)
+            //          (YES means horizontal flip, NO means vertical flip)
             //
             //  Example: .FLIPSPRITE:girl.png:0:YES
             //
@@ -1642,7 +1652,150 @@ class VNScript {
             //NSNumber* durationToUse = @([duration doubleValue]);
             //NSNumber* numberForFlip = @(flipBool.boolValue);
             //analyzedArray = @[type, parameter1, durationToUse, numberForFlip];
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringRollDice) == ComparisonResult.orderedSame) {
+            
+            // Function definition
+            //
+            //  Name: .ROLLDICE
+            //
+            //  Rolls dice to get random result, stores value in a flag named DICEROLL
+            //
+            //  Parameters:
+            //
+            //      #1: Maximum value of roll; possible results = 1 to (max value) (Integer)
+            //
+            //      #2: (OPTIONAL) Number of dice, default is zero (Integer)
+            //
+            //      #3: (OPTIONAL) Name of flag, adds integer value in flag to final result (String)
+            //          (default is ".nil")
+            //
+            //  Example: .ROLLDICE:20:1:luck_modifier
+            //
+            
+            var numberOfDice = NSString(string: "1")
+            var nameOfFlagModifier = NSString(string: VNScriptNilValue) // ".nil"
+            
+            if command.count >= 3 {
+                numberOfDice = command.object(at: 2) as! NSString
+            }
+            if command.count >= 4 {
+                nameOfFlagModifier = command.object(at: 3) as! NSString
+            }
+            
+            type = VNScriptCommandRollDice as NSNumber
+            let maximumValueOfDice = NSNumber(integerLiteral: parameter1.integerValue)
+            let diceNumberToUse = NSNumber(integerLiteral: numberOfDice.integerValue)
+            analyzedArray = NSArray(objects: type, maximumValueOfDice, diceNumberToUse, nameOfFlagModifier)
+            
+        }  else if( action.caseInsensitiveCompare(VNScriptStringModifyChoiceboxOffset) == ComparisonResult.orderedSame ) {
+            
+            // Function definition
+            //
+            //  Name: .MODIFYCHOICEBOXOFFSET
+            //
+            //  Modifies button offsets during choices, in case you don't want them to show up in the middle of the screen.
+            //
+            //  Parameters:
+            //
+            //      #1: X coordinate (in points) (double)
+            //
+            //      #2: Y coordinate (in points) (double)
+            //
+            //  Example: .MODIFYCHOICEBOXOFFSET:10:10
+            //
+            
+            // Set default values
+            var xOffset = NSString(string: "0")
+            var yOffset = NSString(string: "0")
+            
+            if command.count >= 2 {
+                xOffset = command.object(at: 1) as! NSString
+            }
+            if command.count >= 2 {
+                yOffset = command.object(at: 2) as! NSString
+            }
+            
+            type = VNScriptCommandModifyChoiceboxOffset as NSNumber
+            let xAsNumber = NSNumber(value: xOffset.doubleValue);
+            let yAsNumber = NSNumber(value: yOffset.doubleValue);
+            analyzedArray = NSArray(objects: type, xAsNumber, yAsNumber)
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringScaleBackground) == ComparisonResult.orderedSame ) {
+            
+            // Function definition
+            //
+            //  Name: .SCALEBACKGROUND
+            //
+            //  Changes background scale (1.0 being the "normal" scale)
+            //
+            //  Parameters:
+            //
+            //      #1: Scale (double)
+            //
+            //      #2: (OPTIONAL) Duration in seconds; 0 results in instantaneous scaling (double)
+            //
+            //  Example: .SCALEBACKGROUND:2.5:1
+            //
+            
+            // Set default values
+            var scaleValue    = NSString(string: "1") //[NSString stringWithFormat:@"1"];
+            var durationValue = NSString(string: "0")
+            
+            // Overwrite any default values with any values that have been explicitly written into the script
+            if command.count >= 2 {
+                scaleValue = command.object(at: 1) as! NSString //[command objectAtIndex:1];
+            }
+            if command.count >= 3 {
+                durationValue = command.object(at: 2) as! NSString //[command objectAtIndex:2];
+            }
+            
+            type = VNScriptCommandScaleBackground as NSNumber
+            
+            let scaleNumber = NSNumber(value: scaleValue.doubleValue)
+            let durationNumber = NSNumber(value: durationValue.doubleValue)
+            analyzedArray = NSArray(objects: type, scaleNumber, durationNumber)
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringScaleSprite) == ComparisonResult.orderedSame ) {
+            
+            // Function definition
+            //
+            //  Name: .SCALESPRITE
+            //
+            //  Changes sprite scale (1.0 being the "normal" scale)
+            //
+            //  Parameters:
+            //
+            //      #1: Name of sprite (string)
+            //
+            //      #2: Scale (default is 1.0) (double)
+            //
+            //      #3: (OPTIONAL) Duration in seconds; 0 results in instantaneous scaling (double)
+            //
+            //  Example: .SCALESPRITE:girl.png:2:1.5
+            //
+            
+            // Set default values
+            var inputScale = NSString(string: "1")
+            var inputDuration = NSString(string: "0")
+            
+            // overwrite defaults with any information that's been passed in
+            if command.count >= 3 {
+                inputScale = command.object(at: 2) as! NSString
+            }
+            if command.count >= 4 {
+                inputDuration = command.object(at: 3) as! NSString
+            }
+            
+            type = VNScriptCommandScaleSprite as NSNumber
+            
+            let scaleNumber = NSNumber(value: inputScale.doubleValue)
+            let durationNumber = NSNumber(value: inputDuration.doubleValue)
+            
+            analyzedArray = NSArray(objects: type, parameter1, scaleNumber, durationNumber);
         }
+        
+        
         
         return analyzedArray
     }

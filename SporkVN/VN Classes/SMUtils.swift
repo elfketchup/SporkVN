@@ -454,3 +454,37 @@ func SMDoubleFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> Doubl
     return SMNumberFromDictionary(dict, nameOfObject: nameOfObject).doubleValue
 }
 
+/** MISC FUNCTIONS **/
+/*
+ Stuff that really doesn't fit elsewhere
+ */
+
+// Rolls "dice" to generate random number; possible values include 1 to (maximumRollValue)
+//
+// for example, to generate the equivalent of a 10d6 with a +5 bonus, you would call: SMDiceRoll(10, 6, 5).
+func SMRollDice( _ numberOfDice:Int, maximumRollValue:Int, plusModifier:Int ) -> Int {
+    
+    var diceCount = numberOfDice;
+    var maxValue = maximumRollValue// as UInt32
+    
+    // check for invalid inputs and fix them
+    if diceCount < 1 {
+        diceCount = 1
+    }
+    if maxValue < 2 {
+        maxValue = 2
+    }
+    
+    var finalValue:Int = 0
+    var random:Int = 0
+    
+    for _ in 0..<diceCount {
+        //random = Int(arc4random_uniform(maxValue))
+        random = Int( arc4random() ) % maxValue
+        finalValue = finalValue + random + 1 // adds 1 so that the results are 1-(max)
+    }
+    
+    finalValue = finalValue + plusModifier
+    
+    return finalValue
+}
