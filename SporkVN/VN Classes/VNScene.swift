@@ -3172,6 +3172,18 @@ class VNScene : SKScene {
                 localSpriteAliases.setValue(filenameParameter, forKey: aliasParameter as String)
             }
             
+            /*
+             NOTE: For some really weird reason, including the following code causes a buildtime linker error, which I've
+             isolated to the "let sequence = SKAction.sequence" lines. There's no reason any of these should be acting
+             up, but I still get a weird linker error. So for now, the following functionality isn't included.
+             
+             (If you really need the "missing" functionality, EKVN -- which is written with Objective-C -- seems to be 
+             MUCH more stable than its Swift counterpart SporkVN)
+             
+             */
+            
+            /*
+            
         case VNScriptCommandFlipSprite:
             
             let spriteName = String(describing: command.object(at: 1)) as NSString
@@ -3218,8 +3230,10 @@ class VNScene : SKScene {
             let clearEffectFlag = SKAction.run(self.clearEffectRunningFlag)
             let theSequence = SKAction.sequence([scalingAction!, clearEffectFlag])
             sprite!.run(theSequence)
+ 
+ */
             
-        case VNScriptCommandRollDice:
+        /*case VNScriptCommandRollDice:
             
             let maximumNumber   = command.object(at: 1) as! NSNumber
             let numberOfDice    = command.object(at: 2) as! NSNumber
@@ -3253,12 +3267,7 @@ class VNScene : SKScene {
             let ySave = NSNumber(value: yOffset.doubleValue);
             record.setValue(xSave, forKey: VNSceneViewChoiceButtonOffsetX);
             record.setValue(ySave, forKey: VNSceneViewChoiceButtonOffsetY);
-    
-        /*
-         NOTE: For some really weird reason, including the following code causes a buildtime linker error, which I've
-               isolated to the "let sequence = SKAction.sequence" lines. There's no reason any of these should be acting
-               up, but I still get a weird linker error. So for now, the following functionality isn't included
-        */
+ */
             
             /*
              
