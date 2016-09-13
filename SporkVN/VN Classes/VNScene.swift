@@ -3039,237 +3039,45 @@ class VNScene : SKScene {
             
             self.updateTypewriterTextSettings()
             
-       /** NEW STUFF HERE **/
        
        case VNScriptCommandSetSpeechbox:
        
             let duration = (command.object(at: 2) as! NSNumber).doubleValue
+            let speechboxFilename = String(describing: command.object(at: 1))
             
-            // prepare positioning data
-            var boxToBottomMargin   = CGFloat(0)
-            let widthOfScreen       = SMScreenSizeInPoints().width
-            boxToBottomMargin       = CGFloat((viewSettings.object(forKey: VNSceneViewSpeechBoxOffsetFromBottomKey) as! NSNumber).floatValue)
-            
-            if speechBox == nil {
-                print("[VNScene] ERROR: .SETSPEECHBOX failed as speechbox node was invalid.")
-                return;
-            }
-            
-            if( duration <= 0.0 ) {
-                
-                let originalChildren = speechBox!.children
-                speechBox?.removeFromParent()
-                
-                speechBox = SKSpriteNode(imageNamed: String(describing: command.object(at: 1)))
-                
-                speechBox!.position = CGPoint( x: widthOfScreen * 0.5, y: (speechBox!.frame.size.height * 0.5) + boxToBottomMargin )
-                speechBox!.alpha = 1.0;
-                speechBox!.zPosition = VNSceneUILayer;
-                speechBox!.name = VNSceneTagSpeechBox;
-                self.addChild( speechBox! )
-                //[self addChild:speechBox];
-                //[self addChild:speechBox z:VNSceneUILayer name:VNSceneTagSpeechBox];
-                
-                /*for( SKNode* aChild in originalChildren ) {
-                    [speechBox addChild:aChild];
-                    //NSLog(@"d: child z is %f and name is %@", aChild.zPosition, aChild.name);
-                }*/
-                
-                if originalChildren.count > 0 {
-                    for aChild in originalChildren {
-                        speechBox!.addChild(aChild)
-                    }
-                }
-                
-                // set speechbox color
-                speechBox!.colorBlendFactor = 1.0;
-                speechBox!.color = speechBoxColor;
-                
-            } else {
-                
-                // switch gradually
-                //[self createSafeSave];
-                //[self setEffectRunningFlag];
-                self.createSafeSave()
-                self.setEffectRunningFlag()
-                
-                let speechBoxChildren = speechBox!.children
-                
-                // create fake placeholder speechbox that looks like the original
-                //CCSprite* fakeSpeechbox = [CCSprite spriteWithTexture:speechBox.texture];
-                let fakeSpeechbox = SKSpriteNode(texture: speechBox!.texture)
-                fakeSpeechbox.position = speechBox!.position;
-                fakeSpeechbox.zPosition = speechBox!.zPosition;
-                //[self addChild:fakeSpeechbox];
-                self.addChild(fakeSpeechbox)
-                
-                // get rid of the original speechbox and replace it with a new and invisible speechbox
-                //[speechBox removeFromParent];
-                speechBox!.removeFromParent()
-                let spriteNodeName = String(describing: command.object(at: 1))
-                speechBox = SKSpriteNode(imageNamed: spriteNodeName)
-                
-                //speechBox = [SKSpriteNode spriteNodeWithImageNamed:parameter1];
-                speechBox!.position = CGPoint( x: widthOfScreen * 0.5, y: (speechBox!.frame.size.height * 0.5) + boxToBottomMargin );
-                speechBox!.alpha = 0.0;
-                speechBox!.zPosition = VNSceneUILayer;
-                speechBox!.name = VNSceneTagSpeechBox;
-                //[self addChild:speechBox];
-                self.addChild(speechBox!)
-                
-                // set speechbox color
-                speechBox!.colorBlendFactor = 1.0;
-                speechBox!.color = speechBoxColor;
-                
-                //for( SKNode* aChild in speechBoxChildren ) {
-                for aChild in speechBoxChildren {
-                    speechBox!.addChild(aChild)
-                    
-                    // cause each child node to gradually fade out and fade back in so it looks like it's doing it in time with the speechboxes.
-                    let fadeOutChild = SKAction.fadeOut(withDuration: duration * 0.5)
-                    let fadeInChild = SKAction.fadeIn(withDuration: duration * 0.5)
-                    let sequenceForChild = SKAction.sequence([fadeOutChild, fadeInChild])
-                    
-                    aChild.run(sequenceForChild)
-                }
-                
-                // fade out the fake speechbox
-                let fadeOut = SKAction.fadeOut(withDuration: duration * 0.5)
-                fakeSpeechbox.run(fadeOut)
-                
-                // fade in the new "real" speechbox
-                let fadeIn = SKAction.fadeOut(withDuration: duration * 0.5)
-                let delay = SKAction.wait(forDuration: duration * 0.5)
-                //let callFunc = SKAction.performSelector(@selec)
-                let callFunc = SKAction.run(self.clearEffectRunningFlag)
-                let delayedFadeInSequence = SKAction.sequence([delay, fadeIn, callFunc])
-                
-                speechBox!.run(delayedFadeInSequence)
-                
-                /*
-                SKAction* fadeIn = [SKAction fadeOutWithDuration:(duration * 0.5)];
-                SKAction* delay = [SKAction waitForDuration:(duration * 0.5)];
-                SKAction* callFunc = [SKAction performSelector:@selector(clearEffectRunningFlag) onTarget:self];
-                SKAction* delayedFadeInSequence = [SKAction sequence:@[delay, fadeIn, callFunc]];
-                
-                [speechBox runAction:delayedFadeInSequence];*/
-            }
-            
-            //[record setValue:parameter1 forKey:VNSceneSavedOverriddenSpeechboxKey];
-            record.setValue(String(describing: command.object(at: 1)), forKey:VNSceneSavedOverriddenSpeechboxKey)
+            setSpeechBox(spriteName: speechboxFilename, duration: duration)
             
         case VNScriptCommandSetSpriteAlias:
             
             let aliasParameter = command.object(at: 1) as! NSString
             let filenameParameter = command.object(at: 2) as! NSString
             
-            //NSString* aliasParameter = [command objectAtIndex:1];
-            //NSString* filenameParameter = [command objectAtIndex:2];
+            setSpriteAlias(alias: aliasParameter as String, filename: filenameParameter as String)
             
-            if filenameParameter.caseInsensitiveCompare(VNScriptNilValue) == ComparisonResult.orderedSame {
-                localSpriteAliases.removeObject(forKey: aliasParameter) // remove data for this alias
-            } else {
-                localSpriteAliases.setValue(filenameParameter, forKey: aliasParameter as String)
-            }
-            
-            /*
-             NOTE: For some really weird reason, including the following code causes a buildtime linker error, which I've
-             isolated to the "let sequence = SKAction.sequence" lines. There's no reason any of these should be acting
-             up, but I still get a weird linker error. So for now, the following functionality isn't included.
-             
-             (If you really need the "missing" functionality, EKVN -- which is written with Objective-C -- seems to be 
-             MUCH more stable than its Swift counterpart SporkVN)
-             
-             */
-            
-            /*
             
         case VNScriptCommandFlipSprite:
             
-            let spriteName = String(describing: command.object(at: 1)) as NSString
+            let spriteName = String(describing: command.object(at: 1))
             let durationAsDouble = (command.object(at: 2) as! NSNumber).doubleValue
             let flipHorizontal = (command.object(at: 3) as! NSNumber).boolValue
             
-            let sprite:SKSpriteNode? = sprites.object(forKey: spriteName) as? SKSpriteNode
-            if sprite == nil {
-                return;
-            }
-            
-            self.createSafeSave()
-            
-            // If this has a duration of zero, the action will take place instantly and then the function will return
-            if( durationAsDouble <= 0.0 ) {
-                // determine flip style
-                if( flipHorizontal == true ) {
-                    sprite!.xScale = sprite!.xScale * (-1);
-                } else {
-                    sprite!.yScale = sprite!.yScale * (-1);
-                }
-                return;
-            }
-            
-            //[self setEffectRunningFlag];
-            setEffectRunningFlag()
-            
-            var scaleToX = sprite!.xScale;
-            var scaleToY = sprite!.yScale;
-            
-            var scalingAction:SKAction? = nil
-            
-            // determine what kind of action to take (this will determine scaling values)
-            if( flipHorizontal == true ) {
-                scaleToX = scaleToX * (-1);
-                //scalingAction = [SKAction scaleXTo:scaleToX duration:durationAsDouble];
-                scalingAction = SKAction.scaleX(to: scaleToX, duration:durationAsDouble)
-            } else {
-                scaleToY = scaleToY * (-1);
-                //scalingAction = [SKAction scaleYTo:scaleToY duration:durationAsDouble];
-                scalingAction = SKAction.scaleY(to: scaleToY, duration:durationAsDouble)
-            }
-            
-            let clearEffectFlag = SKAction.run(self.clearEffectRunningFlag)
-            let theSequence = SKAction.sequence([scalingAction!, clearEffectFlag])
-            sprite!.run(theSequence)
+            flipSpriteNamed(spriteName: spriteName, duration: durationAsDouble, horizontally: flipHorizontal)
  
- */
             
-        /*case VNScriptCommandRollDice:
+        case VNScriptCommandRollDice:
             
             let maximumNumber   = command.object(at: 1) as! NSNumber
             let numberOfDice    = command.object(at: 2) as! NSNumber
             let flagName        = command.object(at: 3) as! NSString
             
-            var flagModifier = 0
-            let theMax = maximumNumber.intValue
-            let diceNumber = numberOfDice.intValue
-            
-            let theFlag:NSNumber? = flags.object(forKey: flagName) as? NSNumber
-            if( theFlag != nil ) {
-                flagModifier = theFlag!.intValue
-            }
-            
-            let roll = SMRollDice(diceNumber, maximumRollValue: theMax, plusModifier: flagModifier)
-            // Store results of roll in DICEROLL flag
-            let diceRollResult = NSNumber(integerLiteral: roll)
-            flags.setValue(diceRollResult, forKey: VNSceneDiceRollResultFlag)
-            //print("[VNScene] Dice roll results of \(roll) stored in flag named: DICEROLL");
+            rollDice(numberOfDice: numberOfDice.intValue, maximumSidesOfDice: maximumNumber.intValue, plusFlagModifier: flagName as String)
             
         case VNScriptCommandModifyChoiceboxOffset:
             
             let xOffset = command.object(at: 1) as! NSNumber;
             let yOffset = command.object(at: 2) as! NSNumber;
             
-            choiceButtonOffsetX = CGFloat(xOffset.doubleValue);
-            choiceButtonOffsetY = CGFloat(yOffset.doubleValue);
-            
-            // save offset data to record
-            let xSave = NSNumber(value: xOffset.doubleValue);
-            let ySave = NSNumber(value: yOffset.doubleValue);
-            record.setValue(xSave, forKey: VNSceneViewChoiceButtonOffsetX);
-            record.setValue(ySave, forKey: VNSceneViewChoiceButtonOffsetY);
- */
-            
-            /*
+            modifyChoiceboxOffset(xOffset: xOffset.doubleValue, yOffset: yOffset.doubleValue)
              
         case VNScriptCommandScaleBackground:
             
@@ -3281,19 +3089,9 @@ class VNScene : SKScene {
             
             let scaleNumber = command.object(at: 1) as! NSNumber
             let durationNumber = command.object(at: 2) as! NSNumber
-            let theDuration = durationNumber.doubleValue
             
-            if theDuration <= 0.0 {
-                backgroundSprite!.setScale(CGFloat(scaleNumber.doubleValue))
-            } else {
-                self.createSafeSave()
-                self.setEffectRunningFlag()
-                
-                let scaleAction     = SKAction.scale(to: CGFloat(scaleNumber.doubleValue), duration: theDuration);
-                let callClearFlag   = SKAction.run(self.clearEffectRunningFlag);
-                let sequence        = SKAction.sequence([scaleAction, callClearFlag]);
-                backgroundSprite!.run(sequence);
-            }
+            //scaleBackground(scaleFactor: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
+            scaleBackground(sprite: backgroundSprite!, scaleFactor: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
             
         case VNScriptCommandScaleSprite:
             
@@ -3301,43 +3099,276 @@ class VNScene : SKScene {
             let scaleNumber = command.object(at: 2) as! NSNumber
             let durationNumber = command.object(at: 3) as! NSNumber
             
-            let sprite:SKSpriteNode? = sprites.object(forKey: spriteName) as? SKSpriteNode
-            if sprite == nil {
-                return;
-            }
-            
-            let theScale = CGFloat(scaleNumber.doubleValue)
-            let theDuration = durationNumber.doubleValue
-            var xScale = theScale
-            var yScale = theScale
-            
-            // invert x/y-scale values when dealing with flipped sprites
-            if sprite!.xScale < 0.0 {
-                xScale = xScale * (-1)
-            }
-            if sprite!.yScale < 0.0 {
-                yScale = yScale * (-1)
-            }
-            
-            if theDuration <= 0.0 {
-                sprite!.xScale = xScale
-                sprite!.yScale = yScale
-            } else {
-                self.createSafeSave()
-                self.setEffectRunningFlag()
-                
-                let scaleAction = SKAction.scaleX(to: xScale, y: yScale, duration: theDuration)
-                let callClearFlag = SKAction.run(self.clearEffectRunningFlag)
-                let sequence = SKAction.sequence([scaleAction, callClearFlag])
-                
-                sprite!.run(sequence)
-            }
- */
-            
-            
+            scaleSprite(spriteName: spriteName as String, scalingAmount: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
             
         default:
             print("[VNScene] WARNING: Unknown command found in script. The command's NSArray is: %@", command);
         } // switch
     } // function
+    
+    
+    
+    
+    /** SCRIPT COMMANDS **/
+    /*
+     NOTE:  Originally, all this functionality was in the "processCommand" function. However, while the code didn't have any errors,
+            attempting to compile on Xcode 8 would cause linker errors. The only way to avoid linker errors was to either completely comment
+            out the last switch/case cases, or to just move the code to its own seperate functions; the latter is what's being done now.
+     */
+    
+    
+    // scales background to (scaleFactor) amount
+    func scaleBackground(sprite:SKSpriteNode, scaleFactor:Double, duration:Double) {
+        
+        if duration <= 0.0 {
+            sprite.setScale(CGFloat(scaleFactor))
+        } else {
+            self.createSafeSave()
+            self.setEffectRunningFlag()
+            
+            let scaleAction     = SKAction.scale(to: CGFloat(scaleFactor), duration: duration);
+            let callClearFlag   = SKAction.run(self.clearEffectRunningFlag);
+            let sequence        = SKAction.sequence([scaleAction, callClearFlag]);
+            sprite.run(sequence);
+        }
+    }
+
+    // scales an existing sprite by a certain amount over a particular duration
+    func scaleSprite(spriteName:String, scalingAmount:Double, duration:Double) {
+        
+        let sprite:SKSpriteNode? = sprites.object(forKey: spriteName) as? SKSpriteNode
+        if sprite == nil {
+            return;
+        }
+        
+        var xScale = CGFloat(scalingAmount)
+        var yScale = CGFloat(scalingAmount)
+        
+        // invert x/y-scale values when dealing with flipped sprites
+        if sprite!.xScale < 0.0 {
+            xScale = xScale * (-1)
+        }
+        if sprite!.yScale < 0.0 {
+            yScale = yScale * (-1)
+        }
+        
+        if duration <= 0.0 {
+            sprite!.xScale = xScale
+            sprite!.yScale = yScale
+        } else {
+            self.createSafeSave()
+            self.setEffectRunningFlag()
+            
+            let scaleAction = SKAction.scaleX(to: xScale, y: yScale, duration: duration)
+            let callClearFlag = SKAction.run(self.clearEffectRunningFlag)
+            let sequence = SKAction.sequence([scaleAction, callClearFlag])
+            
+            sprite!.run(sequence)
+        }
+    }
+    
+    // swaps the current speechbox sprite for another sprite
+    func setSpeechBox(spriteName:String, duration:Double) {
+        
+        // prepare positioning data
+        var boxToBottomMargin   = CGFloat(0)
+        let widthOfScreen       = SMScreenSizeInPoints().width
+        boxToBottomMargin       = CGFloat((viewSettings.object(forKey: VNSceneViewSpeechBoxOffsetFromBottomKey) as! NSNumber).floatValue)
+        
+        if speechBox == nil {
+            print("[VNScene] ERROR: .SETSPEECHBOX failed as speechbox node was invalid.")
+            return;
+        }
+        
+        if( duration <= 0.0 ) {
+            
+            let originalChildren = speechBox!.children
+            speechBox?.removeFromParent()
+            
+            speechBox = SKSpriteNode(imageNamed: spriteName);
+            
+            speechBox!.position = CGPoint( x: widthOfScreen * 0.5, y: (speechBox!.frame.size.height * 0.5) + boxToBottomMargin )
+            speechBox!.alpha = 1.0;
+            speechBox!.zPosition = VNSceneUILayer;
+            speechBox!.name = VNSceneTagSpeechBox;
+            self.addChild( speechBox! )
+            //[self addChild:speechBox];
+            //[self addChild:speechBox z:VNSceneUILayer name:VNSceneTagSpeechBox];
+            
+            /*for( SKNode* aChild in originalChildren ) {
+             [speechBox addChild:aChild];
+             //NSLog(@"d: child z is %f and name is %@", aChild.zPosition, aChild.name);
+             }*/
+            
+            if originalChildren.count > 0 {
+                for aChild in originalChildren {
+                    speechBox!.addChild(aChild)
+                }
+            }
+            
+            // set speechbox color
+            speechBox!.colorBlendFactor = 1.0;
+            speechBox!.color = speechBoxColor;
+            
+        } else {
+            
+            // switch gradually
+            //[self createSafeSave];
+            //[self setEffectRunningFlag];
+            self.createSafeSave()
+            self.setEffectRunningFlag()
+            
+            let speechBoxChildren = speechBox!.children
+            
+            // create fake placeholder speechbox that looks like the original
+            //CCSprite* fakeSpeechbox = [CCSprite spriteWithTexture:speechBox.texture];
+            let fakeSpeechbox = SKSpriteNode(texture: speechBox!.texture)
+            fakeSpeechbox.position = speechBox!.position;
+            fakeSpeechbox.zPosition = speechBox!.zPosition;
+            //[self addChild:fakeSpeechbox];
+            self.addChild(fakeSpeechbox)
+            
+            // get rid of the original speechbox and replace it with a new and invisible speechbox
+            //[speechBox removeFromParent];
+            speechBox!.removeFromParent()
+            speechBox = SKSpriteNode(imageNamed: spriteName)
+            
+            //speechBox = [SKSpriteNode spriteNodeWithImageNamed:parameter1];
+            speechBox!.position = CGPoint( x: widthOfScreen * 0.5, y: (speechBox!.frame.size.height * 0.5) + boxToBottomMargin );
+            speechBox!.alpha = 0.0;
+            speechBox!.zPosition = VNSceneUILayer;
+            speechBox!.name = VNSceneTagSpeechBox;
+            //[self addChild:speechBox];
+            self.addChild(speechBox!)
+            
+            // set speechbox color
+            speechBox!.colorBlendFactor = 1.0;
+            speechBox!.color = speechBoxColor;
+            
+            //for( SKNode* aChild in speechBoxChildren ) {
+            for aChild in speechBoxChildren {
+                speechBox!.addChild(aChild)
+                
+                // cause each child node to gradually fade out and fade back in so it looks like it's doing it in time with the speechboxes.
+                let fadeOutChild = SKAction.fadeOut(withDuration: duration * 0.5)
+                let fadeInChild = SKAction.fadeIn(withDuration: duration * 0.5)
+                let sequenceForChild = SKAction.sequence([fadeOutChild, fadeInChild])
+                
+                aChild.run(sequenceForChild)
+            }
+            
+            // fade out the fake speechbox
+            let fadeOut = SKAction.fadeOut(withDuration: duration * 0.5)
+            fakeSpeechbox.run(fadeOut)
+            
+            // fade in the new "real" speechbox
+            let fadeIn = SKAction.fadeOut(withDuration: duration * 0.5)
+            let delay = SKAction.wait(forDuration: duration * 0.5)
+            //let callFunc = SKAction.performSelector(@selec)
+            let callFunc = SKAction.run(self.clearEffectRunningFlag)
+            let delayedFadeInSequence = SKAction.sequence([delay, fadeIn, callFunc])
+            
+            speechBox!.run(delayedFadeInSequence)
+            
+            /*
+             SKAction* fadeIn = [SKAction fadeOutWithDuration:(duration * 0.5)];
+             SKAction* delay = [SKAction waitForDuration:(duration * 0.5)];
+             SKAction* callFunc = [SKAction performSelector:@selector(clearEffectRunningFlag) onTarget:self];
+             SKAction* delayedFadeInSequence = [SKAction sequence:@[delay, fadeIn, callFunc]];
+             
+             [speechBox runAction:delayedFadeInSequence];*/
+        }
+        
+        //[record setValue:parameter1 forKey:VNSceneSavedOverriddenSpeechboxKey];
+        record.setValue(spriteName, forKey:VNSceneSavedOverriddenSpeechboxKey)
+    }
+    
+    // adjusts sprite alias
+    func setSpriteAlias(alias:String, filename:String) {
+        //NSString* aliasParameter = [command objectAtIndex:1];
+        //NSString* filenameParameter = [command objectAtIndex:2];
+        
+        let filenameParameter = filename as NSString
+        
+        if filenameParameter.caseInsensitiveCompare(VNScriptNilValue) == ComparisonResult.orderedSame {
+            localSpriteAliases.removeObject(forKey: alias) // remove data for this alias
+        } else {
+            localSpriteAliases.setValue(filename, forKey: alias)
+        }
+    }
+    
+    // moves choice box offsets around (instead of having the choicebox buttons appearing near the middle of the screen)
+    func modifyChoiceboxOffset(xOffset:Double, yOffset:Double) {
+        choiceButtonOffsetX = CGFloat(xOffset)
+        choiceButtonOffsetY = CGFloat(yOffset)
+        
+        // save offset data to record
+        let xSave = NSNumber(value: xOffset)
+        let ySave = NSNumber(value: yOffset)
+        record.setValue(xSave, forKey: VNSceneViewChoiceButtonOffsetX);
+        record.setValue(ySave, forKey: VNSceneViewChoiceButtonOffsetY);
+        
+    }
+    
+    // rolls dice; stores value in a predetermined flag
+    func rollDice(numberOfDice:Int, maximumSidesOfDice:Int, plusFlagModifier:String) {
+        var flagModifier = 0
+
+        let theFlag:NSNumber? = flags.object(forKey: plusFlagModifier) as? NSNumber
+        if( theFlag != nil ) {
+            flagModifier = theFlag!.intValue
+        }
+        
+        let roll = SMRollDice(numberOfDice, maximumRollValue: maximumSidesOfDice, plusModifier: flagModifier)
+        // Store results of roll in DICEROLL flag
+        let diceRollResult = NSNumber(integerLiteral: roll)
+        flags.setValue(diceRollResult, forKey: VNSceneDiceRollResultFlag)
+        //print("[VNScene] Dice roll results of \(roll) stored in flag named: DICEROLL");
+    }
+    
+    // flips sprite around, can flip sprite vertically or horizontally
+    func flipSpriteNamed(spriteName:String, duration:Double, horizontally:Bool) {
+        // get sprite using name
+        let sprite:SKSpriteNode? = sprites.object(forKey: spriteName) as? SKSpriteNode
+        if sprite == nil {
+            return;
+        }
+        
+        self.createSafeSave()
+        
+        // If this has a duration of zero, the action will take place instantly and then the function will return
+        if( duration <= 0.0 ) {
+            // determine flip style
+            if( horizontally == true ) {
+                sprite!.xScale = sprite!.xScale * (-1);
+            } else {
+                sprite!.yScale = sprite!.yScale * (-1);
+            }
+            return;
+        }
+        
+        //[self setEffectRunningFlag];
+        setEffectRunningFlag()
+        
+        var scaleToX = sprite!.xScale;
+        var scaleToY = sprite!.yScale;
+        
+        var scalingAction:SKAction? = nil
+        
+        // determine what kind of action to take (this will determine scaling values)
+        if( horizontally == true ) {
+            scaleToX = scaleToX * (-1);
+            //scalingAction = [SKAction scaleXTo:scaleToX duration:durationAsDouble];
+            scalingAction = SKAction.scaleX(to: scaleToX, duration:duration)
+        } else {
+            scaleToY = scaleToY * (-1);
+            //scalingAction = [SKAction scaleYTo:scaleToY duration:durationAsDouble];
+            scalingAction = SKAction.scaleY(to: scaleToY, duration:duration)
+        }
+        
+        let clearEffectFlag = SKAction.run(self.clearEffectRunningFlag)
+        let theSequence = SKAction.sequence([scalingAction!, clearEffectFlag])
+        sprite!.run(theSequence)
+    }
+    
 } // class
