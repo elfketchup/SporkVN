@@ -27,16 +27,21 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = true
         
         /* Set the scale mode to scale to fit the window */
-        scene.scaleMode = .AspectFill
+        scene.scaleMode = .aspectFill
         
         skView.presentScene(scene)
         //}
     }
 
+    /*
     override func shouldAutorotate() -> Bool {
+        return true
+    }*/
+    override var shouldAutorotate: Bool {
         return true
     }
 
+    /*
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
         /*if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
             return .AllButUpsideDown
@@ -44,7 +49,11 @@ class GameViewController: UIViewController {
             return .All
         }*/
         
-        return .Landscape
+        return .landscape
+    }*/
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .landscape
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,7 +61,11 @@ class GameViewController: UIViewController {
         // Release any cached data, images, etc that aren't in use.
     }
 
-    override func prefersStatusBarHidden() -> Bool {
+    /*override func prefersStatusBarHidden() -> Bool {
+        return true
+    }*/
+    
+    override var prefersStatusBarHidden: Bool {
         return true
     }
 }

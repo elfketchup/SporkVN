@@ -79,13 +79,13 @@ class VNTestScene : SKScene
         var customSettings:NSDictionary? = nil
         
         // Load the custom settings stored in a file
-        let dictionaryFilePath:String? = NSBundle.mainBundle().pathForResource("main_menu", ofType: "plist")
+        let dictionaryFilePath:String? = Bundle.main.path(forResource: "main_menu", ofType: "plist")
         if dictionaryFilePath != nil {
             customSettings = NSDictionary(contentsOfFile: dictionaryFilePath!)
             
             if customSettings != nil && customSettings!.count > 0 {
                 
-                standardSettings.addEntriesFromDictionary(customSettings! as [NSObject : AnyObject])
+                standardSettings.addEntries(from: customSettings! as [NSObject : AnyObject])
                 print("[VNTestScene] UI settings have been loaded from file.")
             }
         }
@@ -101,15 +101,15 @@ class VNTestScene : SKScene
         let startLabelX = SMNumberInDictionaryToCGFloat(standardSettings, objectNamed: VNTestSceneStartNewGameLabelX)
         let startLabelY = SMNumberInDictionaryToCGFloat(standardSettings, objectNamed: VNTestSceneStartNewGameLabelY)
         
-        let startFontSize:CGFloat = CGFloat( (standardSettings.objectForKey(VNTestSceneStartNewGameSize) as! NSNumber).doubleValue )
-        let startText = standardSettings.objectForKey(VNTestSceneStartNewGameText) as! NSString
-        let startFont = standardSettings.objectForKey(VNTestSceneStartNewGameFont) as! NSString
-        let startColors = standardSettings.objectForKey(VNTestSceneStartNewGameColorDict) as! NSDictionary
+        let startFontSize:CGFloat = CGFloat( (standardSettings.object(forKey: VNTestSceneStartNewGameSize) as! NSNumber).doubleValue )
+        let startText = standardSettings.object(forKey: VNTestSceneStartNewGameText) as! NSString
+        let startFont = standardSettings.object(forKey: VNTestSceneStartNewGameFont) as! NSString
+        let startColors = standardSettings.object(forKey: VNTestSceneStartNewGameColorDict) as! NSDictionary
         
         // Decode start colors
-        let startColorR = (startColors.objectForKey("r") as! NSNumber).integerValue
-        let startColorG = (startColors.objectForKey("g") as! NSNumber).integerValue
-        let startColorB = (startColors.objectForKey("b") as! NSNumber).integerValue
+        let startColorR = (startColors.object(forKey: "r") as! NSNumber).intValue
+        let startColorG = (startColors.object(forKey: "g") as! NSNumber).intValue
+        let startColorB = (startColors.object(forKey: "b") as! NSNumber).intValue
     
         // Now create the actual label
         playLabel = DSMultilineLabelNode(fontNamed: startFont as String)
@@ -122,17 +122,17 @@ class VNTestScene : SKScene
         self.addChild(playLabel!)
         
         // Now grab the values for the Continue button
-        let continueLabelX:CGFloat = CGFloat( (standardSettings.objectForKey(VNTestSceneContinueLabelX) as! NSNumber).doubleValue )
-        let continueLabelY:CGFloat = CGFloat( (standardSettings.objectForKey(VNTestSceneContinueLabelY) as! NSNumber).doubleValue )
-        let continueFontSize:CGFloat = CGFloat( (standardSettings.objectForKey(VNTestSceneContinueSize) as! NSNumber).doubleValue )
-        let continueText = standardSettings.objectForKey(VNTestSceneContinueText) as! NSString
-        let continueFont = standardSettings.objectForKey(VNTestSceneContinueFont) as! NSString
-        let continueColors = standardSettings.objectForKey(VNTestSceneContinueColor) as! NSDictionary
+        let continueLabelX:CGFloat = CGFloat( (standardSettings.object(forKey: VNTestSceneContinueLabelX) as! NSNumber).doubleValue )
+        let continueLabelY:CGFloat = CGFloat( (standardSettings.object(forKey: VNTestSceneContinueLabelY) as! NSNumber).doubleValue )
+        let continueFontSize:CGFloat = CGFloat( (standardSettings.object(forKey: VNTestSceneContinueSize) as! NSNumber).doubleValue )
+        let continueText = standardSettings.object(forKey: VNTestSceneContinueText) as! NSString
+        let continueFont = standardSettings.object(forKey: VNTestSceneContinueFont) as! NSString
+        let continueColors = standardSettings.object(forKey: VNTestSceneContinueColor) as! NSDictionary
         
         // Decode continue colors
-        let continueColorR = (continueColors.objectForKey("r") as! NSNumber).integerValue
-        let continueColorG = (continueColors.objectForKey("g") as! NSNumber).integerValue
-        let continueColorB = (continueColors.objectForKey("b") as! NSNumber).integerValue
+        let continueColorR = (continueColors.object(forKey: "r") as! NSNumber).intValue
+        let continueColorG = (continueColors.object(forKey: "g") as! NSNumber).intValue
+        let continueColorB = (continueColors.object(forKey: "b") as! NSNumber).intValue
         
         // Load the "Continue" label
         //loadLabel = [CCLabelTTF labelWithString:continueText fontName:continueFont fontSize:continueFontSize];
@@ -148,14 +148,14 @@ class VNTestScene : SKScene
         // Load the title info
         let titleX = SMNumberInDictionaryToCGFloat(standardSettings, objectNamed: VNTestSceneTitleX)
         let titleY = SMNumberInDictionaryToCGFloat(standardSettings, objectNamed: VNTestSceneTitleY)
-        let titleImageName = standardSettings.objectForKey(VNTestSceneTitleImage) as! String
+        let titleImageName = standardSettings.object(forKey: VNTestSceneTitleImage) as! String
         title = SKSpriteNode(imageNamed: titleImageName)
         title!.position = SMPositionWithNormalizedCoordinates(titleX, normalizedY: titleY)
         title!.zPosition = VNTestSceneZForTitle
         self.addChild(title!)
         
         // Load background image
-        let backgroundImageFilename = standardSettings.objectForKey(VNTestSceneBackgroundImage) as! String
+        let backgroundImageFilename = standardSettings.object(forKey: VNTestSceneBackgroundImage) as! String
         backgroundImage = SKSpriteNode(imageNamed: backgroundImageFilename)
         backgroundImage!.position = SMPositionWithNormalizedCoordinates(0.5, normalizedY: 0.5)
         backgroundImage!.zPosition = VNTestSceneZForBackgroundImage
@@ -163,13 +163,13 @@ class VNTestScene : SKScene
     
         // Grab script name information
         //nameOfScript = standardSettings[VNTestSceneScriptToLoad];
-        nameOfScript = standardSettings.objectForKey(VNTestSceneScriptToLoad) as? String
+        nameOfScript = standardSettings.object(forKey: VNTestSceneScriptToLoad) as? String
     
         // The music data is loaded last since it looks weird if music is playing but nothing has shown up on the screen yet.
-        let musicFilename:NSString? = standardSettings.objectForKey(VNTestSceneMenuMusic) as? NSString
+        let musicFilename:NSString? = standardSettings.object(forKey: VNTestSceneMenuMusic) as? NSString
         
         // Make sure the music isn't set to 'nil'
-        if musicFilename != nil && musicFilename!.caseInsensitiveCompare("nil") != NSComparisonResult.OrderedSame {
+        if musicFilename != nil && musicFilename!.caseInsensitiveCompare("nil") != ComparisonResult.orderedSame {
             
             self.playBackgroundMusic(musicFilename as! String)
         }
@@ -187,32 +187,32 @@ class VNTestScene : SKScene
         let whiteColorDict = NSDictionary(dictionary: ["r":255, "g":255, "b":255])
     
         // Create settings for the "start new game" button
-        resourcesDict.setObject(0.5, forKey: VNTestSceneStartNewGameLabelX)
-        resourcesDict.setObject(0.3, forKey: VNTestSceneStartNewGameLabelY)
-        resourcesDict.setObject("Helvetica", forKey: VNTestSceneStartNewGameFont)
-        resourcesDict.setObject(18, forKey: VNTestSceneStartNewGameSize)
-        resourcesDict.setObject(whiteColorDict.copy(), forKey: VNTestSceneStartNewGameColorDict)
+        resourcesDict.setObject(0.5, forKey: VNTestSceneStartNewGameLabelX as NSCopying)
+        resourcesDict.setObject(0.3, forKey: VNTestSceneStartNewGameLabelY as NSCopying)
+        resourcesDict.setObject("Helvetica", forKey: VNTestSceneStartNewGameFont as NSCopying)
+        resourcesDict.setObject(18, forKey: VNTestSceneStartNewGameSize as NSCopying)
+        resourcesDict.setObject(whiteColorDict.copy(), forKey: VNTestSceneStartNewGameColorDict as NSCopying)
         
         // Create settings for "continue" button
-        resourcesDict.setObject(0.5, forKey: VNTestSceneContinueLabelX)
-        resourcesDict.setObject(0.2, forKey: VNTestSceneContinueLabelX)
-        resourcesDict.setObject("Helvetica", forKey: VNTestSceneContinueFont)
-        resourcesDict.setObject(18, forKey: VNTestSceneContinueSize)
-        resourcesDict.setObject(whiteColorDict.copy(), forKey: VNTestSceneContinueColor)
+        resourcesDict.setObject(0.5, forKey: VNTestSceneContinueLabelX as NSCopying)
+        resourcesDict.setObject(0.2, forKey: VNTestSceneContinueLabelX as NSCopying)
+        resourcesDict.setObject("Helvetica", forKey: VNTestSceneContinueFont as NSCopying)
+        resourcesDict.setObject(18, forKey: VNTestSceneContinueSize as NSCopying)
+        resourcesDict.setObject(whiteColorDict.copy(), forKey: VNTestSceneContinueColor as NSCopying)
         
         // Set up title data
-        resourcesDict.setObject(0.5, forKey: VNTestSceneTitleX)
-        resourcesDict.setObject(0.75, forKey: VNTestSceneTitleY)
-        resourcesDict.setObject("title.png", forKey: VNTestSceneTitleImage)
+        resourcesDict.setObject(0.5, forKey: VNTestSceneTitleX as NSCopying)
+        resourcesDict.setObject(0.75, forKey: VNTestSceneTitleY as NSCopying)
+        resourcesDict.setObject("title.png", forKey: VNTestSceneTitleImage as NSCopying)
         
         // Set up background image
-        resourcesDict.setObject("skyspace.png", forKey: VNTestSceneBackgroundImage)
+        resourcesDict.setObject("skyspace.png", forKey: VNTestSceneBackgroundImage as NSCopying)
     
         // Set up script data
-        resourcesDict.setObject("demo script", forKey: VNTestSceneScriptToLoad)
+        resourcesDict.setObject("demo script", forKey: VNTestSceneScriptToLoad as NSCopying)
     
         // Set default music data
-        resourcesDict.setObject("nil", forKey: VNTestSceneMenuMusic)
+        resourcesDict.setObject("nil", forKey: VNTestSceneMenuMusic as NSCopying)
         
         return NSDictionary(dictionary: resourcesDict)
     }
@@ -225,7 +225,7 @@ class VNTestScene : SKScene
         // Create a blank dictionary with no real data, except for the name of which script file to load.
         // You can pass this in to VNLayer with nothing but that information, and it will load a new game
         // (or at least, a new VNLayer scene!)
-        let settingsForScene = NSDictionary(object: nameOfScript!, forKey: VNSceneToPlayKey)
+        let settingsForScene = NSDictionary(object: nameOfScript!, forKey: VNSceneToPlayKey as NSCopying)
     
         // Create an all-new scene and add VNLayer to it
         let scene = VNScene(size: self.size, settings: settingsForScene)
@@ -249,13 +249,13 @@ class VNTestScene : SKScene
         // Load saved-game records from EKRecord. The activity dictionary holds data about what the last thing the user was doing
         // (presumably, watching a scene), how far the player got, relevent data that needs to be reloaded, etc.
         let activityRecords = SMRecord.sharedRecord.activityDict()
-        let lastActivity:NSString? = activityRecords.objectForKey(SMRecordActivityTypeKey) as? NSString
+        let lastActivity:NSString? = activityRecords.object(forKey: SMRecordActivityTypeKey) as? NSString
         if lastActivity == nil {
             print("[VNTestScene] ERROR: No previous activity found. No saved game can be loaded.");
             return;
         }
         
-        let savedData = activityRecords.objectForKey(SMRecordActivityDataKey) as! NSDictionary
+        let savedData = activityRecords.object(forKey: SMRecordActivityDataKey) as! NSDictionary
         print("[VNTestScene] Saved data is \(savedData)")
     
         // Unlike when the player is starting a new game, the name of the script to load doesn't have to be passed.
@@ -281,7 +281,7 @@ class VNTestScene : SKScene
         isPlayingMusic = false
     }
     
-    func playBackgroundMusic(filename:String)
+    func playBackgroundMusic(_ filename:String)
     {
         if SMStringLength(filename) < 1 {
             return;
@@ -307,19 +307,19 @@ class VNTestScene : SKScene
     /* Touch controls */
     
     //override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         for t in touches {
             
             let touch = t 
-            let touchPos = touch.locationInNode(self)
+            let touchPos = touch.location(in: self)
             
-            if CGRectContainsPoint(SMBoundingBoxOfSprite(playLabel!), touchPos) == true {
+            if SMBoundingBoxOfSprite(playLabel!).contains(touchPos) == true {
                 self.stopMenuMusic()
                 self.startNewGame()
             }
             
-            if( CGRectContainsPoint(SMBoundingBoxOfSprite(loadLabel!), touchPos) ) {
+            if( SMBoundingBoxOfSprite(loadLabel!).contains(touchPos) ) {
                 
                 if loadLabel!.alpha > 0.98 {
                     self.stopMenuMusic()
@@ -353,6 +353,6 @@ class VNTestScene : SKScene
             loadLabel!.alpha = 1.0;
         }
         
-        self.userInteractionEnabled = true
+        self.isUserInteractionEnabled = true
     }
 }
