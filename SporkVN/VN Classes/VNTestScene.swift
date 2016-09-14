@@ -85,7 +85,7 @@ class VNTestScene : SKScene
             
             if customSettings != nil && customSettings!.count > 0 {
                 
-                standardSettings.addEntries(from: customSettings! as [NSObject : AnyObject])
+                standardSettings.addEntries(from: customSettings! as! [AnyHashable: Any])
                 print("[VNTestScene] UI settings have been loaded from file.")
             }
         }

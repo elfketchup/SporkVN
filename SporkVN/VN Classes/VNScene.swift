@@ -398,7 +398,7 @@ class VNScene : SKScene {
             
             if manualSettings != nil {
                 print("[VNScene] Manual settings found; will load into view settings dictionary.")
-                viewSettings.addEntries(from: manualSettings! as [NSObject : AnyObject]) // Copy custom settings to UI dictionary; overwrite default values
+                viewSettings.addEntries(from: manualSettings! as! [AnyHashable: Any]) // Copy custom settings to UI dictionary; overwrite default values
             }
         }
         
@@ -3045,14 +3045,14 @@ class VNScene : SKScene {
             let duration = (command.object(at: 2) as! NSNumber).doubleValue
             let speechboxFilename = String(describing: command.object(at: 1))
             
-            setSpeechBox(spriteName: speechboxFilename, duration: duration)
+            setSpeechBox(speechboxFilename, duration: duration)
             
         case VNScriptCommandSetSpriteAlias:
             
             let aliasParameter = command.object(at: 1) as! NSString
             let filenameParameter = command.object(at: 2) as! NSString
             
-            setSpriteAlias(alias: aliasParameter as String, filename: filenameParameter as String)
+            setSpriteAlias(aliasParameter as String, filename: filenameParameter as String)
             
             
         case VNScriptCommandFlipSprite:
@@ -3061,7 +3061,7 @@ class VNScene : SKScene {
             let durationAsDouble = (command.object(at: 2) as! NSNumber).doubleValue
             let flipHorizontal = (command.object(at: 3) as! NSNumber).boolValue
             
-            flipSpriteNamed(spriteName: spriteName, duration: durationAsDouble, horizontally: flipHorizontal)
+            flipSpriteNamed(spriteName, duration: durationAsDouble, horizontally: flipHorizontal)
  
             
         case VNScriptCommandRollDice:
@@ -3070,14 +3070,14 @@ class VNScene : SKScene {
             let numberOfDice    = command.object(at: 2) as! NSNumber
             let flagName        = command.object(at: 3) as! NSString
             
-            rollDice(numberOfDice: numberOfDice.intValue, maximumSidesOfDice: maximumNumber.intValue, plusFlagModifier: flagName as String)
+            rollDice(numberOfDice.intValue, maximumSidesOfDice: maximumNumber.intValue, plusFlagModifier: flagName as String)
             
         case VNScriptCommandModifyChoiceboxOffset:
             
             let xOffset = command.object(at: 1) as! NSNumber;
             let yOffset = command.object(at: 2) as! NSNumber;
             
-            modifyChoiceboxOffset(xOffset: xOffset.doubleValue, yOffset: yOffset.doubleValue)
+            modifyChoiceboxOffset(xOffset.doubleValue, yOffset: yOffset.doubleValue)
              
         case VNScriptCommandScaleBackground:
             
@@ -3091,7 +3091,7 @@ class VNScene : SKScene {
             let durationNumber = command.object(at: 2) as! NSNumber
             
             //scaleBackground(scaleFactor: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
-            scaleBackground(sprite: backgroundSprite!, scaleFactor: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
+            scaleBackground(backgroundSprite!, scaleFactor: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
             
         case VNScriptCommandScaleSprite:
             
@@ -3099,7 +3099,7 @@ class VNScene : SKScene {
             let scaleNumber = command.object(at: 2) as! NSNumber
             let durationNumber = command.object(at: 3) as! NSNumber
             
-            scaleSprite(spriteName: spriteName as String, scalingAmount: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
+            scaleSprite(spriteName as String, scalingAmount: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
             
         default:
             print("[VNScene] WARNING: Unknown command found in script. The command's NSArray is: %@", command);
@@ -3118,7 +3118,7 @@ class VNScene : SKScene {
     
     
     // scales background to (scaleFactor) amount
-    func scaleBackground(sprite:SKSpriteNode, scaleFactor:Double, duration:Double) {
+    func scaleBackground(_ sprite:SKSpriteNode, scaleFactor:Double, duration:Double) {
         
         if duration <= 0.0 {
             sprite.setScale(CGFloat(scaleFactor))
@@ -3134,7 +3134,7 @@ class VNScene : SKScene {
     }
 
     // scales an existing sprite by a certain amount over a particular duration
-    func scaleSprite(spriteName:String, scalingAmount:Double, duration:Double) {
+    func scaleSprite(_ spriteName:String, scalingAmount:Double, duration:Double) {
         
         let sprite:SKSpriteNode? = sprites.object(forKey: spriteName) as? SKSpriteNode
         if sprite == nil {
@@ -3168,7 +3168,7 @@ class VNScene : SKScene {
     }
     
     // swaps the current speechbox sprite for another sprite
-    func setSpeechBox(spriteName:String, duration:Double) {
+    func setSpeechBox(_ spriteName:String, duration:Double) {
         
         // prepare positioning data
         var boxToBottomMargin   = CGFloat(0)
@@ -3284,7 +3284,7 @@ class VNScene : SKScene {
     }
     
     // adjusts sprite alias
-    func setSpriteAlias(alias:String, filename:String) {
+    func setSpriteAlias(_ alias:String, filename:String) {
         //NSString* aliasParameter = [command objectAtIndex:1];
         //NSString* filenameParameter = [command objectAtIndex:2];
         
@@ -3298,7 +3298,7 @@ class VNScene : SKScene {
     }
     
     // moves choice box offsets around (instead of having the choicebox buttons appearing near the middle of the screen)
-    func modifyChoiceboxOffset(xOffset:Double, yOffset:Double) {
+    func modifyChoiceboxOffset(_ xOffset:Double, yOffset:Double) {
         choiceButtonOffsetX = CGFloat(xOffset)
         choiceButtonOffsetY = CGFloat(yOffset)
         
@@ -3311,7 +3311,7 @@ class VNScene : SKScene {
     }
     
     // rolls dice; stores value in a predetermined flag
-    func rollDice(numberOfDice:Int, maximumSidesOfDice:Int, plusFlagModifier:String) {
+    func rollDice(_ numberOfDice:Int, maximumSidesOfDice:Int, plusFlagModifier:String) {
         var flagModifier = 0
 
         let theFlag:NSNumber? = flags.object(forKey: plusFlagModifier) as? NSNumber
@@ -3327,7 +3327,7 @@ class VNScene : SKScene {
     }
     
     // flips sprite around, can flip sprite vertically or horizontally
-    func flipSpriteNamed(spriteName:String, duration:Double, horizontally:Bool) {
+    func flipSpriteNamed(_ spriteName:String, duration:Double, horizontally:Bool) {
         // get sprite using name
         let sprite:SKSpriteNode? = sprites.object(forKey: spriteName) as? SKSpriteNode
         if sprite == nil {

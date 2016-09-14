@@ -27,16 +27,13 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = true
         
         /* Set the scale mode to scale to fit the window */
-        scene.scaleMode = .aspectFill
+        scene.scaleMode = SKSceneScaleMode.aspectFill //.aspectFill
         
         skView.presentScene(scene)
         //}
     }
 
-    /*
-    override func shouldAutorotate() -> Bool {
-        return true
-    }*/
+    
     override var shouldAutorotate: Bool {
         return true
     }

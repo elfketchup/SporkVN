@@ -722,7 +722,7 @@ class SMRecord {
         if( flagsDictionary != nil ) { // Flags dictionary DOES exist
             
             // Just add the 'existingFlags' values to the current flags dictionary
-            flagsDictionary!.addEntries(from: existingFlags as [NSObject : AnyObject])
+            flagsDictionary!.addEntries(from: existingFlags as! [AnyHashable: Any])
             
         } else { // Flags dictionary does NOT exist (unlikely)
             
