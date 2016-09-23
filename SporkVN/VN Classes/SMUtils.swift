@@ -13,19 +13,26 @@ import AVFoundation
 // Set screen/view dimensions; use default sizes for iPhone 4S
 var SMScreenWidthInPoints:CGFloat   = 480.0;
 var SMScreenHeightInPoints:CGFloat  = 320.0;
+var SMScreenDimensionsHaveBeenSet   = false
 
 /** SCREEN DIMENSIONS **/
 
-//void SMSetScreenSizeInPoints( CGFloat width, CGFloat height )
-func SMSetScreenSizeInPoints(_ width:CGFloat, height:CGFloat)
-{
+// Just tells SMUtils what the screen size is supposed to be (some later calculations are based off this information)
+func SMSetScreenSizeInPoints(_ width:CGFloat, height:CGFloat) {
     SMScreenWidthInPoints = fabs( width );
     SMScreenHeightInPoints = fabs( height );
     
-    //NSLog(@"Screen size in points has been set to: %f, %f", SMScreenWidthInPoints, SMScreenHeightInPoints);
+    SMScreenDimensionsHaveBeenSet = true
 }
 
+// Retrieves screen size in points
 func SMScreenSizeInPoints() -> CGSize {
+    
+    // check if the screen dimenions have NOT been passed in properly yet
+    if SMScreenDimensionsHaveBeenSet == false {
+        // don't really do anything other than print a warning
+        print("[SMScreenSizeInPoints] WARNING: Screen size has not been set properly; this function will return an unsure default value.");
+    }
     
     let w = SMScreenWidthInPoints
     let h = SMScreenHeightInPoints
@@ -33,9 +40,9 @@ func SMScreenSizeInPoints() -> CGSize {
     return CGSize(width: w, height: h)
 }
 
-//void SMSetScreenDataFromView( SKView* view )
-func SMSetScreenDataFromView(_ view:SKView)
-{
+
+// determines screen size and other data from a passed-in SKView object
+func SMSetScreenDataFromView(_ view:SKView) {
     let viewSizeInPoints:CGSize = view.frame.size;
     
     let w = viewSizeInPoints.width
@@ -46,7 +53,7 @@ func SMSetScreenDataFromView(_ view:SKView)
 
 /** POSITIONS **/
 
-//CGPoint SMPositionWithNormalizedCoordinates( CGFloat normalizedX, CGFloat normalizedY )
+// Returns a precise x,y coordinate from normalized values (in which 0.5,0.5 would be the exact center of the screen)
 func SMPositionWithNormalizedCoordinates( _ normalizedX:CGFloat, normalizedY:CGFloat ) -> CGPoint
 {
     let x = (SMScreenWidthInPoints) * (normalizedX)
@@ -55,6 +62,7 @@ func SMPositionWithNormalizedCoordinates( _ normalizedX:CGFloat, normalizedY:CGF
     return CGPoint( x: x, y: y );
 }
 
+// Returns the value of two CGPoint values added together
 func SMPositionAddTwoPositions( _ first:CGPoint, second:CGPoint ) -> CGPoint
 {
     let x = first.x + second.x;
@@ -63,19 +71,21 @@ func SMPositionAddTwoPositions( _ first:CGPoint, second:CGPoint ) -> CGPoint
     return CGPoint( x: x, y: y );
 }
 
-func SMPositionOfBottomLeftCornerOfParentNode( _ parentNode:SKNode ) -> CGPoint
+// Returns the position of the bottom-left corner of a particular node
+func SMPositionOfBottomLeftCornerOfSKNode( _ theNode:SKNode ) -> CGPoint
 {
-    let widthOfParent = parentNode.frame.size.width;
-    let heightOfParent = parentNode.frame.size.height;
+    let widthOfNode = theNode.frame.size.width;
+    let heightOfNode = theNode.frame.size.height;
     
-    let xPos = (widthOfParent * (-0.5));
-    let yPos = (heightOfParent * (-0.5));
+    let xPos = (widthOfNode * (-0.5));
+    let yPos = (heightOfNode * (-0.5));
     
     return CGPoint(x: xPos, y: yPos);
 }
 
 /** MATH **/
 
+// Returns distance between two CGPoint objects
 func SMMathDistanceBetweenPoints( _ first:CGPoint, second:CGPoint ) -> CGFloat
 {
     let subtractedValue         = CGPoint( x: first.x - second.x, y: first.y - second.y );
@@ -89,6 +99,7 @@ func SMMathDistanceBetweenPoints( _ first:CGPoint, second:CGPoint ) -> CGFloat
 
 /** COLLISION **/
 
+// Retrieves bounding box of sprite node
 func SMBoundingBoxOfSprite( _ sprite:SKSpriteNode ) -> CGRect
 {
     let rectX:CGFloat = sprite.position.x - (sprite.size.width * sprite.anchorPoint.x);
@@ -99,6 +110,7 @@ func SMBoundingBoxOfSprite( _ sprite:SKSpriteNode ) -> CGRect
     return CGRect(x: rectX, y: rectY, width: width, height: height);
 }
 
+// Determines if the radii of two sprites are in contact with each other
 func SMCollisionBetweenSpriteCircles( _ first:SKSpriteNode, second:SKSpriteNode ) -> Bool
 {
     // Returns "averaged out" values for distance: (width + height) / 2
@@ -114,7 +126,8 @@ func SMCollisionBetweenSpriteCircles( _ first:SKSpriteNode, second:SKSpriteNode 
     return false;
 }
 
-func SMCollisionBetweenSpriteBoundingBoxes( _ first:SKSpriteNode, second:SKSpriteNode ) ->Bool
+// Determines if two bounding boxes are in contact with each other
+func SMCollisionBetweenSpriteBoundingBoxes( _ first:SKSpriteNode, second:SKSpriteNode ) -> Bool
 {
     let firstPos    = first.position;
     let firstWidth  = first.size.width;
@@ -130,33 +143,28 @@ func SMCollisionBetweenSpriteBoundingBoxes( _ first:SKSpriteNode, second:SKSprit
     let secondY         = secondPos.y - (secondHeight * second.anchorPoint.y);
     let secondBox       = CGRect(x: secondX, y: secondY, width: secondWidth, height: secondHeight);
     
-    return firstBox.intersects(secondBox );
+    return firstBox.intersects( secondBox );
 }
 
 /** TYPE CONVERSION **/
 
-func SMNumberToFloat(_ someNumber:NSNumber) -> Float
-{
+/*
+ These are very simple type conversion wrappers. This is done in case another Swift update causes conversion functions to require rewriting. :P
+ */
+func SMNumberToFloat(_ someNumber:NSNumber) -> Float {
     return someNumber.floatValue
 }
-
-func SMNumberToDouble(_ someNumber:NSNumber) -> Double
-{
+func SMNumberToDouble(_ someNumber:NSNumber) -> Double {
     return someNumber.doubleValue
 }
-
-func SMNumberToCGFloat(_ someNumber:NSNumber) -> CGFloat
-{
+func SMNumberToCGFloat(_ someNumber:NSNumber) -> CGFloat {
     return CGFloat(someNumber.doubleValue)
 }
-
-func SMNumberToInt(_ someNumber:NSNumber) -> Int
-{
+func SMNumberToInt(_ someNumber:NSNumber) -> Int {
     return someNumber.intValue
 }
 
-func SMNumberInDictionaryToCGFloat(_ someDictionary:NSDictionary, objectNamed:String) -> CGFloat
-{
+func SMNumberInDictionaryToCGFloat(_ someDictionary:NSDictionary, objectNamed:String) -> CGFloat {
     let someNumber:NSNumber? = someDictionary.object(forKey: objectNamed) as? NSNumber
     if someNumber != nil {
         return CGFloat(someNumber!.doubleValue)
@@ -166,8 +174,7 @@ func SMNumberInDictionaryToCGFloat(_ someDictionary:NSDictionary, objectNamed:St
     return 0;
 }
 
-func SMNumberInDictionaryToDouble(_ someDictionary:NSDictionary, objectNamed:String) -> Double
-{
+func SMNumberInDictionaryToDouble(_ someDictionary:NSDictionary, objectNamed:String) -> Double {
     let someNumber:NSNumber? = someDictionary.object(forKey: objectNamed) as? NSNumber
     if someNumber != nil {
         return someNumber!.doubleValue
@@ -177,8 +184,7 @@ func SMNumberInDictionaryToDouble(_ someDictionary:NSDictionary, objectNamed:Str
     return 0;
 }
 
-func SMNumberInDictionaryToInt(_ someDictionary:NSDictionary, objectNamed:String) -> Int
-{
+func SMNumberInDictionaryToInt(_ someDictionary:NSDictionary, objectNamed:String) -> Int {
     let someNumber:NSNumber? = someDictionary.object(forKey: objectNamed) as? NSNumber
     if someNumber != nil {
         return someNumber!.intValue
@@ -190,8 +196,9 @@ func SMNumberInDictionaryToInt(_ someDictionary:NSDictionary, objectNamed:String
 
 /** COLOR **/
 
-func SMColorFromRGBA( _ r:Int, g:Int, b:Int, a:Int ) -> UIColor
-{
+// Creates UIColor object from RGBA values; these values range from 0 to 255
+func SMColorFromRGBA( _ r:Int, g:Int, b:Int, a:Int ) -> UIColor {
+    // convert to float
     var fR = CGFloat(r)
     var fG = CGFloat(g)
     var fB = CGFloat(b)
@@ -207,20 +214,10 @@ func SMColorFromRGBA( _ r:Int, g:Int, b:Int, a:Int ) -> UIColor
     return UIColor(red: fR, green: fG, blue: fB, alpha: fA)
 }
 
-func SMColorFromRGB( _ r:Int, g:Int, b:Int ) -> UIColor
-{
+func SMColorFromRGB( _ r:Int, g:Int, b:Int ) -> UIColor {
     return SMColorFromRGBA(r, g: g, b: b, a: 255)
 }
 
-/*func SMColorFromUnsignedCharRGBA( r:Int, g:Int, b:Int, a:Int ) -> UIColor
-{
-    return SMColorFromRGBA(r, g: g, b: b, a: a)
-}
-
-func SMColorFromUnsignedCharRGB( r:Int, g:Int, b:Int ) -> UIColor
-{
-    return SMColorFromUnsignedCharRGBA(r, g: g, b: b, a: 255);
-}*/
 
 /** STRINGS **/
 
@@ -230,12 +227,13 @@ func SMColorFromUnsignedCharRGB( r:Int, g:Int, b:Int ) -> UIColor
  
  Before it changes again, I just made a function to encapsulate it and will just call this function instead
 */
-func SMStringLength( _ theString:String ) -> Int{
+func SMStringLength( _ theString:String ) -> Int {
     let theLength = theString.characters.count
     
     return theLength
 }
 
+// This retrieves the character at a particular index
 func SMStringCharacterAtIndex( _ theString:String, indexPosition:Int ) -> Character {
     let index = theString.characters.index(theString.characters.startIndex, offsetBy: indexPosition)
     let theCharacter = theString.characters[index]
@@ -434,6 +432,7 @@ func SMNumberFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> NSNum
 {
     let number:NSNumber? = dict.object(forKey: nameOfObject) as? NSNumber
     if( number == nil ) {
+        print("[SMNumberFromDictionary] WARNING: Number from key [\(nameOfObject)] could not be found, will auto-generate NSNumber with value of zero.")
         return NSNumber(value: 0);
     }
     

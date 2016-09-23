@@ -219,7 +219,6 @@ class VNTestScene : SKScene
     
     /* Game starting and loading */
     
-    //- (void)startNewGame
     func startNewGame()
     {
         // Create a blank dictionary with no real data, except for the name of which script file to load.
@@ -235,7 +234,6 @@ class VNTestScene : SKScene
         self.view!.presentScene(scene)
     }
     
-    //- (void)loadSavedGame
     func loadSavedGame()
     {
         if SMRecord.sharedRecord.hasAnySavedData() == false {
@@ -306,7 +304,6 @@ class VNTestScene : SKScene
     
     /* Touch controls */
     
-    //override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         for t in touches {

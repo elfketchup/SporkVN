@@ -194,7 +194,6 @@ private var VNSceneSharedInstance:VNScene? = nil
 class VNScene : SKScene {
     
     // Model data (which in this case is the scene's "script" that determines what will happen)
-    //VNScript* script
     var script:VNScript?
     
     class var sharedScene:VNScene? {
@@ -206,10 +205,8 @@ class VNScene : SKScene {
         return nil
     }
 
-    // A helper class that can be used to handle .systemcall commands. This may be redundant, now that
-    // .callcode exists though!
-    //VNSystemCall* systemCallHelper;
-    var systemCallHelper:VNSystemCall = VNSystemCall()// FIX LATER
+    // A helper class that can be used to handle .systemcall commands.
+    var systemCallHelper:VNSystemCall = VNSystemCall()
     
     var record:NSMutableDictionary = NSMutableDictionary() // Holds misc data (especially regarding the script)
     var flags:NSMutableDictionary = NSMutableDictionary() // Local flags data (later saved to SMRecord's flags, when the scene is saved)
@@ -839,7 +836,7 @@ class VNScene : SKScene {
         //  speechBox!.size.height * 0.5 + verticalMargins - speechYOffset );
         let originalSpeechPos = CGPoint(x: originalSpeechPosX, y: originalSpeechPosY)
     
-        let bottomLeftCornerOfSpeechBox = SMPositionOfBottomLeftCornerOfParentNode(speechBox!);
+        let bottomLeftCornerOfSpeechBox = SMPositionOfBottomLeftCornerOfSKNode(speechBox!);
         speech!.position = SMPositionAddTwoPositions(originalSpeechPos, second: bottomLeftCornerOfSpeechBox);
         speech!.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         speech!.zPosition = VNSceneTextLayer;
@@ -3192,8 +3189,6 @@ class VNScene : SKScene {
             speechBox!.zPosition = VNSceneUILayer;
             speechBox!.name = VNSceneTagSpeechBox;
             self.addChild( speechBox! )
-            //[self addChild:speechBox];
-            //[self addChild:speechBox z:VNSceneUILayer name:VNSceneTagSpeechBox];
             
             /*for( SKNode* aChild in originalChildren ) {
              [speechBox addChild:aChild];
@@ -3213,8 +3208,6 @@ class VNScene : SKScene {
         } else {
             
             // switch gradually
-            //[self createSafeSave];
-            //[self setEffectRunningFlag];
             self.createSafeSave()
             self.setEffectRunningFlag()
             
@@ -3299,6 +3292,7 @@ class VNScene : SKScene {
     
     // moves choice box offsets around (instead of having the choicebox buttons appearing near the middle of the screen)
     func modifyChoiceboxOffset(_ xOffset:Double, yOffset:Double) {
+        
         choiceButtonOffsetX = CGFloat(xOffset)
         choiceButtonOffsetY = CGFloat(yOffset)
         
@@ -3312,8 +3306,9 @@ class VNScene : SKScene {
     
     // rolls dice; stores value in a predetermined flag
     func rollDice(_ numberOfDice:Int, maximumSidesOfDice:Int, plusFlagModifier:String) {
+        
         var flagModifier = 0
-
+        
         let theFlag:NSNumber? = flags.object(forKey: plusFlagModifier) as? NSNumber
         if( theFlag != nil ) {
             flagModifier = theFlag!.intValue

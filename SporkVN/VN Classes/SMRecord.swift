@@ -86,14 +86,9 @@ let SMRecordCurrentActivityDictKey  = "current activity" // Used to locate the a
 let SMRecordActivityTypeKey         = "activity type" // Is this a VNScene, or some other kind of CCScene / activity type?
 let SMRecordActivityDataKey         = "activity data" // This will almost always be a dictionary with activity-specific data
 
-/*
-@interface SMRecord : NSObject
-{
-// The record holds all data (scores, flags, activities, etc.) for a particular playthrough of the game.
-NSMutableDictionary* record;
-}*/
 
 private let SMRecordSharedInstance = SMRecord()
+
 
 class SMRecord {
     
@@ -102,17 +97,9 @@ class SMRecord {
         return SMRecordSharedInstance
     }
     
-    var record:NSMutableDictionary = NSMutableDictionary(capacity: 1)
-    var currentSlot:Int = 0;
+    var record      = NSMutableDictionary(capacity: 1)
+    var currentSlot = Int(0)
     
-    /*
-    func record() -> NSMutableDictionary {
-    return nil
-    }*/
-    
-    /*func flags()->NSMutableDictionary {
-    return NSMutableDictionary(capacity: 1) // FAKE, OVERWRITE LATER
-    }*/
     
     /** UTILITY FUNCTIONS **/
     
@@ -130,7 +117,6 @@ class SMRecord {
     }
     
     // Set all time/date information in a save slot to the current time.
-    //- (void)updateDateInDictionary:(NSDictionary*)dict
     func updateDateInDictionary(_ dict:NSDictionary) {
         
         // Get the current time, and then create a string displaying a human-readable version of the current time
@@ -210,7 +196,6 @@ class SMRecord {
     }
     
     // Set the "flags" mutable dictionary in the record. If there's no record, it just gets created on the fly
-    //- (void)setFlags:(NSMutableDictionary*)updatedFlags
     func setFlags(_ updatedFlags:NSMutableDictionary) {
         
         if record.count < 1 {
@@ -221,6 +206,7 @@ class SMRecord {
         record.setValue(updatedFlags, forKey: SMRecordFlagsKey)
     }
     
+    // Retrieve sprite alias data rom record and return it in a mutable dictionary
     func spriteAliases() -> NSMutableDictionary {
         // check if the dictionary already exists, and if so, return it
         let s:NSMutableDictionary? = record.object(forKey: SMRecordSpriteAliasesKey) as? NSMutableDictionary
@@ -246,7 +232,6 @@ class SMRecord {
     /** Slots tracking **/
     
     // This grabs an NSArray (filled with NSNumbers) from NSUserDefaults. The array keeps track of which "slots" have saved game information stored in them.
-    //- (NSArray*)arrayOfUsedSlotNumbers
     func arrayOfUsedSlotNumbers() -> NSArray? {
         
         // The array is considered a "global" value (that is, the same value is stored across multiple playthrough/saved-games)
@@ -292,7 +277,6 @@ class SMRecord {
     }
     
     // This adds a particular value to the list of used slot numbers.
-    //- (void)addToUsedSlotNumbers:(NSUInteger)slotNumber
     func addToUsedSlotNumbers(_ slotNumber:Int) {
         
         print("[SMRecord] Will now attempt to add \(slotNumber) to array of used slot numbers.")
@@ -329,7 +313,6 @@ class SMRecord {
     /** SCORE PROPERTIES **/
     
     // Sets the high score (stored in NSUserDefaults)
-    //- (void)setHighScore:(NSUInteger)highScoreValue
     func setHighScore(_ highScoreValue:Int) {
         
         // Remember that the High Score is a global value and should be stored directly in NSUserDefaults instead of the slot/record section
@@ -343,7 +326,7 @@ class SMRecord {
         record.setValue(theHighScore, forKey: SMRecordHighScoreKey)
     }
     
-    ///- (NSUInteger)highScore
+    // Retrieve high score value (if any; otherwise returns zero if no data was found)
     func highScore() -> Int {
         
         var result:Int = 0; // The default value for the "high score" is zero
@@ -372,7 +355,6 @@ class SMRecord {
     }
     
     // Sets the current score. Unlike the High Score, the Current Score IS stored in the record/slot section.
-    //- (void)setCurrentScore:(NSUInteger)scoreValue
     func setCurrentScore(_ scoreValue:Int) {
         
         // If there's no current record, then just create one on the fly (and hope it works out!)
@@ -387,7 +369,6 @@ class SMRecord {
     
     // This will return the current score for this playthrough. If there isn't any record (or there's no scoring data
     // in the record), then it will just return a zero.
-    //- (NSUInteger)currentScore
     func currentScore() -> Int {
         
         var result:Int = 0; // Assume zero by default
@@ -407,7 +388,6 @@ class SMRecord {
     /** LOADING DATA **/
     
     // Load NSData from a "slot" stored in NSUserDefaults / device memory.
-    //- (NSData*)dataFromSlot:(NSUInteger)slotNumber
     func dataFromSlot(_ slotNumber:Int) -> Data? {
         
         let deviceMemory:UserDefaults = UserDefaults.standard   // Pointer to where memory is stored in the device
@@ -447,7 +427,6 @@ class SMRecord {
     }
     
     // Load saved game data from a slot
-    //- (NSDictionary*)recordFromSlot:(NSUInteger)slotNumber
     func recordFromSlot(_ slotNumber:Int) -> NSDictionary? {
         
         let loadedData:Data? = dataFromSlot(slotNumber)
@@ -521,7 +500,6 @@ class SMRecord {
     /** SAVING DATA **/
     
     // Create an NSData object from a game record
-    //- (NSData*)dataFromRecord:(NSDictionary*)dict
     func dataFromRecord(_ dict:NSDictionary) -> Data {
         
         // Update the date/time information in the record to "right now."
@@ -543,7 +521,6 @@ class SMRecord {
     }
     
     // Saves NSData object to a particular "slot" (which is located in NSUserDefaults's root dictionary)
-    //- (void)saveData:(NSData*)data toSlot:(NSUInteger)slotNumber
     func saveData(_ data:Data, slotNumber:Int) {
         
         // Store the NSData object into NSUserDefaults, under the key "slotXX" (XX being whatever value 'slotNumber' is)
@@ -572,7 +549,6 @@ class SMRecord {
     
     // If SMRecord is storing any data, then it will get stored to device memory (NSUserDefaults). The slot number being used
     // would be whatever 'currentSlot' has as its value.
-    //- (void)saveCurrentRecord
     func saveCurrentRecord()
     {
         if( record.count < 1 ) {
@@ -598,15 +574,8 @@ class SMRecord {
         //println("[SMRecord] saveCurrentRecord - Record has been saved.");
     }
     
-    //#pragma mark - Initialization Code
     /** INITIALIZATION CODE **/
     
-    /*- (void)dealloc
-    {
-    [self saveToDevice];
-    }*/
-    
-    //- (id)init
     init() {
         
         // Set default values
@@ -701,7 +670,6 @@ class SMRecord {
     }
     
     // Adds a dictionary of flags to the Flags data stored in SMRecord
-    //- (void)addExistingFlags:(NSDictionary*)existingFlags
     func addExistingFlags(_ existingFlags:NSDictionary) {
         
         // Check if there's not really any data to add
@@ -732,14 +700,6 @@ class SMRecord {
         }
     }
     
-    /*- (id)flagNamed:(NSString*)nameOfFlag
-    {
-    if( !record )
-    return nil;
-    
-    return [[self flags] objectForKey:nameOfFlag];
-    }*/
-    
     func flagNamed(_ nameOfFlag:String) -> AnyObject? {
         
         // Check if the record exists
@@ -758,7 +718,6 @@ class SMRecord {
     // Return the int value of a particular flag. It's important to keep in mind though, that while flags by default
     // use int values, it's entirely possible that it might use something entirely different. It's even possible to use
     // completely different types of objects (say, UIImage) as a flag value.
-    //- (int)valueOfFlagNamed:(NSString*)flagName
     func valueOfFlagNamed(_ flagName:String) -> Int {
         
         var result:Int = 0;
@@ -781,7 +740,6 @@ class SMRecord {
     }
     
     // Sets the value of a flag
-    //- (void)setFlagValue:(id)flagValue forFlagNamed:(NSString*)nameOfFlag
     func setFlagValue(_ flagValue:AnyObject, nameOfFlag:String) {
         
         // Create valid record if one doesn't exist
@@ -800,7 +758,6 @@ class SMRecord {
     
     // Sets a flag's int value. If you want to use a non-integer value (or something that's not even a number to begin with),
     // then you shoule switch to 'setFlagValue' instead.
-    //- (void)setIntegerValue:(int)iValue forFlag:(NSString*)nameOfFlag
     func setIntegerValue(_ iValue:Int, nameOfFlag:String) {
         
         
@@ -813,7 +770,6 @@ class SMRecord {
     }
     
     // Adds or subtracts the integer value of a flag by a certain amount (the amount being whatever 'iValue' is).
-    //- (void)modifyIntegerValue:(int)iValue forFlag:(NSString*)nameOfFlag
     func modifyIntegerValue(_ iValue:Int, nameOfFlag:String) {
         
         var modifiedInteger:Int = 0
@@ -845,7 +801,6 @@ class SMRecord {
     /** ACTIVITY DATA **/
     
     // Sets the activity information in the record
-    //- (void)setActivityDict:(NSDictionary*)activityDict
     func setActivityDict(_ activityDict:NSDictionary) {
         
         // Check if there's no data
@@ -864,7 +819,6 @@ class SMRecord {
     }
     
     // Return activity data from record
-    //- (NSDictionary*)activityDict
     func activityDict() -> NSDictionary
     {
         //NSDictionary* result = nil; // Assume there's no valid data by default
@@ -885,7 +839,6 @@ class SMRecord {
     
     // This just resets all the activity information stored by a particular dictionary back to its default values (that is, "dummy" values).
     // The "dict" being passed in should be a record dictionary of some kind (ideally, the 'record' dictionary stored by SMRecord)
-    //- (void)resetActivityInformationInDict:(NSDictionary*)dict
     func resetActivityInformationInDict(_ dict:NSDictionary)
     {
         // Fill out the activity information with useless "dummy data." Later, this data can (and should) be overwritten there's actual data to use
@@ -901,7 +854,6 @@ class SMRecord {
     
     // For saving/loading to device. This should cause the information stored by SMRecord to being put to NSUserDefaults, and then
     // it would "synchronize," so that the data would be stored directly into the device memory (as opposed to just sitting in RAM).
-    //- (void)saveToDevice
     func saveToDevice()
     {
         print("[SMRecord] Will now attempt to save information to device memory.");
@@ -927,69 +879,5 @@ class SMRecord {
         } else if record.count < 1 {
             print("[SMRecord] ERROR: Cannot save information because no record exists.")
         }
-    }
-    
-    /*
-    // NOTE: These next "properties" don't exist as part of the SMRecord class. Rather, they exist as key/value pairs
-    // in the "record" dictionary, and these functions are just ways of accessing that data in the dictionary.
-    
-    - (NSMutableDictionary*)flags;
-    - (void)setFlags:(NSMutableDictionary*)updatedFlags;
-    
-    - (void)setHighScore:(NSUInteger)highScoreValue;
-    - (NSUInteger)highScore;
-    - (void)setCurrentScore:(NSUInteger)scoreValue;
-    - (NSUInteger)currentScore;
-    
-    - (void)setActivityDict:(NSDictionary*)activityDict;
-    - (NSDictionary*)activityDict;
-    - (void)resetActivityInformationInDict:(NSDictionary*)dict;
-    
-    #pragma mark Slots Tracking
-    
-    // The following are used to keep track of which slots have been used by SMRecord.
-    - (NSArray*)arrayOfUsedSlotNumbers; // Returns array of all the slot numbers that have been saved to thus far
-    - (void)addToUsedSlotNumbers:(NSUInteger)slotNumber; // Adds a particular slot number to the "used slots" array
-    - (BOOL)slotNumberHasBeenUsed:(NSUInteger)slotNumber; // Checks if a particular slot has been used
-    
-    #pragma mark Flag functions
-    
-    // Similar to the "property" functions above, these functions just modify the flag data that's stored
-    // in the record dictionary.
-    
-    - (void)resetAllFlags;
-    - (void)addExistingFlags:(NSDictionary*)existingFlags; // Add existing flags from another dictionary to SMRecord's flag dictionary
-    - (id)flagNamed:(NSString*)nameOfFlag; // Retrieve a particular flag
-    - (int)valueOfFlagNamed:(NSString*)flagName;
-    - (void)setFlagValue:(id)flagValue forFlagNamed:(NSString*)nameOfFlag;
-    - (void)setIntegerValue:(int)iValue forFlag:(NSString*)nameOfFlag;
-    - (void)modifyIntegerValue:(int)iValue forFlag:(NSString*)nameOfFlag; // Use a positive number to "add" or a negative to subtract
-    
-    #pragma mark Utility functions
-    
-    - (NSString*)stringFromDate:(NSDate*)dateObject;    // Creates a human-readable string from raw NSDate data
-    - (void)updateDateInDictionary:(NSDictionary*)dict; // Updates the date in a dictionary (assumes dictionary is a saved game)
-    
-    #pragma mark Loading functions
-    
-    - (NSDictionary*)emptyRecord; // Creates a dictionary of new saved-game information, including "dummy" data
-    - (void)startNewRecord; // This "resets" SMRecord so that it will have brand-new data (as in a fresh saved game)
-    - (BOOL)hasAnySavedData; // Does this game have any saved-game data at all?
-    
-    - (NSData*)dataFromSlot:(NSUInteger)slotNumber; // Loads NSData from a "slot" (a key/value pair in the NSUserDefaults dictionary)
-    - (NSDictionary*)recordFromData:(NSData*)data; // Creates an NSDictionary from NSData; assumes NSData holds saved game info
-    - (NSDictionary*)recordFromSlot:(NSUInteger)slotNumber; // "Shortcut" to load NSData from NSUserDefaults, then NSDictionary from that NSData
-    - (void)loadRecordFromCurrentSlot; // Takes whatever data might be in the current slot and overwrites SMRecord's "record" dictionary with it
-    
-    #pragma mark Saving functions
-    
-    - (NSData*)dataFromRecord:(NSDictionary*)dict; // Encodes saved game information in NSDictionary into NSData
-    - (void)saveData:(NSData*)data toSlot:(NSUInteger)slotNumber; // Saves NSData to a particular "slot" in NSUserDefaults
-    - (void)updateHighScore; // Checks if the current score is higher than the "high score" and updates the value stored in NSUserDefaults
-    - (void)saveCurrentRecord; // Saves the current record to a "slot" in NSUserDefaults (the exact slot number is based on 'currentSlot')
-    
-    - (void)saveToDevice; // Saves the data stored in NSUserDefaults to device memory (this should happen on its own, but this speeds up the process)
-    
-    */
-    
-}
+    } // end function
+} // end class

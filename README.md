@@ -6,9 +6,14 @@ short dialogue scenes for games, or full-length "visual novel" games (or anythin
 It has a simple "scripting language" for creating scenes, support for branching story paths,
 built-in autosave features, and a customizable user interface.
 
+(At the time of this writing, EKVN is the more stable project; SporkVN is more of a part-experiment,
+part-learning-experience; the goal being to port an existing project written in Objective-C -- in this
+case, EVKN -- to Swift and have it have the same functionality. So if you just want some stable code
+for use in an actual visual novel, you may be better off using EKVN instead.)
+
 To start projects with SporkVN, you'll need:
 
-   1. A Mac, running OS X 10.11 or newer
+   1. A Mac, preferably running the latest version of macOS (Sierra, at the time of this writing)
    2. Xcode 8 or newer - http://developer.apple.com/xcode
    3. iOS 10 
    
@@ -28,7 +33,7 @@ Twitter: http://twitter.com/elfketchup
 Getting Started
 ===============
 
-Most of this file consists of one long tutorial on how to get started using EKVN. If some of it seems
+Most of this file consists of one long tutorial on how to get started using SporkVN. If some of it seems
 awfully basic, that's because it was written partly for people who didn't know much about SpriteKit / iOS,
 but still wanted to make visual novels for iOS devices. More experienced/advanced developers may want
 to skip the "simple" stuff and jump straight to the more complex ones; if that's the case, I would recommend
@@ -36,7 +41,7 @@ focusing more on Parts 3 and 5 of "Getting Started."
 
 The file "VN commands list.txt" has a list of all the scripting language commands that can be used
 by SporkVN, and the source code (in the "VN Classes" folder) is fairly simple and well-commented, so anyone
-who really wants to learn the ins and outs of EKVN should be able to do so easily (especially if they
+who really wants to learn the ins and outs of SporkVN should be able to do so easily (especially if they
 already have experience with SpriteKit!)
 
 The sample scripts ("demo script" and "test script") also show a lot of the scripting language and
@@ -45,7 +50,7 @@ see what might happen.
 
 Some notes on porting to Swift
 ------------------------------
-While the original EKVN project and its SpriteKit-powered spinoff were written in Objective-C, EKVN Swift
+While the original EKVN project and its SpriteKit-powered spinoff were written in Objective-C, SporkVN
 has been (as you might have guessed) rewritten in Swift. This presents some issues, since the original projects
 were designed to take advantage of Objective-C's unique features, namely the fact that Objective-C is a
 dynamically-typed language, while Swift is designed to be more static-typed/type-safe. 
@@ -72,13 +77,13 @@ switching to Swift.
 Getting Started, Part 1: Starting a new project
 -----------------------------------------------
 
-[WARNING: This is a little outdated and the documentation has yet to be updated to iOS 9.0 / Swift 2.1,
+[WARNING: This is a little outdated and the documentation has yet to be updated to iOS 10 / Swift 3.0,
 but it should work well enough to get you started]
 
 (This assumes that you've downloaded the "SporkVN” project that has all the code and resource files 
 that you'll need to get started)
 
-1. Open up Xcode (I'm using version 6.1.1 )
+1. Open up Xcode
 
 2. Choose the “Game” template (under “iOS > Application”), and set the Language to Swift and the
 Game Technology to “SpriteKit.” By default, Devices is set to “Universal,” but for simplicity’s sake,
@@ -112,10 +117,10 @@ Hit enter and then paste in:
 
         override func viewDidLoad() {
             super.viewDidLoad()
-            let scene = VNTestScene(size: self.view.frame.size)
-            let skView = self.view as SKView
+            let skView = self.view as! SKView
+            let scene = VNTestScene(size: skView.frame.size)
             skView.ignoresSiblingOrder = true
-            scene.scaleMode = .AspectFill
+            scene.scaleMode = SKSceneScaleMode.aspectFill
             skView.presentScene(scene)
         }
 
@@ -477,7 +482,7 @@ MIT License
 
 SporkVN is released under the MIT License
 
-Copyright (c) 2011-2014 James Briones
+Copyright (c) 2011-2016 James Briones
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
