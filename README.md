@@ -1,4 +1,4 @@
-SporkVN - a visual novel framework
+ SporkVN - a visual novel framework
 ==================================
 
 SporkVN is a visual novel framework, based on EKVN, and rewritten in Swift. It can be used to create

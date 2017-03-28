@@ -10,8 +10,8 @@
     },
     {
       "idiom" : "iphone",
-      "scale" : "3x",
-      "filename" : "skyspace.png"
+      "filename" : "skyspace.png",
+      "scale" : "3x"
     },
     {
       "idiom" : "ipad",
@@ -19,8 +19,8 @@
     },
     {
       "idiom" : "ipad",
-      "scale" : "2x",
-      "filename" : "skyspace-1.png"
+      "filename" : "skyspace-1.png",
+      "scale" : "2x"
     }
   ],
   "info" : {

@@ -603,7 +603,7 @@ class SMRecord {
             //NSArray* allUsedSlots = [self arrayOfUsedSlotNumbers];
             let allUsedSlots:NSArray? = arrayOfUsedSlotNumbers()
             if( allUsedSlots != nil ) {
-                print("[SMRecord] The following slots are in use: \(allUsedSlots)")
+                print("[SMRecord] The following slots are in use: \(String(describing: allUsedSlots))")
             }
             
             // Load the data from the current slot (which is the one with the most recent save data)

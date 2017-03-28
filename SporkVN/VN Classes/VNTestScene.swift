@@ -171,7 +171,7 @@ class VNTestScene : SKScene
         // Make sure the music isn't set to 'nil'
         if musicFilename != nil && musicFilename!.caseInsensitiveCompare("nil") != ComparisonResult.orderedSame {
             
-            self.playBackgroundMusic(musicFilename as! String)
+            self.playBackgroundMusic(musicFilename! as String)
         }
     }
     

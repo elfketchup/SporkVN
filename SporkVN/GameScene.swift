@@ -31,7 +31,7 @@ class GameScene: SKScene {
             sprite.yScale = 0.5
             sprite.position = location
             
-            let action = SKAction.rotate(byAngle: CGFloat(M_PI), duration:1)
+            let action = SKAction.rotate(byAngle: CGFloat(Double.pi), duration:1)
             
             sprite.run(SKAction.repeatForever(action))
             

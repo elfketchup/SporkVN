@@ -372,7 +372,7 @@ class VNScene : SKScene {
             // Create script data
             let loadedScript:VNScript? = VNScript(info: dictionaryForScriptLoading)
             if loadedScript == nil {
-                print("[VNScene] ERROR: Could not load script named: \(scriptFileName)")
+                print("[VNScene] ERROR: Could not load script named: \(String(describing: scriptFileName))")
                 return
             }
             
@@ -513,14 +513,14 @@ class VNScene : SKScene {
         // Load speaker name (if any exists)
         if( savedSpeakerName != nil ) {
             //speaker!.text = savedSpeakerName;
-            speaker!.text = savedSpeakerName as! String
+            speaker!.text = savedSpeakerName! as String
         }
     
         // Load speech data (if any exists)
         if( savedSpeech != nil ) {
     
             //[speech setString:savedSpeech)
-            speech!.text = savedSpeech as! String
+            speech!.text = savedSpeech! as String
         }
     
         //if( self.wasJustLoadedFromSave == YES )
@@ -600,7 +600,7 @@ class VNScene : SKScene {
                     //spriteY = spriteY - heightMarginForAds;
                 }
                 
-                let sprite          = SKSpriteNode(imageNamed: filenameOfSprite as! String)
+                let sprite          = SKSpriteNode(imageNamed: filenameOfSprite! as String)
                 sprite.position     = CGPoint(x: spriteX, y: spriteY)
                 sprite.xScale       = scaleX
                 sprite.yScale       = scaleY
@@ -627,7 +627,7 @@ class VNScene : SKScene {
                 speechBox!.removeFromParent()
             }
             
-            speechBox               = SKSpriteNode(imageNamed: savedSpeechbox as! String)
+            speechBox               = SKSpriteNode(imageNamed: savedSpeechbox! as String)
             speechBox!.position     = CGPoint( x: widthOfScreen * 0.5, y: (speechBox!.frame.size.height * 0.5) + boxToBottomMargin );
             speechBox!.zPosition    = VNSceneUILayer
             speechBox!.name         = VNSceneTagSpeechBox
@@ -2684,7 +2684,7 @@ class VNScene : SKScene {
             
             // Handle modification operation
             let originalNumber:NSNumber = originalObject! as! NSNumber
-            let originalValue = originalNumber.int32Value
+            let originalValue = originalNumber.intValue
             let modifiedValue = originalValue + modifyWithValue
             let finalNumber = NSNumber(value: modifiedValue)
             
