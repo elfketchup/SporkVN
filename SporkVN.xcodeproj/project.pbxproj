@@ -373,7 +373,7 @@
 				INFOPLIST_FILE = SporkVN/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sporkinthemoon.SporkVN;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elfketchup.SporkVN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SporkVN/VN Classes/SporkVN ObjC.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -388,7 +388,7 @@
 				INFOPLIST_FILE = SporkVN/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sporkinthemoon.SporkVN;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elfketchup.SporkVN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SporkVN/VN Classes/SporkVN ObjC.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
