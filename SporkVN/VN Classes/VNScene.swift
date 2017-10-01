@@ -1145,7 +1145,9 @@ class VNScene : SKScene {
             let numberOfCharsToUse = TWNumberOfCurrentCharacters;
             
             let TWIndex: String.Index = TWFullText.index(TWFullText.startIndex, offsetBy: numberOfCharsToUse)
-            TWCurrentText = TWFullText.substring(to: TWIndex)
+            //TWCurrentText = TWFullText.substring(to: TWIndex)
+            //TWCurrentText = "\(TWFullText[..<TWIndex])"
+            TWCurrentText = String(TWFullText[..<TWIndex])
             
             if speech != nil {
                 speech!.text = TWCurrentText
