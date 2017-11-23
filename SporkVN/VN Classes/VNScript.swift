@@ -339,8 +339,11 @@ class VNScript {
         let firstString:NSString = command.object(at: 0) as! NSString
         let thatFirstStr = firstString as String
         //let firstCharacter = Array(thatFirstStr.characters)[0]
-        let characterArray = Array(thatFirstStr.characters)
-        let firstCharacter = characterArray[0]
+        //let characterArray = Array(thatFirstStr.characters)
+        //let characterArray = Array(thatFirstStr.ch)
+        //let firstCharacter = characterArray[0]
+        //let firstCharacter = thatFirstStr.first as Character! // this works in Swift4
+        let firstCharacter = SMStringCharacterAtIndex(thatFirstStr, indexPosition: 0)
         
         if command.count < 2 || firstCharacter != "." {
             

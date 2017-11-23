@@ -228,15 +228,17 @@ func SMColorFromRGB( _ r:Int, g:Int, b:Int ) -> UIColor {
  Before it changes again, I just made a function to encapsulate it and will just call this function instead
 */
 func SMStringLength( _ theString:String ) -> Int {
-    let theLength = theString.characters.count
+    let theLength = theString.count
     
     return theLength
 }
 
 // This retrieves the character at a particular index
 func SMStringCharacterAtIndex( _ theString:String, indexPosition:Int ) -> Character {
-    let index = theString.characters.index(theString.characters.startIndex, offsetBy: indexPosition)
-    let theCharacter = theString.characters[index]
+    //let index = theString.characters.index(theString.characters.startIndex, offsetBy: indexPosition)
+    //let theCharacter = theString.characters[index]
+    let index : String.Index = String.Index.init(encodedOffset: indexPosition)
+    let theCharacter = theString[index]
     
     return theCharacter
 }
