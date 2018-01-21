@@ -22,6 +22,8 @@ func SMSetScreenSizeInPoints(_ width:CGFloat, height:CGFloat) {
     SMScreenWidthInPoints = fabs( width );
     SMScreenHeightInPoints = fabs( height );
     
+    print("[SMSetScreenSizeInPoints] - width: \(SMScreenWidthInPoints) | height: \(SMScreenHeightInPoints)")
+    
     SMScreenDimensionsHaveBeenSet = true
 }
 

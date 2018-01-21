@@ -61,11 +61,13 @@ class VNTestScene : SKScene
     var backgroundImage:SKSpriteNode?
     
     var nameOfScript:String?
-    var testScene:VNScene?
+    //var testScene:VNScene?
     
     // music stuff
     var isPlayingMusic = false;
     var backgroundMusic:AVAudioPlayer? = nil
+    
+    var sceneNode:VNSceneNode? = nil
     
     
     // This loads the user interface for the title menu. Default view settings are first loaded into a dictionary,
@@ -226,12 +228,28 @@ class VNTestScene : SKScene
         // (or at least, a new VNLayer scene!)
         let settingsForScene = NSDictionary(object: nameOfScript!, forKey: VNSceneToPlayKey as NSCopying)
     
+        /*
         // Create an all-new scene and add VNLayer to it
         let scene = VNScene(size: self.size, settings: settingsForScene)
         scene.scaleMode = self.scaleMode
         scene.previousScene = self
         
-        self.view!.presentScene(scene)
+        self.view!.presentScene(scene)*/
+        
+        //let w = self.frame.width
+        //let h = self.frame.height
+        
+        sceneNode = VNSceneNode(settings: settingsForScene)
+        sceneNode!.loadDataOnView(view: self.view!)
+        sceneNode!.zPosition = 9999
+        self.addChild(sceneNode!)
+        
+        // hide menu
+        self.isUserInteractionEnabled = false
+        playLabel!.alpha = 0
+        loadLabel!.alpha = 0
+        title!.alpha = 0.0
+        backgroundImage!.alpha = 0
     }
     
     func loadSavedGame()
@@ -259,10 +277,24 @@ class VNTestScene : SKScene
         // Unlike when the player is starting a new game, the name of the script to load doesn't have to be passed.
         // It should already be stored within the Activity Records from EKRecord.
         //[[CCDirector sharedDirector] pushScene:[VNScene sceneWithSettings:savedData]];
+        
+        /*
         let loadedGameScene = VNScene(size: self.size, settings: savedData)
         loadedGameScene.scaleMode = self.scaleMode
         loadedGameScene.previousScene = self;
-        self.view!.presentScene(loadedGameScene)
+        self.view!.presentScene(loadedGameScene)*/
+        
+        sceneNode = VNSceneNode(settings: savedData)
+        sceneNode!.loadDataOnView(view: self.view!)
+        self.addChild(sceneNode!)
+        sceneNode!.zPosition = 9999
+        
+        // hide menu
+        self.isUserInteractionEnabled = false
+        playLabel!.alpha = 0
+        loadLabel!.alpha = 0
+        title!.alpha = 0.0
+        backgroundImage!.alpha = 0
     }
     
     /* Audio */
@@ -351,5 +383,24 @@ class VNTestScene : SKScene
         }
         
         self.isUserInteractionEnabled = true
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        if sceneNode != nil  {
+            sceneNode!.update(currentTime)
+            
+            // check if VNSceneNode is done running; if it is, then remove it and restore control to the menu scene
+            if sceneNode!.isFinished == true {
+                sceneNode!.removeFromParent()
+                sceneNode = nil
+                
+                // restore menu
+                self.isUserInteractionEnabled = true
+                loadLabel!.alpha = 1.0
+                playLabel!.alpha = 1.0
+                backgroundImage!.alpha = 1.0
+                title!.alpha = 1.0
+            }
+        }
     }
 }

@@ -56,7 +56,8 @@ class VNSystemCall {
         // Try to get the current VN scene (if it exists)
         //VNScene* currentVNScene = [VNScene currentVNScene];
         //var currentVNScene? = VNScene.sharedScene()
-        let currentVNScene:VNScene? = VNScene.sharedScene
+        //let currentVNScene:VNScene? = VNScene.sharedScene
+        let currentVNScene:VNSceneNode? = VNSceneNode.sharedScene
     
         // Now check if the scene exists at all
         if( currentVNScene != nil ) {
