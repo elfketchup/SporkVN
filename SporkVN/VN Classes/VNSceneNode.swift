@@ -1246,7 +1246,7 @@ class VNSceneNode : SKNode {
         // Check if the "safe save" exists; if it does, then it should be used instead of whatever the current data is.
         //if( safeSave != nil ) {
         if safeSave.count > 1 {
-            
+            print("Will save safe save data.")
             let localFlags = safeSave.object(forKey: "flags") as! NSDictionary
             let localRecord = safeSave.object(forKey: "record") as! NSMutableDictionary
             let aliasesFromSafeSave = safeSave.object(forKey: "aliases") as! NSDictionary
@@ -1259,11 +1259,13 @@ class VNSceneNode : SKNode {
             SMRecord.sharedRecord.addExistingFlags(localFlags)
             dictToSave.setValue(localRecord, forKey: SMRecordActivityDataKey)
             SMRecord.sharedRecord.setActivityDict(dictToSave)
+            SMRecord.sharedRecord.saveToDevice()
             
             //[[[SMRecord sharedRecord] flags] addEntriesFromDictionary:[safeSave.objectForKey(@"flags"])
             //[dictToSave setObject:[safeSave.objectForKey(@"record"] forKey:SMRecordActivityDataKey)
             //[[SMRecord sharedRecord] setActivityDict:dictToSave)
-            return;
+            print("Did perform safe save.")
+            //return;
         }
         
         // Save all the names and coordinates of the sprites still active in the scene. This data will be enough
