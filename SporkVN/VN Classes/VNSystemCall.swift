@@ -75,6 +75,8 @@ class VNSystemCall {
                 //[currentVNScene saveToRecord]; // Attemp to autosave
                 currentVNScene!.saveToRecord()
             }
+        } else {
+            print("[VNSystemCall] Cannot autosave, no current VNSceneNode object detected.")
         }
     }
 

@@ -1,3 +1,6 @@
+version 1.1.1 Sep-14-2018
+. Updated for iOS 12.
+
 version 1.1.0 Jan-21-2018
 . [NEW] Changed VNScene to VNSceneNode. This is mostly done for games that aren't "pure" visual novels, and where SporkVN is just used to power short dialogue sequences. Since the visual novel "scene" is now just a node, it can be added to an existing SKScene subclass, and removed when the dialogue is done. This doesn't really affect games that are purely visual novels.
 

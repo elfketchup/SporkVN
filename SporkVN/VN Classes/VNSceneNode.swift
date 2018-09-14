@@ -650,6 +650,16 @@ class VNSceneNode : SKNode {
             }
         }
         
+        // make sure the speaker name appears properly
+        if savedSpeakerName != nil && speaker != nil {
+            speaker!.anchorPoint = CGPoint(x: 0, y: 1.0);
+            speaker!.position = self.updatedSpeakerPosition() //[self updatedSpeakerPosition)
+            
+            // Fade in the speaker name label
+            //let fadeIn = SKAction.fadeIn(withDuration: speechTransitionSpeed)
+            //speaker!.run(fadeIn)
+        }
+        
         // Load typewriter text information
         if let TWValueForSpeed = record.object(forKey: VNSceneTypewriterTextSpeed) as? NSNumber {
             TWSpeedInCharacters = TWValueForSpeed.intValue
@@ -1255,14 +1265,17 @@ class VNSceneNode : SKNode {
             
             //recordedFlags.addEntriesFromDictionary(localFlags)
             //SMDictionaryAddEntriesFromAnotherDictionary(SMRecord.sprite)
-            SMRecord.sharedRecord.addExistingSpriteAliases(aliasesFromSafeSave)
-            SMRecord.sharedRecord.addExistingFlags(localFlags)
+            SMRecord.sharedRecord.addExistingFlags(fromDictionary: aliasesFromSafeSave)
+            SMRecord.sharedRecord.addExistingFlags(fromDictionary: localFlags)
             dictToSave.setValue(localRecord, forKey: SMRecordActivityDataKey)
-            SMRecord.sharedRecord.setActivityDict(dictToSave)
+            //SMRecord.sharedRecord.setActivityDict(dictToSave)
+            SMRecord.sharedRecord.setActivityDictionary(dictionary: dictToSave)
+            SMRecord.sharedRecord.saveToDevice()
             
             //[[[SMRecord sharedRecord] flags] addEntriesFromDictionary:[safeSave.objectForKey(@"flags"])
             //[dictToSave setObject:[safeSave.objectForKey(@"record"] forKey:SMRecordActivityDataKey)
             //[[SMRecord sharedRecord] setActivityDict:dictToSave)
+            print("[VNSceneNode] Saving 'safe save' data from scene.")
             return;
         }
         
@@ -1279,13 +1292,14 @@ class VNSceneNode : SKNode {
         // Load all flag data back to SMRecord. Remember that VNScene doesn't have a monopoly on flag data;
         // other classes and game systems can modify the flags as well!
         //[[SMRecord sharedRecord].flags addEntriesFromDictionary:flags)
-        SMRecord.sharedRecord.addExistingFlags(flags)
+        //SMRecord.sharedRecord.addExistingFlags(flags)
+        SMRecord.sharedRecord.addExistingFlags(fromDictionary: flags)
         
         // Update script data and then load it into the activity dictionary.
-        updateScriptInfo()                                          // Update all index and conversation data
-        dictToSave.setValue(record, forKey:SMRecordActivityDataKey) // Load into activity dictionary
-        SMRecord.sharedRecord.setActivityDict(dictToSave)           // Save the activity dictionary into SMRecord
-        SMRecord.sharedRecord.saveToDevice()                        // Save all record data to device memory
+        updateScriptInfo()                                                  // Update all index and conversation data
+        dictToSave.setValue(record, forKey:SMRecordActivityDataKey)         // Load into activity dictionary
+        SMRecord.sharedRecord.setActivityDictionary(dictionary: dictToSave) // Save the activity dictionary into SMRecord
+        SMRecord.sharedRecord.saveToDevice()                                // Save all record data to device memory
         
         print("[VNScene] Data has been saved. Stored data is: \(dictToSave)");
     }
@@ -1737,9 +1751,11 @@ class VNSceneNode : SKNode {
                 //SMRecord* theRecord = [SMRecord sharedRecord)
                 let theRecord = SMRecord.sharedRecord
                 //[theRecord addExistingFlags:flags) // Save flag data (this can overwrite existing flag values)
-                theRecord.addExistingFlags(flags)
+                //theRecord.addExistingFlags(flags)
+                theRecord.addExistingFlags(fromDictionary: flags)
                 //[theRecord resetActivityInformationInDict:theRecord.record) // Remove activity data from record
-                theRecord.resetActivityInformationInDict(theRecord.record)
+                //theRecord.resetActivityInformationInDict(theRecord.record)
+                theRecord.resetActivityInformation(inDictionary: theRecord.record)
                 
                 self.isFinished = true; // Mark as finished
                 //[self purgeDataCreatedByScene) // Get rid of all data stored by the scene

@@ -264,7 +264,8 @@ class VNTestScene : SKScene
     
         // Load saved-game records from EKRecord. The activity dictionary holds data about what the last thing the user was doing
         // (presumably, watching a scene), how far the player got, relevent data that needs to be reloaded, etc.
-        let activityRecords = SMRecord.sharedRecord.activityDict()
+        //let activityRecords = SMRecord.sharedRecord.activityDict()
+        let activityRecords = SMRecord.sharedRecord.dictionaryOfActivityInformation()
         let lastActivity:NSString? = activityRecords.object(forKey: SMRecordActivityTypeKey) as? NSString
         if lastActivity == nil {
             print("[VNTestScene] ERROR: No previous activity found. No saved game can be loaded.");
