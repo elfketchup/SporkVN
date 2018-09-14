@@ -366,6 +366,7 @@ class VNTestScene : SKScene
     }
 
     override init(size: CGSize) {
+        
         super.init(size: size)
         
         SMSetScreenSizeInPoints(size.width, height: size.height)
