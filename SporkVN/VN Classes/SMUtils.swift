@@ -19,8 +19,8 @@ var SMScreenDimensionsHaveBeenSet   = false
 
 // Just tells SMUtils what the screen size is supposed to be (some later calculations are based off this information)
 func SMSetScreenSizeInPoints(_ width:CGFloat, height:CGFloat) {
-    SMScreenWidthInPoints = fabs( width );
-    SMScreenHeightInPoints = fabs( height );
+    SMScreenWidthInPoints = abs( width );
+    SMScreenHeightInPoints = abs( height );
     
     print("[SMSetScreenSizeInPoints] - width: \(SMScreenWidthInPoints) | height: \(SMScreenHeightInPoints)")
     
@@ -239,7 +239,9 @@ func SMStringLength( _ theString:String ) -> Int {
 func SMStringCharacterAtIndex( _ theString:String, indexPosition:Int ) -> Character {
     //let index = theString.characters.index(theString.characters.startIndex, offsetBy: indexPosition)
     //let theCharacter = theString.characters[index]
-    let index : String.Index = String.Index.init(encodedOffset: indexPosition)
+    //let index : String.Index = String.Index.init(encodedOffset: indexPosition)
+    
+    let index = theString.index(theString.startIndex, offsetBy: indexPosition)
     let theCharacter = theString[index]
     
     return theCharacter
