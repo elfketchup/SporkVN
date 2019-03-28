@@ -240,7 +240,6 @@ func SMStringCharacterAtIndex( _ theString:String, indexPosition:Int ) -> Charac
     //let index = theString.characters.index(theString.characters.startIndex, offsetBy: indexPosition)
     //let theCharacter = theString.characters[index]
     //let index : String.Index = String.Index.init(encodedOffset: indexPosition)
-    //let index : String.Index = String.Index(utf16Offset: indexPosition, in: <#T##StringProtocol#>
     
     let index = theString.index(theString.startIndex, offsetBy: indexPosition)
     let theCharacter = theString[index]
