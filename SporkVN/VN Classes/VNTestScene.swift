@@ -254,7 +254,8 @@ class VNTestScene : SKScene
     
     func loadSavedGame()
     {
-        if SMRecord.sharedRecord.hasAnySavedData() == false {
+        //if SMRecord.sharedRecord.hasAnySavedData() == false {
+        if SMRecord.sharedRecord.hasSavedLocalData() == false { //&& SMRecord.sharedRecord.hasSavedCloudData() == false {
             print("[VNTestScene] ERROR: No saved data, cannot continue game!");
             return;
         }
@@ -371,7 +372,7 @@ class VNTestScene : SKScene
         
         SMSetScreenSizeInPoints(size.width, height: size.height)
         
-        let previousSaveData = SMRecord.sharedRecord.hasAnySavedData()
+        let previousSaveData = SMRecord.sharedRecord.hasSavedLocalData()
         isPlayingMusic = false
         
         self.loadUI()

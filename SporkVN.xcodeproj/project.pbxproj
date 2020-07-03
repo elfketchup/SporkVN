@@ -55,6 +55,8 @@
 		1AB1316A1C6563FA00F5B83A /* main_menu.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = main_menu.plist; sourceTree = "<group>"; };
 		1AB1316B1C6563FA00F5B83A /* test script.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "test script.plist"; sourceTree = "<group>"; };
 		1AB1316C1C6563FA00F5B83A /* vnscene view settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "vnscene view settings.plist"; sourceTree = "<group>"; };
+		1ACDEE9424971A7E00D0A39A /* SporkVN.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SporkVN.entitlements; sourceTree = "<group>"; };
+		1ACDEE9624971A7E00D0A39A /* HomeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HomeKit.framework; path = System/Library/Frameworks/HomeKit.framework; sourceTree = SDKROOT; };
 		1ADEE729200BD1A90002399C /* VNSceneNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VNSceneNode.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -74,6 +76,7 @@
 			children = (
 				1AB131381C6562A000F5B83A /* SporkVN */,
 				1AB131371C6562A000F5B83A /* Products */,
+				1ACDEE9524971A7E00D0A39A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,6 +91,7 @@
 		1AB131381C6562A000F5B83A /* SporkVN */ = {
 			isa = PBXGroup;
 			children = (
+				1ACDEE9424971A7E00D0A39A /* SporkVN.entitlements */,
 				1AB1314F1C6563FA00F5B83A /* Other */,
 				1AB131541C6563FA00F5B83A /* VN Classes */,
 				1AB1315C1C6563FA00F5B83A /* VN resources */,
@@ -164,6 +168,14 @@
 			path = plists;
 			sourceTree = "<group>";
 		};
+		1ACDEE9524971A7E00D0A39A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1ACDEE9624971A7E00D0A39A /* HomeKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -196,6 +208,7 @@
 				TargetAttributes = {
 					1AB131351C6562A000F5B83A = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = VJ7ZPNN4QF;
 						LastSwiftMigration = 1020;
 					};
 				};
@@ -326,7 +339,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -376,7 +389,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -388,9 +401,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SporkVN/SporkVN.entitlements;
+				DEVELOPMENT_TEAM = VJ7ZPNN4QF;
 				INFOPLIST_FILE = SporkVN/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.elfketchup.SporkVN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SporkVN/VN Classes/SporkVN ObjC.h";
@@ -403,9 +419,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SporkVN/SporkVN.entitlements;
+				DEVELOPMENT_TEAM = VJ7ZPNN4QF;
 				INFOPLIST_FILE = SporkVN/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.elfketchup.SporkVN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SporkVN/VN Classes/SporkVN ObjC.h";

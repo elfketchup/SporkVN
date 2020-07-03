@@ -2043,7 +2043,7 @@ class VNSceneNode : SKNode {
         // Now, figure out what type of command this is!
         switch( type ) {
             
-            // Adds a CCSprite object to the screen; the image is loaded from a file in the app bundle. Currently, VNScene doesn't
+        // Adds a CCSprite object to the screen; the image is loaded from a file in the app bundle. Currently, VNScene doesn't
         // support texture atlases, so it can only load the WHOLE IMAGE as-is.
         case VNScriptCommandAddSprite:
             
@@ -2093,7 +2093,7 @@ class VNSceneNode : SKNode {
                 createdSprite!.run(fadeIn)
             } // appearAtOnce
             
-            // This "aligns" a sprite so that it's either in the left, center, or right areas of the screen. (This is calculated as being
+        // This "aligns" a sprite so that it's either in the left, center, or right areas of the screen. (This is calculated as being
         // 25%, 50% or 75% of the screen width).
         case VNScriptCommandAlignSprite:
             
@@ -2170,7 +2170,7 @@ class VNSceneNode : SKNode {
             setEffectRunningFlag()
             sprite!.run(spriteMoveSequence)
             
-            // This command just removes a sprite from the screen. It can be done immediately (though suddenly vanishing is kind of
+        // This command just removes a sprite from the screen. It can be done immediately (though suddenly vanishing is kind of
         // jarring for players) or it can gradually fade from sight.
         case VNScriptCommandRemoveSprite:
             
@@ -2269,7 +2269,7 @@ class VNSceneNode : SKNode {
             
             background.run(movementSequence)
             
-            // This command moves a sprite by a certain number of points (since Cocos2D uses points instead of pixels). This
+        // This command moves a sprite by a certain number of points (since Cocos2D uses points instead of pixels). This
         // is really just a "wrapper" of sorts for the CCMoveBy action in Cocos2D.
         case VNScriptCommandEffectMoveSprite:
             
@@ -2380,7 +2380,7 @@ class VNSceneNode : SKNode {
                 record.setObject(bgYNumber, forKey: VNSceneBackgroundYKey as NSCopying)
             }
             
-            // Sets the "speaker name," so that the player knows which character is speaking. The name usually appears above and to the
+        // Sets the "speaker name," so that the player knows which character is speaking. The name usually appears above and to the
         // left of the actual dialogue text. The value of the speaker name can be set to "nil" to hide the label.
         case VNScriptCommandSetSpeaker:
             
@@ -2517,7 +2517,7 @@ class VNSceneNode : SKNode {
             mode = VNSceneModeChoiceWithJump
             
             
-            // This command will show (or hide) the speech box (the little box where all the speech/dialogue text is shown).
+        // This command will show (or hide) the speech box (the little box where all the speech/dialogue text is shown).
         // Hiding it is useful in case you want the player to just enjoy the background art.
         case VNScriptCommandShowSpeechOrNot:
             

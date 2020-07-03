@@ -69,9 +69,11 @@
 		<string>.SHOWSPEECH:YES</string>
 		<string>A better way to do background transitions is to use .FADEOUT...</string>
 		<string>Then switch the background, and then use .FADEIN so it looks like a smooth transition.</string>
+		<string>.SHOWSPEECH:NO</string>
 		<string>.FADEOUT:0.5</string>
 		<string>.SETBACKGROUND:skyspace.png</string>
 		<string>.FADEIN:0.5</string>
+		<string>.SHOWSPEECH:YES</string>
 		<string>You can also look at the file named &quot;demo script.plist&quot; that&apos;s in the app bundle to see the code for this.</string>
 		<string>Changing some of the commands should give you first-hand experience in how things work.</string>
 		<string>.ADDSPRITE:matsuri_close.png</string>
@@ -109,7 +111,7 @@
 		<string>.SYSTEMCALL:AUTOSAVE</string>
 		<string>And now the game has been autosaved.</string>
 		<string>IF you were to quit the app now by pressing on the Home Button on your device...</string>
-		<string>And then double-tapping the Home Button to (x) out of this app~</string>
+		<string>And then double-tapping the Home Button to (x) out of this app...</string>
 		<string>If you &quot;Continue&quot; the game from the main screen, you&apos;d be back at the autosave point.</string>
 		<string>Anyways!</string>
 		<string>Many visual novels will ask the player to make choices.</string>

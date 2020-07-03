@@ -1,3 +1,7 @@
+version 1.1.2 Jul-03-2020
+. SMRecord has been streamlined, and experimental support for iCloud saving has been added.
+. SporkVN now targets iOS 12 by default.
+
 version 1.1.1 Sep-14-2018
 . Updated for iOS 12.
 

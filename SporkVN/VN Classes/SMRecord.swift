@@ -12,27 +12,17 @@ import UIKit
 
 SMRecord
 
-This class works by storing game data in NSUserDefaults. There are two types of data; the "global" data
-that remains the same across all saved games / new games, and then the data that's stored inside "slots"
-and is only relevant within a particular playthrough of the game.
-
-The "global" relevant-across-all-playthroughs data is just stored in NSUserDefault's "root" dictionary
-as either NSString or NSNumber objects. Conversely, an entire slot is stored as a single NSData object
-in the root dictionary. Each slot can be accessed through the dictionary key "slotX", where X is the
-number.
-
-The main Global values are:
-1. HIGH SCORE (NSUInteger) - The highest score achieved by a player
-2. DATE SAVED (NSDate object) - Time and date of most recent saved game
-3. CURRENT SLOT (NSUInteger) - Which save slot was most recently used
-
-Slot Zero ("slot0") is the default slot, and is meant mostly for autosave data. If you're creating a game
-where it's not necessary to have multiple slots/games/playthroughs, then you can just store everything
-in Slot Zero. On the other hand, some other game types (such as, say, JRPGs) might require multiple slots.
-There is no hard-coded limit on the number of slots you can use.
-
-Each slot is an NSData object, which can be decoded into a single NSDictionary (or more practically,
-an NSMutableDictionary) called the Record, which holds the following values:
+This class works by storing game data in NSUserDefaults. The game data is originally in a mutable
+dictionary (NSMutableDictionary) format, and converted to the Data/NSData type when it's actually
+stored in device memory.
+ 
+(NOTE: As of July 2020, there is experimental support for storing data in iCloud using NSUbiquitousKeyValueStore.
+       This feature has not been tested thoroughly, but functions similarly as storing data in
+       the device's user defaults. However saving data to iCloud this way means that data is limited
+       to taking up no more than 1 MB of storage.)
+ 
+ SMRecord functions by keeping track of information using the key-value storage of NSDictionary. Generally,
+ a single record will hold:
 
 1. ACTIVITY TYPE (NSString) - What kind of activity the player was engaged in when the game was saved
 (a specific mini-game, cutscene, etc)
@@ -60,23 +50,19 @@ certainly be done.
 SMRecord is meant to be used as a singleton, and having multiple SMRecord objects in existence may lead to
 unknown/untested behaviors, especially since they all write data to the same NSUserDefaults dictionary.
 
-In the future, functionality for saving to iCloud or to actual files (as opposed to NSUserDefaults) may be
-added, but for now SMRecord works well enough.
+In the future, functionality for more complex cloud storage or for saving to actual files (as opposed to
+relying on NSUserDefaults) may be added, but for now SMRecord works well enough.
 
 */
 
-let SMRecordAutosaveSlotNumber      = 0   // ZERO is the autosave slot (slots 1 and above being "normal" save slots)
+let SMRecordDataSavedKey          = "save data"
 
 // These are keys for the "global" values in the record,
-let SMRecordHighScoreKey            = "the high score"   // Highest score achieved by anyone playing the game on this device
 let SMRecordDateSavedKey            = "date saved"       // The last time any data was saved on this device
-let SMRecordCurrentSlotKey          = "current slot"     // The most recently used slot
-let SMRecordUsedSlotNumbersKey      = "used slots array" // Lists all the arrays used so far
 
 // Keys for data that's specific to a particular playthrough and is stored inside of individual "slots" (which contain a single
 // NSData object that encapsulates all the other playthrough-specific data)
 let SMRecordDataKey                 = "record"               // THe NSData object that holds the dictionary with all the other saved-game data
-let SMRecordCurrentScoreKey         = "current score"        // NSUInteger of the player's current score
 let SMRecordFlagsKey                = "flag data"            // Key for a dictionary of "flag" data
 let SMRecordDateSavedAsString       = "date saved as string" // A string with a more human-readable version of the NSDate object
 let SMRecordSpriteAliasesKey	    = "sprite aliases"       // stores all sprite aliases in use by the game 
@@ -86,7 +72,7 @@ let SMRecordCurrentActivityDictKey  = "current activity" // Used to locate the a
 let SMRecordActivityTypeKey         = "activity type" // Is this a VNScene, or some other kind of CCScene / activity type?
 let SMRecordActivityDataKey         = "activity data" // This will almost always be a dictionary with activity-specific data
 
-
+// Singleton
 private let SMRecordSharedInstance = SMRecord()
 
 class SMRecord {
@@ -96,42 +82,23 @@ class SMRecord {
         return SMRecordSharedInstance
     }
     
+    // stores all save data for this game
     var record      = NSMutableDictionary(capacity: 1)
-    var currentSlot = Int(0)
+    
+    // Determines whether or not to use the cloud or use ONLY local storage
+    var useCloud = false
     
     // MARK: - Initialization
     
     init() {
-        // Set default values
-        currentSlot = SMRecordAutosaveSlotNumber // ZERO
-        let userDefaults:UserDefaults = UserDefaults.standard
-        
-        // If a slot number was found, then just get that value and overwrite the default slot number
-        if let lastSavedSlot = userDefaults.object(forKey: SMRecordCurrentSlotKey) as? NSNumber {
-            self.currentSlot = lastSavedSlot.intValue
-            print("[SMRecord] Current slot set to \(self.currentSlot), which was the value stored in memory.")
-        }
-        
         // If there's any previously-saved data, then just load that information. If there is NO previously-saved data, then just do nothing.
         // The reasoning here is that if there's previously-saved data, then it should be loaded by default (if the app or player wants to create
         // all new data, they can just do that manually). If no record exists, then it will be created either automatically once the app starts
         // trying to write flag data. Of course, it can also be created manually (like when a new game begins, SMRecord can be told to just
         // create a new record.
-        if self.hasAnySavedData() == true {
-            // Display all used slots (this is actually meant for diagnostic/testing purposes)
-            if let allUsedSlots = self.arrayOfUsedSlotNumbers() {
-                print("[SMRecord] The following slots are in use: \(String(describing: allUsedSlots))")
-            }
-            
-            // Load the data from the current slot (which is the one with the most recent save data)
-            self.loadRecordFromCurrentSlot()
-            
-            // Log success or failure
-            if( record.count > 0 ) {
-                print("[SMRecord] Record initialized with data: \(record)")
-            } else {
-                print("[SMRecord] Failed to initialize saved game data.");
-            }
+        if let dictionaryFromLocalStorage = recordFromLocalStorage() {
+            print("[SMRecord] Record initialized with dictionary: \(dictionaryFromLocalStorage)")
+            record = NSMutableDictionary(dictionary: dictionaryFromLocalStorage)
         }
     }
     
@@ -144,6 +111,7 @@ class SMRecord {
         return format.string(from: date)
     }
     
+    /*
     // Set all time/date information in a save slot to the current time.
     func updateDateInDictionary(dictionary:NSDictionary) {
         // Get the current time, and then create a string displaying a human-readable version of the current time
@@ -153,7 +121,7 @@ class SMRecord {
         // Set date information in the dictionary
         dictionary.setValue(theTimeRightNow,        forKey:SMRecordDateSavedKey)        // Save NSDate object
         dictionary.setValue(stringWithCurrentTime,  forKey:SMRecordDateSavedAsString)   // Save human-readable string
-    }
+    }*/
     
     // MARK: - Record
     
@@ -163,9 +131,8 @@ class SMRecord {
         let tempRecord = NSMutableDictionary()
         
         // Fill the record with default data
-        tempRecord.setValue(NSNumber(value: 0), forKey:SMRecordCurrentScoreKey) // No score yet, since this is a new game
-        updateDateInDictionary(dictionary: tempRecord)          // Set current date as "the time when this was saved"
-        self.resetActivityInformation(inDictionary: tempRecord) // Fill the activity dictionary with dummy data
+        //updateDateInDictionary(dictionary: tempRecord)      // Set current date as "the time when this was saved"
+        resetActivityInformation(inDictionary: tempRecord)  // Fill the activity dictionary with dummy data
         
         // Create a flags dictionary with some default "dummy" data in it
         let tempFlags = NSMutableDictionary(object: "dummy value - empty record", forKey: "dummy key" as NSCopying)
@@ -179,198 +146,40 @@ class SMRecord {
     // to call those functions yourself!
     func startNewRecord() {
         record = NSMutableDictionary(dictionary: emptyRecord())
-        UserDefaults.standard.setValue(currentSlot, forKey: SMRecordCurrentSlotKey)
     }
     
-    func hasAnySavedData() ->Bool {
-        var result = true; // At first, assume that there IS saved data. The rest of the function will check if this assumption is false!
-        
+    //func hasAnySavedData() ->Bool {
+    func hasSavedLocalData() -> Bool {
         // This function will check if any of the following objects are missing, since a successful save should have put all of this into device memory
-        let lastSavedDate:Date? = UserDefaults.standard.object(forKey: SMRecordDateSavedKey) as? Date
-        let usedSlotNumbers:NSArray? = arrayOfUsedSlotNumbers()
-        
-        if( lastSavedDate == nil || usedSlotNumbers == nil ) {
-            result = false;
+        let lastSavedDate:Date?     = UserDefaults.standard.object(forKey: SMRecordDateSavedKey) as? Date
+        let previousSaveData:Data?  = UserDefaults.standard.object(forKey: SMRecordDataSavedKey) as? Data
+        // If neither of these things exist, then SMRecord will believe there is no saved data
+        if( lastSavedDate == nil || previousSaveData == nil ) {
+            return false
         }
         
-        return result;
+        return true;
     }
     
-    // MARK - Flags
-    
-    // Returns the flags dictionary that's stored in the record... assuming that the record exists, that is!
-    // (If the record does exist, then the flags dictionary should also exist inside it too)
-    func flags() -> NSMutableDictionary {
-        if record.count < 0 {
-            startNewRecord()
+    // Determine if there's saved game data stored in the cloud
+    func hasSavedCloudData() -> Bool {
+        if useCloud == false {
+            print("[SMRecord] Cannot check cloud storage since SMRecord is set to NOT use cloud storage. Adjust settings first.")
+            return false;
         }
         
-        if let allMyFlags = record.object(forKey: SMRecordFlagsKey) as? NSMutableDictionary {
-            return allMyFlags
+        let cloudStorage    = NSUbiquitousKeyValueStore.default
+        let cloudSaveDate   = cloudStorage.object(forKey: SMRecordDateSavedKey) as? Date
+        let dataInCloud     = cloudStorage.object(forKey: SMRecordDataSavedKey) as? Data
+        
+        if cloudSaveDate == nil || dataInCloud == nil {
+            return false
         }
         
-        // In this case, there are no flags at all, so create a new dictionary and just return that
-        let emptyFlags = NSMutableDictionary(object: "dummy value - flags", forKey: "dummy key" as NSCopying)
-        record.setValue(emptyFlags, forKey: SMRecordFlagsKey)
-        return emptyFlags
-    }
-    
-    // Set the "flags" mutable dictionary in the record. If there's no record, it just gets created on the fly
-    func setFlags(dictionary:NSMutableDictionary) {
-        if record.count < 1 {
-            record = emptyRecord()
-        }
-        
-        // Flags will only get updated if the dictionary is valid
-        record.setValue(dictionary, forKey: SMRecordFlagsKey)
-    }
-    
-    // MARK: - Slot functions
-    
-    // This grabs an NSArray (filled with NSNumbers) from NSUserDefaults. The array keeps track of which "slots" have
-    // saved game information stored in them.
-    func arrayOfUsedSlotNumbers() -> NSArray? {
-        // The array is considered a "global" value (that is, the same value is stored across multiple playthrough/saved-games)
-        // so it would be found under the root dictionary of NSUserDefaults for this app.
-        let deviceMemory:UserDefaults = UserDefaults.standard //[NSUserDefaults standardUserDefaults];
-        let tempArray:NSArray? = deviceMemory.object(forKey: SMRecordUsedSlotNumbersKey) as? NSArray
-        
-        if( tempArray == nil ) {
-            print("[SMRecord] Cannot find a previously existing array of used slot numbers.");
-            return nil
-        }
-        
-        return tempArray
-    }
-    
-    // This just checks if a particular slot number has been used (reminder: the "autosave" slot is slot ZERO)
-    func slotNumberHasBeenUsed(number:Int) -> Bool {
-        var result = false // Assume NO by default; this gets changed if data proves otherwise
-        
-        // Check if there's any slot number data at all. If there isn't, then obviously none of the slot numbers have been used.
-        let slotsUsed:NSArray? = arrayOfUsedSlotNumbers()
-        if( slotsUsed == nil || slotsUsed!.count < 1 ) {
-            return result
-        }
-        
-        // The following loop checks every single index in the array and examines if the NSNumber stored within
-        // holds the value as the slot number we're checking for.
-        for i in 0 ..< slotsUsed!.count {
-            
-            let currentNumber:NSNumber = slotsUsed!.object(at: i) as! NSNumber
-            let valueOfCurrentNumber:Int = currentNumber.intValue
-            
-            // Check if the value that was found matches the value that was expected
-            if( valueOfCurrentNumber == number ) {
-                print("[SMRecord] Match found for slot number \(number) in index \(i)")
-                result = true; // This slot number has indeed been used
-            }
-        }
-        
-        return result;
-    }
-    
-    // This adds a particular value to the list of used slot numbers.
-    func addToUsedSlotNumbers(slotNumber:Int) {
-        print("[SMRecord] Will now attempt to add \(slotNumber) to array of used slot numbers.")
-        let numberWasAlreadyUsed:Bool = slotNumberHasBeenUsed(number:slotNumber)
-        
-        // If the number has already been used, then there's no point adding another mention of it; that would
-        // up more memory to tell SMRecord something that it already knows. Information will only be added
-        // if the slot number in question hasn't been used yet.
-        if( numberWasAlreadyUsed == false ) {
-            print("[SMRecord] Slot number \(slotNumber) has not been used previously.")
-            let slotNumbersArray:NSMutableArray = NSMutableArray() //[[NSMutableArray alloc] init];
-            
-            // Check if there was any previous data. If there was, then it'll be added to the new array. If not... well, it's not a big deal!
-            if let previousSlotsArray = self.arrayOfUsedSlotNumbers() {
-                slotNumbersArray.addObjects(from: previousSlotsArray as [AnyObject])
-            }
-            
-            // Add the slot number that was passed in to the newly-created array
-            //[slotNumbersArray addObject:@(slotNumber)];
-            slotNumbersArray.add(NSNumber(value: slotNumber))
-            
-            // Create a regular non-mutable NSArray and store the data there
-            let unmutableArray:NSArray = NSArray(array: slotNumbersArray) //[[NSArray alloc] initWithArray:slotNumbersArray];
-            let deviceMemory:UserDefaults = UserDefaults.standard // Pointer to NSUserDefaults
-            deviceMemory.setValue(unmutableArray, forKey: SMRecordUsedSlotNumbersKey)
-            print("[SMRecord] Slot number \(slotNumber) saved to array of used slot numbers.")//, (unsigned long)slotNumber);
-        }
-    }
-    
-    // MARK: - Score
-    
-    // Sets the high score (stored in NSUserDefaults)
-    func setHighScoreWithInteger(integer:Int) {
-        // Remember that the High Score is a global value and should be stored directly in NSUserDefaults instead of the slot/record section
-        let theUserDefaults = UserDefaults.standard
-        let theHighScore = NSNumber(value: integer) // Used to be unsigned, now regularly signed (theoretically a 64-bit integer)
-        theUserDefaults.setValue(theHighScore, forKey: SMRecordHighScoreKey)
-        
-        /** WARNING: For some reason, the high score isn't being saved to NSUserDefaults anymore, so for now I'm
-        saving it into the record along with normal data. **/
-        record.setValue(theHighScore, forKey: SMRecordHighScoreKey)
-    }
-    
-    // Retrieve high score value (if any; otherwise returns zero if no data was found)
-    func highScore() -> Int {
-        var result:Int = 0; // The default value for the "high score" is zero
-        
-        // It's entirely possible that no high score has been saved yet (either because this is a brand-new game
-        // and nothing has been saved yet, or if the game just doesn't really bother with high score data), so it's
-        // important to check if a valid value was returned.
-        if let theHighScore = record.object(forKey: SMRecordHighScoreKey) as? NSNumber {
-            result = theHighScore.intValue // update 'result' with actual data
-        } else {
-            print("[SMRecord] WARNING: High score could not retrieved.")
-        }
-        
-        return result;
-    }
-    
-    // Sets the current score. Unlike the High Score, the Current Score IS stored in the record/slot section.
-    func setCurrentScoreWithInteger(integer:Int) {
-        // If there's no current record, then just create one on the fly (and hope it works out!)
-        if( record.count < 1 ) {
-            //record = [[NSMutableDictionary alloc] initWithDictionary:[self emptyRecord]];
-            record = emptyRecord()
-        }
-        
-        // Store the current score as an NSNumber in the record
-        record.setValue(NSNumber(value: integer), forKey:SMRecordCurrentScoreKey)
-    }
-    
-    // This will return the current score for this playthrough. If there isn't any record (or there's no scoring data
-    // in the record), then it will just return a zero.
-    func currentScore() -> Int {
-        if( record.count > 0 ) {
-            if let scoreFromRecord = record.object(forKey: SMRecordCurrentScoreKey) as? NSNumber {
-                return scoreFromRecord.intValue
-            }
-        }
-        
-        return 0
+        return true
     }
     
     // MARK: - NSData handling
-    
-    // Load NSData from a "slot" stored in NSUserDefaults / device memory.
-    func dataFromSlot(slotNumber:Int) -> Data? {
-        let deviceMemory:UserDefaults = UserDefaults.standard   // Pointer to where memory is stored in the device
-        let slotKey = NSString(string: "slot\(slotNumber)") // Generate name of the dictionary key where save data is stored
-        
-        print("[SMRecord] Loading record from slot named [\(slotKey)]")
-        
-        // Try to load the data from the slot that should be stored in the device's memory.
-        if let slotData = deviceMemory.object(forKey: slotKey as String) as? Data {
-            print("[SMRecord] 'dataFromSlot' has loaded an NSData object of size \(slotData.count) bytes.")
-            return (NSData(data: slotData) as Data)
-        }
-        
-        print("[SMRecord] ERROR: No data found in slot number \(slotNumber)")
-        return nil;
-    }
     
     // Load a dictionary with game record from an NSData object (which was loaded from memory), by unarchiving information from
     // an NSData object into an NSDictionary object
@@ -387,34 +196,8 @@ class SMRecord {
         return nil
     }
     
-    // Load saved game data from a slot into NSDictionary object
-    func recordFromSlot(number:Int) -> NSDictionary? {
-        if let loadedData = self.dataFromSlot(slotNumber: number) {
-            return self.recordFromData(data: loadedData)
-        }
-        
-        return nil
-    }
-    
-    // This attempts to load a record from the "current slot," which is slotXX (where XX is whatever the heck 'self.currentSlot' is).
-    // If this sounds kind of vague and unhelpful... well, I suppose that says something about this function! :P
-    //- (void)loadRecordFromCurrentSlot
-    func loadRecordFromCurrentSlot() {
-        // Load temporary dictionary from a particular slot in device memory
-        if let temporaryDictionary = self.recordFromSlot(number: currentSlot) {
-            // Copy record data from device memory
-            record = NSMutableDictionary(dictionary: temporaryDictionary)
-            print("[SMRecord] Record was successfully loaded from slot \(self.currentSlot)")
-        } else {
-            // Error as there's no valid data in the dictionary
-            print("[SMRecord] ERROR: Could not load record from slot \(self.currentSlot)")
-        }
-    }
-    
     // Create an NSData object from a game record
     func dataFromRecord(dictionary:NSDictionary) -> Data {
-        self.updateDateInDictionary(dictionary: dictionary)
-        
         // Encode the dictionary into NSData format
         let archiver = NSKeyedArchiver(requiringSecureCoding: false)
         archiver.encode(dictionary, forKey: SMRecordDataKey)
@@ -423,49 +206,43 @@ class SMRecord {
         return archiver.encodedData
     }
     
-    // Saves NSData object to a particular "slot" (which is located in NSUserDefaults's root dictionary)
-    func saveData(data:Data, slotNumber:Int) {
-        // Store the NSData object into NSUserDefaults, under the key "slotXX" (XX being whatever value 'slotNumber' is)
-        let deviceMemory            = UserDefaults.standard
-        let stringWithSlotNumber    = NSString(string: "slot\(slotNumber)") // Dictionary key for slot
-        deviceMemory.setValue(data, forKey: stringWithSlotNumber as String) // Store data in NSUserDefaults dictionary
-        self.addToUsedSlotNumbers(slotNumber: slotNumber)                   // flag this slot number as being used
-    }
-    
-    // This just checks if the current score is higher than the "high score" saved in NSUserDefaults. If that's the case, then
-    // the high score is set to the current score's value.
-    func updateHighScore() {
-        // Try to get the scores. If, for some reason, there isn't any actual score data, then they'll just be set to zero
-        let theCurrentScore = currentScore() //[self currentScore];
-        let theHighScore    = highScore()
-        
-        // Save the current score if it's higher than the High Score that's been saved
-        if( theCurrentScore > theHighScore ) {
-            self.setHighScoreWithInteger(integer: theCurrentScore)
+    // This attempts to load a record from the "current slot," which is slotXX (where XX is whatever the heck 'self.currentSlot' is).
+    // If this sounds kind of vague and unhelpful... well, I suppose that says something about this function! :P
+    func recordFromLocalStorage() -> NSDictionary? {
+        let deviceMemory = UserDefaults.standard
+        if let dataFromLocalStorage = deviceMemory.object(forKey: SMRecordDataSavedKey) as? Data {
+            print("[SMRecord] Found save data in device storage. Will attempt to convert to readable format.")
+            
+            if let dictionaryFromData = recordFromData(data: dataFromLocalStorage) {
+                print("[SMRecord] Save data was converted to readable format.")
+                return dictionaryFromData
+            } else {
+                print("[SMRecord] WARNING: Save data could not be converted to readable format.")
+            }
+        } else {
+            print("[SMRecord] WARNING: No data could be retrieved from device storage.")
         }
+        
+        return nil
     }
     
     // If SMRecord is storing any data, then it will get stored to device memory (NSUserDefaults). The slot number being used
     // would be whatever 'currentSlot' has as its value.
-    func saveCurrentRecord() {
+    func saveCurrentRecord() -> Bool {
         if( record.count < 1 ) {
             print("[SMRecord] ERROR: No record data exists.");
-            return;
+            return false;
         }
         
         // Update global data
         let deviceMemory = UserDefaults.standard
         let theDateToday = Date()
-        let theSlotToUse = NSNumber(value: currentSlot)
+        let recordAsData = dataFromRecord(dictionary: record)
+        
         deviceMemory.setValue(theDateToday, forKey: SMRecordDateSavedKey)
-        deviceMemory.setValue(theSlotToUse, forKey: SMRecordCurrentSlotKey)
+        deviceMemory.setValue(recordAsData, forKey: SMRecordDataSavedKey)
         
-        // Update record information
-        self.updateDateInDictionary(dictionary: record)
-        self.updateHighScore() //updateHighScore()
-        
-        let recordAsData = self.dataFromRecord(dictionary: record)
-        self.saveData(data: recordAsData, slotNumber: currentSlot)
+        return true
     }
     
     // MARK: - Sprite aliases
@@ -486,10 +263,6 @@ class SMRecord {
     
     // Replace the existing sprite alias dictionary with another dictionary
     func setSpriteAliases(dictionary:NSMutableDictionary) {
-        if record.count < 0 {
-            self.startNewRecord()
-        }
-        
         record.setValue(dictionary, forKey:SMRecordSpriteAliasesKey)
     }
     
@@ -532,11 +305,28 @@ class SMRecord {
     
     // MARK: - Flags
     
-    /*
-     Opens a PLIST file and copies all items in it to EKRecord as flags.
-     
-     Can choose whether or not to overwrite existing flags that have the same names.
-     */
+    // Returns the flags dictionary that's stored in the record... assuming that the record exists, that is!
+    // (If the record does exist, then the flags dictionary should also exist inside it too)
+    func flags() -> NSMutableDictionary {
+        if let allMyFlags = record.object(forKey: SMRecordFlagsKey) as? NSMutableDictionary {
+            return allMyFlags
+        }
+        
+        // In this case, there are no flags at all, so create a new dictionary and just return that
+        let emptyFlags = NSMutableDictionary(object: "dummy value - flags", forKey: "dummy key" as NSCopying)
+        record.setValue(emptyFlags, forKey: SMRecordFlagsKey)
+        return emptyFlags
+    }
+    
+    // Set the "flags" mutable dictionary in the record. If there's no record, it just gets created on the fly
+    func setFlags(dictionary:NSMutableDictionary) {
+        // Flags will only get updated if the dictionary is valid
+        record.setValue(dictionary, forKey: SMRecordFlagsKey)
+    }
+    
+    
+    // Opens a PLIST file and copies all items in it to EKRecord as flags.
+    // Can choose whether or not to overwrite existing flags that have the same names.
     func addFlagsFromFile(named:String, overrideExistingFlags:Bool) {
         let rootDictionary = SMDictionaryFromFile(named)
         if rootDictionary == nil {
@@ -573,14 +363,10 @@ class SMRecord {
     // This removes any existing flag data and overwrites it with a blank dictionary that has dummy values
     func resetAllFlags() {
         // Create a brand-new dictionary with nothing but dummy data
-        //NSMutableDictionary* dummyFlags = [[NSMutableDictionary alloc] init];
-        //[dummyFlags setValue:@"dummy value" forKey:@"dummy key"];
         let dummyFlags = NSMutableDictionary()
         dummyFlags.setValue(NSString(string: "dummy value - reset all flags"), forKey: "dummy key")
         
         // Set this "dummy data" dictionary as the flags data
-        //[self setFlags:dummyFlags];
-        //setFlags(dummyFlags)
         self.setFlags(dictionary: dummyFlags)
     }
     
@@ -713,18 +499,20 @@ class SMRecord {
     
     // For saving/loading to device. This should cause the information stored by SMRecord to being put to NSUserDefaults, and then
     // it would "synchronize," so that the data would be stored directly into the device memory (as opposed to just sitting in RAM).
-    func saveToDevice() {
+    func saveToDevice() -> Bool {
         print("[SMRecord] Will now attempt to save information to device memory.");
         
         if record.count < 1 {
             print("[SMRecord] ERROR: Cannot save information because no record exists.")
-            return
+            return false
         }
         
         print("[SMRecord] Saving record to device memory...");
         
         //[self saveCurrentRecord];
-        saveCurrentRecord()
+        if saveCurrentRecord() == false {
+            return false
+        }
         
         // Now "synchronize" the data so that everything in NSUserDefaults will be moved from RAM into the actual device memory.
         // NSUserDefaults synchronizes its data every so often, but in this case it will be done manually to ensure that SMRecord's data
@@ -734,8 +522,131 @@ class SMRecord {
         
         if didSync == false {
             print("[SMRecord] WARNING: Could not synchronize data to device memory.")
+            return false
         } else {
             print("[SMRecord] Record was synchronized.")
         }
+        
+        return true
     } // end function
+    
+    // MARK: - Cloud storage
+    
+    // WARNING: This is experimental and hasn't really been tested properly.
+    
+    // Store autosave data in the cloud
+    func saveToCloud() -> Bool {
+        print("[SMRecord] Will now attempt to save information to the cloud")
+        
+        if useCloud == false {
+            print("[SMRecord] ERROR: Could not save to cloud as SMRecord is not configured to use cloud storage.")
+            return false
+        }
+        
+        if saveToDevice() == false {
+            print("[SMRecord] ERROR: Could not save data to local storage. Data will not be saved to cloud.")
+            return false
+        }
+        
+        let store = NSUbiquitousKeyValueStore.default
+        let currentDate = Date()
+        let recordAsData = dataFromRecord(dictionary: record)
+        
+        store.setValue(currentDate, forKey: SMRecordDateSavedKey)
+        store.setValue(recordAsData, forKey: SMRecordDataSavedKey)
+        
+        print("[SMRecord] Did finish attempting to save data to the cloud.")
+        
+        return true
+    }
+    
+    // Attempts to load save data from the cloud
+    func loadFromCloud() -> Bool {
+        print("[SMRecord] Will attempt to load data from cloud")
+        
+        if useCloud == false {
+            print("[SMRecord] ERROR: Could not load from cloud as SMRecord is not configured to use cloud storage.")
+            return false
+        }
+        
+        let store               = NSUbiquitousKeyValueStore.default
+        let dateFromCloud       = store.value(forKey: SMRecordDateSavedKey) as? Date
+        let saveDataFromCloud   = store.value(forKey: SMRecordDataSavedKey) as? Data
+        
+        // check if any of the information retrieved was invalid
+        if dateFromCloud == nil || saveDataFromCloud == nil {
+            print("[SMRecord] ERROR: No saved data could be found in the cloud")
+            return false;
+        }
+        
+        if let savedDictionary = recordFromData(data: saveDataFromCloud!) {
+            record = NSMutableDictionary(dictionary: savedDictionary)
+            return true
+        }
+        
+        return false
+    } // end function
+    
+    // Check if there's data saved in the cloud
+    func cloudHasNewerSavedData() -> Bool {
+        if useCloud == false {
+            print("[SMRecord] ERROR: Could not check if data in cloud is newer as cloud storage is disabled.")
+            return false
+        }
+        
+        let dateInCloud = NSUbiquitousKeyValueStore.default.object(forKey: SMRecordDateSavedKey) as? Date
+        let dateInLocal = UserDefaults.standard.object(forKey: SMRecordDateSavedKey) as? Date
+        
+        if dateInCloud == nil {
+            return false
+        }
+        if dateInLocal == nil {
+            // if it reaches this point (meaning there IS a date in the cloud) and there's no local date, then the cloud is the newest one
+            return true
+        }
+        
+        // Compare the two existing dates
+        if dateInLocal! < dateInCloud! {
+            return true
+        }
+        
+        return false
+    }
+    
+    // Date stored in cloud
+    func dateInCloudStorage() -> Date? {
+        if useCloud == false {
+            print("[SMRecord] ERROR: Could not check data in cloud storage as cloud storage is not currently enabled.")
+            return nil
+        }
+        
+        let cloudStorage = NSUbiquitousKeyValueStore.default
+        return cloudStorage.object(forKey: SMRecordDateSavedKey) as? Date
+    }
+    
+    // Retrieve NSData object from the cloud and convert it to NSDictionary
+    func recordFromCloud() -> NSDictionary? {
+        if useCloud == false {
+            print("[SMRecord] ERROR: Could not check data in cloud storage as cloud storage is not currently enabled.")
+            return nil
+        }
+        
+        let cloudStorage = NSUbiquitousKeyValueStore.default
+        
+        if let dataInCloud = cloudStorage.object(forKey: SMRecordDataSavedKey) as? Data {
+            print("[SMRecord] Data was found in cloud storage. Will now attempt to convert to readable format.")
+            
+            if let dictionaryFromData = recordFromData(data: dataInCloud) {
+                print("[SMRecord] Data was successfully converted to readable format.")
+                return dictionaryFromData
+            } else {
+                print("[SMRecord] WARNING: Data could not be converted to readable format.")
+            }
+        } else {
+            print("[SMRecord] WARNING: No data was found in cloud storage.")
+        }
+        
+        return nil
+    }
+    
 } // end class
