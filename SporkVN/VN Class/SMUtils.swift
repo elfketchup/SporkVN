@@ -15,8 +15,8 @@ var SMScreenWidthInPoints:CGFloat   = 480.0;
 var SMScreenHeightInPoints:CGFloat  = 320.0;
 var SMScreenDimensionsHaveBeenSet   = false
 
-// MARK: - Screen dimensions
-    
+/** SCREEN DIMENSIONS **/
+
 // Just tells SMUtils what the screen size is supposed to be (some later calculations are based off this information)
 func SMSetScreenSizeInPoints(_ width:CGFloat, height:CGFloat) {
     SMScreenWidthInPoints = abs( width );
@@ -53,7 +53,7 @@ func SMSetScreenDataFromView(_ view:SKView) {
     SMSetScreenSizeInPoints( w, height: h );
 }
 
-// MARK: - Positions
+/** POSITIONS **/
 
 // Returns a precise x,y coordinate from normalized values (in which 0.5,0.5 would be the exact center of the screen)
 func SMPositionWithNormalizedCoordinates( _ normalizedX:CGFloat, normalizedY:CGFloat ) -> CGPoint
@@ -85,7 +85,7 @@ func SMPositionOfBottomLeftCornerOfSKNode( _ theNode:SKNode ) -> CGPoint
     return CGPoint(x: xPos, y: yPos);
 }
 
-// MARK: - Math
+/** MATH **/
 
 // Returns distance between two CGPoint objects
 func SMMathDistanceBetweenPoints( _ first:CGPoint, second:CGPoint ) -> CGFloat
@@ -99,67 +99,7 @@ func SMMathDistanceBetweenPoints( _ first:CGPoint, second:CGPoint ) -> CGFloat
     return length;
 }
 
-func SMClampDouble(input:Double, min:Double, max:Double) -> Double {
-    var result = input
-    var actualMin = min
-    var actualMax = max
-    
-    if min > max {
-        actualMin = max
-        actualMax = min
-    }
-    
-    if result < actualMin {
-        result = actualMin
-    }
-    if result > actualMax {
-        result = actualMax
-    }
-    
-    return result
-}
-
-func SMClampFloat(input:CGFloat, min:CGFloat, max:CGFloat) -> CGFloat {
-    var result = input
-    var actualMin = min
-    var actualMax = max
-    
-    if min > max {
-        actualMin = max
-        actualMax = min
-    }
-    
-    if result < actualMin {
-        result = actualMin
-    }
-    if result > actualMax {
-        result = actualMax
-    }
-    
-    return result
-}
-
-func SMClampInteger(input:Int, min:Int, max:Int) -> Int {
-    var result = input
-    var actualMin = min
-    var actualMax = max
-    
-    if min > max {
-        actualMin = max
-        actualMax = min
-    }
-    
-    if result < actualMin {
-        result = actualMin
-    }
-    if result > actualMax {
-        result = actualMax
-    }
-    
-    return result
-}
-
-// MARK: - Collision
+/** COLLISION **/
 
 // Retrieves bounding box of sprite node
 func SMBoundingBoxOfSprite( _ sprite:SKSpriteNode ) -> CGRect
@@ -208,7 +148,7 @@ func SMCollisionBetweenSpriteBoundingBoxes( _ first:SKSpriteNode, second:SKSprit
     return firstBox.intersects( secondBox );
 }
 
-// MARK: - Type conversion
+/** TYPE CONVERSION **/
 
 /*
  These are very simple type conversion wrappers. This is done in case another Swift update causes conversion functions to require rewriting. :P
@@ -256,7 +196,7 @@ func SMNumberInDictionaryToInt(_ someDictionary:NSDictionary, objectNamed:String
     return 0;
 }
 
-// MARK: - Color
+/** COLOR **/
 
 // Creates UIColor object from RGBA values; these values range from 0 to 255
 func SMColorFromRGBA( _ r:Int, g:Int, b:Int, a:Int ) -> UIColor {
@@ -281,7 +221,7 @@ func SMColorFromRGB( _ r:Int, g:Int, b:Int ) -> UIColor {
 }
 
 
-// MARK: - Strings
+/** STRINGS **/
 
 /*
  This function exists because the actual method to calculate String lengths in Swift changes every so often.
@@ -293,15 +233,6 @@ func SMStringLength( _ theString:String ) -> Int {
     let theLength = theString.count
     
     return theLength
-}
-
-// Determines if two strings are the same (ignored case). This functions exists because 'caseInsensitiveCompare' is way too long to type all the time
-func SMStringsAreSame(first:String, second:String) -> Bool {
-    if first.caseInsensitiveCompare(second) == .orderedSame {
-        return true
-    }
-    
-    return false
 }
 
 // This retrieves the character at a particular index
@@ -316,7 +247,7 @@ func SMStringCharacterAtIndex( _ theString:String, indexPosition:Int ) -> Charac
     return theCharacter
 }
 
-// MARK: - Filename/bundle functions
+/** FILENAME/BUNDLE FUNCTIONS **/
 
 
  /*
@@ -404,7 +335,7 @@ func SMStringURLFromFilename( _ filename:String ) -> URL?
 }
 
 
-// MARK: - AUDIO
+/** AUDIO **/
 
 
 /*
@@ -437,7 +368,7 @@ func SMAudioSoundFromFile( _ filename:String ) -> AVAudioPlayer?
 }
 
 
-// MARK: - Swift/Foundation conversion
+/** Swift/Foundation conversion **/
 /*
 
     Trying to access data stored in Foundation classes (such as retrieving various types of data stored in an NSDictionary object)
@@ -528,7 +459,7 @@ func SMDoubleFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> Doubl
     return SMNumberFromDictionary(dict, nameOfObject: nameOfObject).doubleValue
 }
 
-// MARK: - Misc functions
+/** MISC FUNCTIONS **/
 /*
  Stuff that really doesn't fit elsewhere
  */

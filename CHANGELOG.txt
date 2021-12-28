@@ -1,3 +1,7 @@
+version 1.2 Dec-27-2021
+. Updated for use with iOS 15.2
+. Now uses SMTextNode for text: the project is now all-Swift and no longer uses Objective-C classes
+
 version 1.1.2 Jul-03-2020
 . SMRecord has been streamlined, and experimental support for iCloud saving has been added.
 . SporkVN now targets iOS 12 by default.

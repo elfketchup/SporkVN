@@ -914,7 +914,7 @@ class VNSceneNode : SKNode {
         // Add the speaker to the speech-box. The "name" is just empty text by default, until an actual name is provided later.
         //speaker = [SMTextNode labelNodeWithFontNamed:[viewSettings.objectForKey(VNSceneViewFontNameKey])
         //speaker = SMTextNode(fontNamed:fontNameValue as String)
-        speaker = SMTextNode(fontNamed: fontNameValue as String)
+        speaker = SMTextNode(fontNamed: fontNameValue as! String)
         speaker!.text = " ";
         speaker!.fontSize = CGFloat(fontSize * 1.1) // 1.1 is used as a "magic number" because it looks OK
         speaker!.paragraphWidth = speakerSize.width;

@@ -54,8 +54,8 @@ class VNTestScene : SKScene
 {
     //CCLabelTTF* playLabel;
     //CCLabelTTF* loadLabel;
-    var playLabel:SMTextNode?
-    var loadLabel:SMTextNode?
+    var playLabel:DSMultilineLabelNode?
+    var loadLabel:DSMultilineLabelNode?
     
     var title:SKSpriteNode?
     var backgroundImage:SKSpriteNode?
@@ -114,7 +114,7 @@ class VNTestScene : SKScene
         let startColorB = (startColors.object(forKey: "b") as! NSNumber).intValue
     
         // Now create the actual label
-        playLabel = SMTextNode(fontNamed: startFont as String)
+        playLabel = DSMultilineLabelNode(fontNamed: startFont as String)
         playLabel!.text = startText as String
         playLabel!.fontSize = startFontSize
         playLabel!.color = SMColorFromRGB(startColorR, g: startColorG, b: startColorB)
@@ -139,7 +139,7 @@ class VNTestScene : SKScene
         // Load the "Continue" label
         //loadLabel = [CCLabelTTF labelWithString:continueText fontName:continueFont fontSize:continueFontSize];
         //loadLabel = [[SKLabelNode alloc] initWithFontNamed:continueFont];
-        loadLabel = SMTextNode(fontNamed: continueFont as String)
+        loadLabel = DSMultilineLabelNode(fontNamed: continueFont as String)
         loadLabel!.fontSize = continueFontSize
         loadLabel!.text = continueText as String
         loadLabel!.position = SMPositionWithNormalizedCoordinates( continueLabelX, normalizedY: continueLabelY );
