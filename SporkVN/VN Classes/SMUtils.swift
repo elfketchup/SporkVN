@@ -99,6 +99,39 @@ func SMMathDistanceBetweenPoints( _ first:CGPoint, second:CGPoint ) -> CGFloat
     return length;
 }
 
+func SMDegreesToRadians(degrees:CGFloat) -> CGFloat {
+    return (degrees * 0.01745329252)
+}
+
+func SMRadiansToDegrees( radians:CGFloat ) -> CGFloat {
+    return (radians * 57.29577951)
+}
+
+// Gets the angle between origin and another object
+func SMFindAngleBetweenPoints( original:CGPoint, target:CGPoint ) -> CGFloat {
+    let mX = target.x - original.x;
+    let mY = target.y - original.y;
+    
+    var f = CGFloat( atan2(mX, mY) )
+    f = (f * 57.29577951); // PI * 180
+    
+    // The converted value is fine if the angle is between 0 degrees and 180, degrees, but beyond 180 it becomes
+    // a little unusual. 181 degrees will be -179, 182 will be -178, etc. Fortunately, this is easy to fix.
+    if( f < 0.0 ) {
+        f = 180.0 + (180.0 + f);
+    }
+    
+    // Correct for excessive values
+    while( f > 360.0 ) {
+        f = f - 360.0;
+    }
+    while( f < 0.0 ) {
+        f = f + 360.0;
+    }
+    
+    return f; // This should be the correct angle now
+}
+
 func SMClampDouble(input:Double, min:Double, max:Double) -> Double {
     var result = input
     var actualMin = min

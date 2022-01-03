@@ -1271,7 +1271,9 @@ class VNSceneNode : SKNode {
             dictToSave.setValue(localRecord, forKey: SMRecordActivityDataKey)
             //SMRecord.sharedRecord.setActivityDict(dictToSave)
             SMRecord.sharedRecord.setActivityDictionary(dictionary: dictToSave)
-            SMRecord.sharedRecord.saveToDevice()
+            if SMRecord.sharedRecord.saveToDevice() == false {
+                print("[VNSceneNode] WARNING: Attempt to save game data to device data encountered an error.")
+            }
             
             //[[[SMRecord sharedRecord] flags] addEntriesFromDictionary:[safeSave.objectForKey(@"flags"])
             //[dictToSave setObject:[safeSave.objectForKey(@"record"] forKey:SMRecordActivityDataKey)
@@ -1300,7 +1302,9 @@ class VNSceneNode : SKNode {
         updateScriptInfo()                                                  // Update all index and conversation data
         dictToSave.setValue(record, forKey:SMRecordActivityDataKey)         // Load into activity dictionary
         SMRecord.sharedRecord.setActivityDictionary(dictionary: dictToSave) // Save the activity dictionary into SMRecord
-        SMRecord.sharedRecord.saveToDevice()                                // Save all record data to device memory
+        if SMRecord.sharedRecord.saveToDevice() == false {                  // Save all record data to device memory
+            print("[VNSceneNode] WARNING: Attempt to save game data to device encountered an error.")
+        }
         
         print("[VNScene] Data has been saved. Stored data is: \(dictToSave)");
     }
