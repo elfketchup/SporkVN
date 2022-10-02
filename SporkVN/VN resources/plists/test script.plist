@@ -2,6 +2,35 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>vacation in europe</key>
+	<array>
+		<string>Europe is pretty awesome if you go in the summer.</string>
+		<string>Anyway give me a second to wipe the choice set data.</string>
+		<string>.WIPECHOICESET:vacation spots</string>
+		<string>OK so what about Europe again?</string>
+		<string>It&apos;s pretty awesome.</string>
+	</array>
+	<key>vacation in canada</key>
+	<array>
+		<string>Do you mean like the Canadian Alps, or the big cities?</string>
+		<string>I&apos;ll wipe the choice set first.</string>
+		<string>.WIPECHOICESET:vacation spots</string>
+		<string>So yeah, Canada has some surprisingly good food.</string>
+		<string>It&apos;s pretty chilly though.</string>
+	</array>
+	<key>vacation in thailand</key>
+	<array>
+		<string>Bangkok or the beaches in the south?</string>
+		<string>Let me wipe the choice set data first</string>
+		<string>.WIPECHOICESET:vacation spots</string>
+	</array>
+	<key>vacation in hawaii</key>
+	<array>
+		<string>Yeah, Hawaii is pretty sweet.</string>
+		<string>.WIPECHOICESET:vacation spots</string>
+		<string>Also I wiped the choice sets just now.</string>
+		<string>I don&apos;t know what else to say about this.</string>
+	</array>
 	<key>sketch</key>
 	<array>
 		<string>.SETSPRITEALIAS:matsuri:sketchmatsuri_close.png</string>
@@ -27,6 +56,12 @@
 		<string>.SETBACKGROUND:pond.png</string>
 		<string>Hey, a background!</string>
 		<string>.ROLLDICE:20</string>
+		<string>.ADDTOCHOICESET:vacation spots:vacation in hawaii:&quot;Hawaii&quot;</string>
+		<string>.ADDTOCHOICESET:vacation spots:vacation in thailand:&quot;Thailand&quot;</string>
+		<string>.ADDTOCHOICESET:vacation spots:vacation in canada:&quot;Canada&quot;</string>
+		<string>.ADDTOCHOICESET:vacation spots:vacation in europe:&quot;Europe&quot;</string>
+		<string>Where do you want to go on vacation?</string>
+		<string>.SHOWCHOICESET:vacation spots</string>
 		<string>Also, I&apos;m going to change the font name.</string>
 		<string>.SETSPEECHFONT:Courier New</string>
 		<string>How does this look?</string>

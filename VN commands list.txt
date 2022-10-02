@@ -591,3 +591,88 @@ Example: .addsprite:girl.png:NO
 
   Example: .MODIFYCHOICEBOXOFFSET:10:10
 
+================
+
+ Name: .SCALEBACKGROUND
+            
+ Changes background scale (1.0 being the "normal" scale)
+            
+  Parameters:
+            
+      #1: Scale (double)
+            
+      #2: (OPTIONAL) Duration in seconds; 0 results in instantaneous scaling (double)
+            
+  Example: .SCALEBACKGROUND:2.5:1
+            
+================
+
+  Name: .SCALESPRITE
+
+  Changes sprite scale (1.0 being the "normal" scale)
+
+  Parameters:
+
+      #1: Name of sprite (string)
+
+      #2: Scale (default is 1.0) (double)
+
+      #3: (OPTIONAL) Duration in seconds; 0 results in instantaneous scaling (double)
+
+  Example: .SCALESPRITE:girl.png:2:1.5
+
+================
+
+  Name: .SCALESPRITE
+
+  Changes sprite scale (1.0 being the "normal" scale)
+
+  Parameters:
+
+      #1: Name of sprite (string)
+
+      #2: Scale (default is 1.0) (double)
+
+      #3: (OPTIONAL) Duration in seconds; 0 results in instantaneous scaling (double)
+
+  Example: .SCALESPRITE:girl.png:2:1.5
+
+================
+
+  Name: .REMOVEFROMCHOICESET
+
+  Removes a single location (and the accompanying choice text) from a choice set
+
+  Parameters:
+
+      #1: The choice set that a choice will be removed from (String)
+
+      #2: The destination to remove (String)
+
+  Example: .REMOVEFROMCHOICESET:locations to travel:San Francisco
+
+================
+
+  Name: .WIPECHOICESET
+
+  Removes an entire choice set from memory (both RAM and from SMRecord / device storage)
+
+  Parameters:
+
+      #1: The name of the choice set to remove from memory (String)
+
+  Example: .WIPECHOICESET:locations to travel
+
+================
+
+  Name: .SHOWCHOICESET
+
+  Displays the entire choice set on screen so the player can choose
+
+  Parameters:
+
+      #1: The name of the choice set to display (String)
+
+  Example: .SHOWCHOICESET:locations to travel
+
+================

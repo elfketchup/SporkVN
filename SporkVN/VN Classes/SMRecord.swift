@@ -65,7 +65,8 @@ let SMRecordDateSavedKey            = "date saved"       // The last time any da
 let SMRecordDataKey                 = "record"               // THe NSData object that holds the dictionary with all the other saved-game data
 let SMRecordFlagsKey                = "flag data"            // Key for a dictionary of "flag" data
 let SMRecordDateSavedAsString       = "date saved as string" // A string with a more human-readable version of the NSDate object
-let SMRecordSpriteAliasesKey	    = "sprite aliases"       // stores all sprite aliases in use by the game 
+let SMRecordSpriteAliasesKey	    = "sprite aliases"       // stores all sprite aliases in use by the game
+let SMRecordChoiceSetsKey           = "choice sets"          // stores sets
 
 // Keys for activity data
 let SMRecordCurrentActivityDictKey  = "current activity" // Used to locate the activity data in the User Defaults
@@ -449,6 +450,20 @@ class SMRecord {
         
         modifiedInteger = modifiedInteger + integer
         self.setFlagValue(object: NSNumber(value: modifiedInteger), flagNamed: flagNamed)
+    }
+    
+    // MARK: - Choice sets
+    
+    func saveChoiceSetsToRecord(dictionary:NSDictionary) {
+        record.setValue(dictionary, forKey: SMRecordChoiceSetsKey)
+    }
+    
+    func choiceSetsFromRecord() -> NSDictionary {
+        if let savedChoiceSets = record.object(forKey: SMRecordChoiceSetsKey) as? NSDictionary {
+            return savedChoiceSets
+        }
+        
+        return NSDictionary() // empty choice set
     }
     
     // MARK: - Activity data

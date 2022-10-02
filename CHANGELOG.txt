@@ -1,3 +1,7 @@
+version 1.2.1 Oct-1-2022
+. Added "Choice Sets" functionality for dynamically adding and removing entries to a user "choice" segment.
+. Also fixed a bug with choices segments where choices didn't display properly if there were too many choices (turned out this was an issue with the buttons Y coordinates).
+
 version 1.2 Dec-27-2021
 . Updated for use with iOS 15.2
 . Now uses SMTextNode for text: the project is now all-Swift and no longer uses Objective-C classes

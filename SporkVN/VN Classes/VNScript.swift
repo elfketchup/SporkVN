@@ -67,6 +67,10 @@ let VNScriptCommandRollDice                 = 136
 let VNScriptCommandModifyChoiceboxOffset    = 137
 let VNScriptCommandScaleBackground          = 138
 let VNScriptCommandScaleSprite              = 139
+let VNScriptCommandAddToChoiceSet           = 140
+let VNScriptCommandRemoveFromChoiceSet      = 141
+let VNScriptCommandWipeChoiceSet            = 142
+let VNScriptCommandShowChoiceSet            = 143
 
 // The command strings. Each one starts with a dot (the parser will only check treat a line as a command if it starts
 // with a dot), and is followed by some parameters, separated by colons.
@@ -108,6 +112,10 @@ let VNScriptStringRollDice                  = ".rolldice"            // rolls di
 let VNScriptStringModifyChoiceboxOffset     = ".modifychoiceboxoffset" // adds X/Y offset to button coordinates during choices (default = 0,0)
 let VNScriptStringScaleBackground           = ".scalebackground"     // changes background scale
 let VNScriptStringScaleSprite               = ".scalesprite"         // changes sprite scale
+let VNScriptStringAddToChoiceSet            = ".addtochoiceset"      // Adds a line of text choice and script section that it will jump to to a "choice set"
+let VNScriptStringRemoveFromChoiceSet       = ".removefromchoiceset" // Removes a line of text / jump from a choice set
+let VNScriptStringWipeChoiceSet             = ".wipechoiceset"       // Completely removes a Choice Set (this saves memory)
+let VNScriptStringShowChoiceSet             = ".showchoiceset"       // Shows a series of choices from a set that can be dynamically modified
 
 // Script syntax
 let VNScriptSeparationString               = ":"
@@ -1796,8 +1804,106 @@ class VNScript {
             let durationNumber = NSNumber(value: inputDuration.doubleValue)
             
             analyzedArray = NSArray(objects: type, parameter1, scaleNumber, durationNumber);
+        } else if( action.caseInsensitiveCompare(VNScriptStringAddToChoiceSet) == ComparisonResult.orderedSame) {
+            
+            // Function definition
+            //
+            //  Name: .ADDTOCHOICESET
+            //
+            //  Adds a choice (specifically, a line of dilaogue and a destination to jump to) to a choice set.
+            //
+            //  Parameters:
+            //
+            //      #1: The choice set to add to (String)
+            //
+            //      #2: The destination to jump to (String)
+            //
+            //      #3: The text to display as a choice (String)
+            //
+            //  Example: .ADDTOCHOICESET:locations to travel:San Francisco:"I want to go to San Francisco!"
+            //
+            
+            if command.count < 4 {
+                return nil
+            }
+            
+            let setName             = parameter1
+            let destinationString   = command.object(at: 2) as! NSString
+            let textToDisplay       = command.object(at: 3) as! NSString
+            
+            type = VNScriptCommandAddToChoiceSet as NSNumber
+            
+            analyzedArray = NSArray(objects: type, setName, destinationString, textToDisplay)
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringRemoveFromChoiceSet) == ComparisonResult.orderedSame) {
+            
+            // Function definition
+            //
+            //  Name: .REMOVEFROMCHOICESET
+            //
+            //  Removes a single location (and the accompanying choice text) from a choice set
+            //
+            //  Parameters:
+            //
+            //      #1: The choice set that a choice will be removed from (String)
+            //
+            //      #2: The destination to remove (String)
+            //
+            //  Example: .REMOVEFROMCHOICESET:locations to travel:San Francisco
+            //
+            
+            if command.count < 3 {
+                return nil
+            }
+            
+            let destinationString   = command.object(at: 2) as! String
+            type                    = VNScriptCommandRemoveFromChoiceSet as NSNumber
+            analyzedArray           = NSArray(objects: type, parameter1, destinationString)
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringWipeChoiceSet) == ComparisonResult.orderedSame) {
+            
+            // Function definition
+            //
+            //  Name: .WIPECHOICESET
+            //
+            //  Removes an entire choice set from memory (both RAM and from SMRecord / device storage)
+            //
+            //  Parameters:
+            //
+            //      #1: The name of the choice set to remove from memory (String)
+            //
+            //  Example: .WIPECHOICESET:locations to travel
+            //
+            
+            if command.count < 2 {
+                return nil
+            }
+            
+            type = VNScriptCommandWipeChoiceSet as NSNumber
+            analyzedArray = NSArray(objects: type, parameter1)
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringShowChoiceSet) == ComparisonResult.orderedSame) {
+            
+            // Function definition
+            //
+            //  Name: .SHOWCHOICESET
+            //
+            //  Displays the entire choice set on screen so the player can choose
+            //
+            //  Parameters:
+            //
+            //      #1: The name of the choice set to display (String)
+            //
+            //  Example: .SHOWCHOICESET:locations to travel
+            //
+            
+            if command.count < 2 {
+                return nil
+            }
+            
+            type = VNScriptCommandShowChoiceSet as NSNumber
+            analyzedArray = NSArray(objects: type, parameter1)
         }
-        
         
         
         return analyzedArray
