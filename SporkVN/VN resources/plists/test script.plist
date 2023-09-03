@@ -55,6 +55,17 @@
 		<string>Hello.</string>
 		<string>.SETBACKGROUND:pond.png</string>
 		<string>Hey, a background!</string>
+		<string>.SETFLAG:ninethousand:9000</string>
+		<string>.SETFLAG:one:1</string>
+		<string>.SETFLAG:overninethousand:9001</string>
+		<string>.ISFLAGMORETHANFLAG:overninethousand:ninethousand:Over Nine Thousand is indeed greater than Nine Thousand</string>
+		<string>.SETFLAG:powerlevel:9001</string>
+		<string>.ISFLAGEQUALTOFLAG:powerlevel:overninethousand:The power level is also Over Nine Thousand</string>
+		<string>.SETFLAG:scouter:8999</string>
+		<string>.ISFLAGLESSTHANFLAG:scouter:ninethousand:The scouter&apos;s max scan is under nine thousand.</string>
+		<string>.INCREASEFLAGBYFLAG:scouter:one</string>
+		<string>.ISFLAGEQUALTOFLAG:scouter:ninethousand:Actually, the scouter can now reach exactly nine thousand.</string>
+		<string>I really hoped all those flag-related commands worked.</string>
 		<string>.ROLLDICE:20</string>
 		<string>.ADDTOCHOICESET:vacation spots:vacation in hawaii:&quot;Hawaii&quot;</string>
 		<string>.ADDTOCHOICESET:vacation spots:vacation in thailand:&quot;Thailand&quot;</string>

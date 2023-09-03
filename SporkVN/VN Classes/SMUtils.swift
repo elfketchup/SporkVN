@@ -555,7 +555,7 @@ func SMRollDice( _ numberOfDice:Int, maximumRollValue:Int, plusModifier:Int ) ->
     for _ in 0..<diceCount {
         //random = Int(arc4random_uniform(maxValue))
         random = Int( arc4random() ) % maxValue
-        finalValue = finalValue + random + 1 // adds 1 so that the results are 1-(max)
+        finalValue = finalValue + random + 1 // adds 1 so that the results are: from 1 to (max)
     }
     
     finalValue = finalValue + plusModifier

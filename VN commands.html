@@ -5,10 +5,10 @@
   <meta http-equiv="Content-Style-Type" content="text/css">
   <title></title>
   <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2113.6">
+  <meta name="CocoaVersion" content="2299.7">
   <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; -webkit-text-stroke: #000000; min-height: 16.0px}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; -webkit-text-stroke: #000000}
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; -webkit-text-stroke: #000000; min-height: 16.0px}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; -webkit-text-stroke: #000000}
     span.s1 {font-kerning: none}
   </style>
 </head>
@@ -16,7 +16,7 @@
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .ADDSPRITE</span></p>
 <p class="p1"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses Cocos2D to add a sprite to the screen. By default, the sprite usually appears right</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses SpriteKit to add a sprite to the screen. By default, the sprite usually appears right</span></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>at the center of the screen.</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
@@ -82,7 +82,7 @@
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .MOVESPRITE</span></p>
 <p class="p1"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses Cocos2D actions to move a sprite by a certain number of points.</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses SKActions to move a sprite by a certain number of points.</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
 <p class="p1"><span class="s1"></span><br></p>
@@ -125,7 +125,7 @@
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Changes whatever image (if any) is used as the background. You can set this to 'nil' which removes</span></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>the background entirely, and shows whatever is behind. This is useful if you're overlaying the VN</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>scene over an existing Cocos2D layer/scene node.</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>scene over an existing SpriteKit layer/scene node.</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Unlike some of the other image-switching commands, this one is supposed to do the change instantly.</span></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>It might be helpful to fade-out and then fade-in the scene during transistions so that the background</span></p>
@@ -141,7 +141,7 @@
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .MOVEBACKGROUND</span></p>
 <p class="p1"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses Cocos2D actions to move the background by a certain number of points. This is normally used to</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses SKActions to move the background by a certain number of points. This is normally used to</span></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>pan the background (along the X-axis), but you can move the background up and down as well. Character</span></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>sprites can also be moved along with the background, though usually at a slightly different rate;</span></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>the rate is referred to as the "parallax factor." A parallax factor of 1.0 means that the character</span></p>
@@ -230,7 +230,7 @@
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .FADEIN</span></p>
 <p class="p1"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses Cocos2D to fade-out the VN scene's backgrounds and sprites... and nothing else (UI</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses SpriteKit to fade-out the VN scene's backgrounds and sprites... and nothing else (UI</span></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>elements like speech text are unaffected).</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
@@ -244,7 +244,7 @@
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .FADEOUT</span></p>
 <p class="p1"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses Cocos2D to fade-out the VN scene's backgrounds and sprites... and nothing else (UI</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Uses SpriteKit to fade-out the VN scene's backgrounds and sprites... and nothing else (UI</span></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>elements like speech text are unaffected).</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
@@ -258,7 +258,7 @@
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .PLAYSOUND</span></p>
 <p class="p1"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Plays a sound (any type of sound file supported by Cocos2D/SimpleAudioEngine)</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Plays a sound (any type of sound file supported by SpriteKit/SimpleAudioEngine)</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
 <p class="p1"><span class="s1"></span><br></p>
@@ -689,6 +689,84 @@
 <p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: The name of the choice set to display (String)</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .SHOWCHOICESET:locations to travel</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .ISFLAGLESSTHANFLAG</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Checks if the first flag's value is less than the second flag. If it is, then a secondary command is run.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: Name of the first flag (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#2: Name of the second flag (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#3: Another command</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .ISFLAGLESSTHANFLAG:power_level:over_nine_thousand:.PLAYMUSIC:its_under_nine_thousand.mp3</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .ISFLAGMORETHANFLAG</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Checks if the first flag's value is MORE than the second flag. If it is, then a secondary command is run.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: Name of the first flag (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#2: Name of the second flag (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#3: Another command</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .ISFLAGMORETHANFLAG:power_level:over_nine_thousand:.PLAYMUSIC:itsOVERninethousand.mp3</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .ISFLAGEQUALTOFLAG</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Checks if two flags have the same numerical value. If they do, then a secondary command is run.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: Name of the first flag (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#2: Name of the second flag (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#3: Another command</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .ISFLAGEQUALTOFLAG:left_side:right_side:They're the same.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space"> </span>Function definition</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .INCREASEFLAGBYFLAG</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Increases the first flag by the value of the second flag</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: Name of the first flag, which gets modified (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#2: The name of the second flag; the value of this flag gets added to the first flag (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .INCREASEFLAGBYFLAG:nine_thousand:and_one</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .DECREASEFLAGBYFLAG</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Decreases the first flag by the value of the second flag</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: Name of the first flag, which gets modified (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#2: The name of the second flag, which is used to subtract a value from the first flag (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .DECREASEFLAGBYFLAG:seventy:just_one_i_guess</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1">================</span></p>
 </body>

@@ -1,7 +1,7 @@
 
   Name: .ADDSPRITE
 
-  Uses Cocos2D to add a sprite to the screen. By default, the sprite usually appears right
+  Uses SpriteKit to add a sprite to the screen. By default, the sprite usually appears right
   at the center of the screen.
 
   Parameters:
@@ -67,7 +67,7 @@ Example: .addsprite:girl.png:NO
 
   Name: .MOVESPRITE
 
-  Uses Cocos2D actions to move a sprite by a certain number of points.
+  Uses SKActions to move a sprite by a certain number of points.
 
   Parameters:
 
@@ -110,7 +110,7 @@ Example: .addsprite:girl.png:NO
 
   Changes whatever image (if any) is used as the background. You can set this to 'nil' which removes
   the background entirely, and shows whatever is behind. This is useful if you're overlaying the VN
-  scene over an existing Cocos2D layer/scene node.
+  scene over an existing SpriteKit layer/scene node.
 
   Unlike some of the other image-switching commands, this one is supposed to do the change instantly.
   It might be helpful to fade-out and then fade-in the scene during transistions so that the background
@@ -126,7 +126,7 @@ Example: .addsprite:girl.png:NO
 
   Name: .MOVEBACKGROUND
 
-  Uses Cocos2D actions to move the background by a certain number of points. This is normally used to
+  Uses SKActions to move the background by a certain number of points. This is normally used to
   pan the background (along the X-axis), but you can move the background up and down as well. Character
   sprites can also be moved along with the background, though usually at a slightly different rate;
   the rate is referred to as the "parallax factor." A parallax factor of 1.0 means that the character
@@ -215,7 +215,7 @@ Example: .addsprite:girl.png:NO
 
   Name: .FADEIN
 
-  Uses Cocos2D to fade-out the VN scene's backgrounds and sprites... and nothing else (UI
+  Uses SpriteKit to fade-out the VN scene's backgrounds and sprites... and nothing else (UI
   elements like speech text are unaffected).
 
   Parameters:
@@ -229,7 +229,7 @@ Example: .addsprite:girl.png:NO
 
   Name: .FADEOUT
 
-  Uses Cocos2D to fade-out the VN scene's backgrounds and sprites... and nothing else (UI
+  Uses SpriteKit to fade-out the VN scene's backgrounds and sprites... and nothing else (UI
   elements like speech text are unaffected).
 
   Parameters:
@@ -243,7 +243,7 @@ Example: .addsprite:girl.png:NO
 
   Name: .PLAYSOUND
 
-  Plays a sound (any type of sound file supported by Cocos2D/SimpleAudioEngine)
+  Plays a sound (any type of sound file supported by SpriteKit/SimpleAudioEngine)
 
   Parameters:
 
@@ -674,5 +674,83 @@ Example: .addsprite:girl.png:NO
       #1: The name of the choice set to display (String)
 
   Example: .SHOWCHOICESET:locations to travel
+
+================
+
+  Name: .ISFLAGLESSTHANFLAG
+
+  Checks if the first flag's value is less than the second flag. If it is, then a secondary command is run.
+
+  Parameters:
+
+      #1: Name of the first flag (string)
+
+      #2: Name of the second flag (string)
+
+      #3: Another command
+
+  Example: .ISFLAGLESSTHANFLAG:power_level:over_nine_thousand:.PLAYMUSIC:its_under_nine_thousand.mp3
+
+================
+
+  Name: .ISFLAGMORETHANFLAG
+
+  Checks if the first flag's value is MORE than the second flag. If it is, then a secondary command is run.
+
+  Parameters:
+
+      #1: Name of the first flag (string)
+
+      #2: Name of the second flag (string)
+
+      #3: Another command
+
+  Example: .ISFLAGMORETHANFLAG:power_level:over_nine_thousand:.PLAYMUSIC:itsOVERninethousand.mp3
+
+================
+
+  Name: .ISFLAGEQUALTOFLAG
+
+  Checks if two flags have the same numerical value. If they do, then a secondary command is run.
+
+  Parameters:
+
+      #1: Name of the first flag (string)
+
+      #2: Name of the second flag (string)
+
+      #3: Another command
+
+  Example: .ISFLAGEQUALTOFLAG:left_side:right_side:They're the same.
+
+================
+
+ Function definition
+
+  Name: .INCREASEFLAGBYFLAG
+
+  Increases the first flag by the value of the second flag
+
+  Parameters:
+
+      #1: Name of the first flag, which gets modified (string)
+
+      #2: The name of the second flag; the value of this flag gets added to the first flag (string)
+
+  Example: .INCREASEFLAGBYFLAG:nine_thousand:and_one
+
+================
+
+  Name: .DECREASEFLAGBYFLAG
+
+  Decreases the first flag by the value of the second flag
+
+  Parameters:
+
+      #1: Name of the first flag, which gets modified (string)
+
+      #2: The name of the second flag, which is used to subtract a value from the first flag (string)
+
+  Example: .DECREASEFLAGBYFLAG:seventy:just_one_i_guess
 
 ================

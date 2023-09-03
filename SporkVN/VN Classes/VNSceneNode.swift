@@ -2511,7 +2511,7 @@ class VNSceneNode : SKNode {
             sprite.run(movementSequence)
             
             
-            // Instantly set a sprite's position (this is similar to the "move sprite" command, except this happens instantly).
+        // Instantly set a sprite's position (this is similar to the "move sprite" command, except this happens instantly).
         // While instant movement can look strange, there are some situations it can be useful.
         case VNScriptCommandSetSpritePosition:
             
@@ -2755,11 +2755,11 @@ class VNSceneNode : SKNode {
             }
             
             
-            // This command causes the background image and character sprites to "fade in" (go from being fully transparent to being
-            // opaque).
-            //
-            // Note that if you want a fade-to-black (or rather, fade-FROM-black) effect, it helps if this CCLayer is being run in
-            // its own CCScene. If the layer has just been added on to an existing CCScene/CCLayer, then hopefully there's a big
+        // This command causes the background image and character sprites to "fade in" (go from being fully transparent to being
+        // opaque).
+        //
+        // Note that if you want a fade-to-black (or rather, fade-FROM-black) effect, it helps if this CCLayer is being run in
+        // its own CCScene. If the layer has just been added on to an existing CCScene/CCLayer, then hopefully there's a big
         // black image behind it or something.
         case VNScriptCommandEffectFadeIn:
             
@@ -2808,7 +2808,7 @@ class VNSceneNode : SKNode {
             viewSettings.setValue(NSNumber(value: 1.0), forKey: VNSceneViewDefaultBackgroundOpacityKey)
             
             
-            // This is similar to the above command, except that it causes the character sprites and background to go from being
+        // This is similar to the above command, except that it causes the character sprites and background to go from being
         // fully opaque to fully transparent (or "fade out").
         case VNScriptCommandEffectFadeOut:
             
@@ -2841,8 +2841,8 @@ class VNSceneNode : SKNode {
             
             viewSettings.setValue(NSNumber(value: 0.0), forKey: VNSceneViewDefaultBackgroundOpacityKey)
             
-            // This just plays a sound. I had actually thought about creating some kind of system to keep track of all
-            // the sounds loaded, and then to manually remove them from memory once they were no longer being used,
+        // This just plays a sound. I had actually thought about creating some kind of system to keep track of all
+        // the sounds loaded, and then to manually remove them from memory once they were no longer being used,
         // but I've never gotten around to implementing it.
         case VNScriptCommandPlaySound:
             
@@ -2851,11 +2851,11 @@ class VNSceneNode : SKNode {
             self.playSoundEffect(soundName)
             
             
-            // This plays music (an MP3 file is good, though AAC might be better since iOS devices supposedly have built-in
-            // hardware-decoding for them, or CAF since they have small filesizes and small memory footprints). You can only
-            // play one music file at a time. You can choose whether it loops infinitely, or if it just plays once.
-            //
-            // If you want to STOP music from playing, you can also pass "nil" as the filename (parameter #1) to cause
+        // This plays music (an MP3 file is good, though AAC might be better since iOS devices supposedly have built-in
+        // hardware-decoding for them, or CAF since they have small filesizes and small memory footprints). You can only
+        // play one music file at a time. You can choose whether it loops infinitely, or if it just plays once.
+        //
+        // If you want to STOP music from playing, you can also pass "nil" as the filename (parameter #1) to cause
         // VNScene to stop all music.
         case VNScriptCommandPlayMusic:
             
@@ -2881,8 +2881,8 @@ class VNSceneNode : SKNode {
             }
             
             
-            // This command sets a variable (or "flag"), which is usually an "int" value stored in an NSNumber object by a dictionary.
-            // VNScene stores a local dictionary, and whenever the game is saved, the contents of that dictionary are copied over to
+        // This command sets a variable (or "flag"), which is usually an "int" value stored in an NSNumber object by a dictionary.
+        // VNScene stores a local dictionary, and whenever the game is saved, the contents of that dictionary are copied over to
         // SMRecord's own flags dictionary (and stored in device memory).
         case VNScriptCommandSetFlag:
             
@@ -2896,7 +2896,7 @@ class VNSceneNode : SKNode {
             flags.setValue(flagValue, forKey: flagName)
             
             
-            // This modifies an existing flag's integer value by a certain amount (you might have guessed: a positive value "adds",
+        // This modifies an existing flag's integer value by a certain amount (you might have guessed: a positive value "adds",
         // while a negative "subtracts). If no flag actually exists, then a new flag is created with whatever value was passed in.
         case VNScriptCommandModifyFlagValue:
             
@@ -2947,7 +2947,7 @@ class VNSceneNode : SKNode {
                 script!.currentIndex -= 1
             }
             
-            // This checks if a particular flag is GREATER THAN a certain value. If it does, then it executes ANOTHER command (which starts
+        // This checks if a particular flag is GREATER THAN a certain value. If it does, then it executes ANOTHER command (which starts
         // at the third parameter and continues to whatever comes afterwards).
         case VNScriptCommandIsFlagMoreThan:
             
@@ -2974,7 +2974,7 @@ class VNSceneNode : SKNode {
             }
             
             
-            // This checks if a particular flag LESS THAN certain value. If it does, then it executes ANOTHER command (which starts
+        // This checks if a particular flag LESS THAN certain value. If it does, then it executes ANOTHER command (which starts
         // at the third parameter and continues to whatever comes afterwards).
         case VNScriptCommandIsFlagLessThan:
             
@@ -2999,7 +2999,7 @@ class VNSceneNode : SKNode {
                 script!.currentIndex -= 1;
             }
             
-            // This checks if a particular flag is between two values (a lesser value and a greater value). If thie is the case,
+        // This checks if a particular flag is between two values (a lesser value and a greater value). If thie is the case,
         // then a secondary command is run.
         case VNScriptCommandIsFlagBetween:
             
@@ -3026,7 +3026,7 @@ class VNSceneNode : SKNode {
                 script!.currentIndex -= 1;
             }
             
-            // This command presents the user with a choice menu. When the user makes a choice, it results in the value of a flag
+        // This command presents the user with a choice menu. When the user makes a choice, it results in the value of a flag
         // being modified by a certain amount (just like if the .MODIFYFLAG command had been used).
         case VNScriptCommandModifyFlagOnChoice:
             
@@ -3161,7 +3161,7 @@ class VNSceneNode : SKNode {
             systemCallHelper.sendCall(systemCallArray)
             
             
-            // This command replaces the scene's script with a script loaded from another .PLIST file. This is useful in case
+        // This command replaces the scene's script with a script loaded from another .PLIST file. This is useful in case
         // your script is actually broken up into multiple .PLIST files.
         case VNScriptCommandSwitchScript:
             
@@ -3353,6 +3353,139 @@ class VNSceneNode : SKNode {
             
             let setName = command.object(at: 1) as! String
             displayChoiceSet(setName: setName)
+            
+        // This checks if a particular flag is GREATER THAN a certain value. If it does, then it executes ANOTHER command (which starts
+        // at the third parameter and continues to whatever comes afterwards).
+        case VNScriptCommandIsFlagMoreThanFlag:
+            
+            let firstFlag = String(describing: command.object(at: 1))
+            let secondFlag = String(describing: command.object(at: 2))
+            let secondaryCommand = command.object(at: 3) as! NSArray
+            
+            let firstFlagNumber:NSNumber? = flags.object(forKey: firstFlag) as? NSNumber
+            if firstFlagNumber == nil {
+                return;
+            }
+            
+            let secondFlagNumber:NSNumber? = flags.object(forKey: secondFlag) as? NSNumber
+            if secondFlagNumber == nil {
+                return
+            }
+            
+            let firstValue = firstFlagNumber!.intValue
+            let secondValue = secondFlagNumber!.intValue
+            
+            // halts processing if the first value is NOT greater than the second value
+            if( firstValue <= secondValue ) {
+                return;
+            }
+            
+            self.processCommand(secondaryCommand)
+            
+            let secondaryCommandType = (secondaryCommand.object(at: 0) as! NSNumber).intValue
+            if( secondaryCommandType != VNScriptCommandChangeConversation ) {
+                script!.currentIndex -= 1
+            }
+            
+        // This checks if a flag is LESS THAN another flag's value, and executes another command if it's true.
+        case VNScriptCommandIsFlagLessThanFlag:
+            let firstFlag = String(describing: command.object(at: 1))
+            let secondFlag = String(describing: command.object(at: 2))
+            let secondaryCommand = command.object(at: 3) as! NSArray
+            
+            let firstFlagNumber:NSNumber? = flags.object(forKey: firstFlag) as? NSNumber
+            if firstFlagNumber == nil {
+                return;
+            }
+            
+            let secondFlagNumber:NSNumber? = flags.object(forKey: secondFlag) as? NSNumber
+            if secondFlagNumber == nil {
+                return
+            }
+            
+            let firstValue = firstFlagNumber!.intValue
+            let secondValue = secondFlagNumber!.intValue
+            
+            // halts processing if the first value is NOT LESS than the second value
+            if( firstValue >= secondValue ) {
+                return;
+            }
+            
+            self.processCommand(secondaryCommand)
+            
+            let secondaryCommandType = (secondaryCommand.object(at: 0) as! NSNumber).intValue
+            if( secondaryCommandType != VNScriptCommandChangeConversation ) {
+                script!.currentIndex -= 1
+            }
+            
+        // Check if two flags are of equal numerical value, and if so, then execute another command
+        case VNScriptCommandIsFlagEqualToFlag:
+            let firstFlag = String(describing: command.object(at: 1))
+            let secondFlag = String(describing: command.object(at: 2))
+            let secondaryCommand = command.object(at: 3) as! NSArray
+            
+            let firstFlagNumber:NSNumber? = flags.object(forKey: firstFlag) as? NSNumber
+            if firstFlagNumber == nil {
+                return;
+            }
+            
+            let secondFlagNumber:NSNumber? = flags.object(forKey: secondFlag) as? NSNumber
+            if secondFlagNumber == nil {
+                return
+            }
+            
+            let firstValue = firstFlagNumber!.intValue
+            let secondValue = secondFlagNumber!.intValue
+            
+            // halts processing if the first value is NOT LESS than the second value
+            if( firstValue != secondValue ) {
+                return;
+            }
+            
+            self.processCommand(secondaryCommand)
+            
+            let secondaryCommandType = (secondaryCommand.object(at: 0) as! NSNumber).intValue
+            if( secondaryCommandType != VNScriptCommandChangeConversation ) {
+                script!.currentIndex -= 1
+            }
+            
+        case VNScriptCommandIncreaseFlagByFlag:
+            let firstFlag   = String(describing: command.object(at: 1))
+            let secondFlag  = String(describing: command.object(at: 2))
+            
+            var firstValue = Int(0)
+            var secondValue = Int(0)
+            
+            if let firstFlagObject = flags.object(forKey: firstFlag) as? NSNumber {
+                firstValue = firstFlagObject.intValue
+            }
+            if let secondFlagObject = flags.object(forKey: secondFlag) as? NSNumber {
+                secondValue = secondFlagObject.intValue
+            }
+            
+            let finalValue = firstValue + secondValue
+            let updatedFlag = NSNumber(value: finalValue)
+            
+            flags.setValue(updatedFlag, forKey: firstFlag)
+            
+        case VNScriptCommandDecreaseFlagByFlag:
+            let firstFlag   = String(describing: command.object(at: 1))
+            let secondFlag  = String(describing: command.object(at: 2))
+            
+            var firstValue = Int(0)
+            var secondValue = Int(0)
+            
+            if let firstFlagObject = flags.object(forKey: firstFlag) as? NSNumber {
+                firstValue = firstFlagObject.intValue
+            }
+            if let secondFlagObject = flags.object(forKey: secondFlag) as? NSNumber {
+                secondValue = secondFlagObject.intValue
+            }
+            
+            let finalValue = firstValue - secondValue
+            let updatedFlag = NSNumber(value: finalValue)
+            
+            flags.setValue(updatedFlag, forKey: firstFlag)
             
         default:
             print("[VNScene] WARNING: Unknown command found in script. The command's NSArray is: %@", command);

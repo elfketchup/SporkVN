@@ -71,6 +71,11 @@ let VNScriptCommandAddToChoiceSet           = 140
 let VNScriptCommandRemoveFromChoiceSet      = 141
 let VNScriptCommandWipeChoiceSet            = 142
 let VNScriptCommandShowChoiceSet            = 143
+let VNScriptCommandIsFlagLessThanFlag       = 144
+let VNScriptCommandIsFlagEqualToFlag        = 145
+let VNScriptCommandIsFlagMoreThanFlag       = 146
+let VNScriptCommandIncreaseFlagByFlag       = 147
+let VNScriptCommandDecreaseFlagByFlag       = 148
 
 // The command strings. Each one starts with a dot (the parser will only check treat a line as a command if it starts
 // with a dot), and is followed by some parameters, separated by colons.
@@ -116,6 +121,11 @@ let VNScriptStringAddToChoiceSet            = ".addtochoiceset"      // Adds a l
 let VNScriptStringRemoveFromChoiceSet       = ".removefromchoiceset" // Removes a line of text / jump from a choice set
 let VNScriptStringWipeChoiceSet             = ".wipechoiceset"       // Completely removes a Choice Set (this saves memory)
 let VNScriptStringShowChoiceSet             = ".showchoiceset"       // Shows a series of choices from a set that can be dynamically modified
+let VNScriptStringIsFlagLessThanFlag        = ".isflaglessthanflag"  // Runs a command if the first flag's value is lesser than the secon flag
+let VNScriptStringIsFlagEqualToFlag         = ".isflagequaltoflag"   // Runs a command if the two flags have the same value
+let VNScriptStringIsFlagMoreThanFlag        = ".isflagmorethanflag"  // Runs a command if the first flag's value is greater than the second flag
+let VNScriptStringIncreaseFlagByFlag        = ".increaseflagbyflag"  // Increases flag by however much another flag's value is
+let VNScriptStringDecreaseFlagByFlag        = ".decreaseflagbyflag"  // Subtracts the second flag's value from the first flag
 
 // Script syntax
 let VNScriptSeparationString               = ":"
@@ -1676,7 +1686,7 @@ class VNScript {
             //
             //      #1: Maximum value of roll; possible results = 1 to (max value) (Integer)
             //
-            //      #2: (OPTIONAL) Number of dice, default is zero (Integer)
+            //      #2: (OPTIONAL) Number of dice, default is one (Integer)
             //
             //      #3: (OPTIONAL) Name of flag, adds integer value in flag to final result (String)
             //          (default is ".nil")
@@ -1804,6 +1814,7 @@ class VNScript {
             let durationNumber = NSNumber(value: inputDuration.doubleValue)
             
             analyzedArray = NSArray(objects: type, parameter1, scaleNumber, durationNumber);
+            
         } else if( action.caseInsensitiveCompare(VNScriptStringAddToChoiceSet) == ComparisonResult.orderedSame) {
             
             // Function definition
@@ -1903,6 +1914,218 @@ class VNScript {
             
             type = VNScriptCommandShowChoiceSet as NSNumber
             analyzedArray = NSArray(objects: type, parameter1)
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringIsFlagLessThanFlag) == ComparisonResult.orderedSame ) {
+            
+            // Function definition
+            //
+            //  Name: .ISFLAGLESSTHANFLAG
+            //
+            //  Checks if the first flag's value is less than the second flag. If it is, then a secondary command is run.
+            //
+            //  Parameters:
+            //
+            //      #1: Name of the first flag (string)
+            //
+            //      #2: Name of the second flag (string)
+            //
+            //      #3: Another command
+            //
+            //  Example: .ISFLAGLESSTHANFLAG:power_level:over_nine_thousand:.PLAYMUSIC:its_under_nine_thousand.mp3
+            //
+            
+            if( command.count < 4 ) {
+                return nil;
+            }
+            
+            let firstFlag:NSString?     = command.object(at: 1) as? NSString
+            let secondFlag:NSString?    = command.object(at: 2) as? NSString
+            let extraCount              = command.count - 3; // This number = secondary command + secondary command's parameters
+            
+            if( firstFlag == nil || secondFlag == nil ) {
+                print("[VNScript] ERROR: Invalid variable name or value in .ISFLAGLESSTHANFLAG command");
+                return nil;
+            }
+            
+            let extraCommand:NSMutableArray = NSMutableArray(capacity: extraCount)
+            
+            for i in 3 ..< command.count  {
+                let partOfCommand:NSString = command.object(at: i) as! NSString
+                extraCommand.add(partOfCommand)
+            }
+            
+            let secondaryCommand:NSArray? = analyzedCommand(extraCommand)
+            if( secondaryCommand == nil ) {
+                print("[VNScript] ERROR: Could not translate secondary command of .ISFLAGLESSTHANFLAG");
+                return nil;
+            }
+            
+            type = VNScriptCommandIsFlagLessThanFlag as NSNumber
+            //analyzedArray = NSArray(objects: type, variableName!, expectedValue!, secondaryCommand!)
+            analyzedArray = NSArray(objects: type, firstFlag!, secondFlag!, secondaryCommand!)
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringIsFlagMoreThanFlag) == ComparisonResult.orderedSame ) {
+            
+            // Function definition
+            //
+            //  Name: .ISFLAGMORETHANFLAG
+            //
+            //  Checks if the first flag's value is MORE than the second flag. If it is, then a secondary command is run.
+            //
+            //  Parameters:
+            //
+            //      #1: Name of the first flag (string)
+            //
+            //      #2: Name of the second flag (string)
+            //
+            //      #3: Another command
+            //
+            //  Example: .ISFLAGMORETHANFLAG:power_level:over_nine_thousand:.PLAYMUSIC:itsOVERninethousand.mp3
+            //
+            
+            if( command.count < 4 ) {
+                return nil;
+            }
+            
+            let firstFlag:NSString?     = command.object(at: 1) as? NSString
+            let secondFlag:NSString?    = command.object(at: 2) as? NSString
+            let extraCount              = command.count - 3; // This number = secondary command + secondary command's parameters
+            
+            if( firstFlag == nil || secondFlag == nil ) {
+                print("[VNScript] ERROR: Invalid variable name or value in .ISFLAGMORETHANFLAG command");
+                return nil;
+            }
+            
+            let extraCommand:NSMutableArray = NSMutableArray(capacity: extraCount)
+            
+            for i in 3 ..< command.count  {
+                let partOfCommand:NSString = command.object(at: i) as! NSString
+                extraCommand.add(partOfCommand)
+            }
+            
+            let secondaryCommand:NSArray? = analyzedCommand(extraCommand)
+            if( secondaryCommand == nil ) {
+                print("[VNScript] ERROR: Could not translate secondary command of .ISFLAGMORETHANFLAG");
+                return nil;
+            }
+            
+            type = VNScriptCommandIsFlagMoreThanFlag as NSNumber
+            //analyzedArray = NSArray(objects: type, variableName!, expectedValue!, secondaryCommand!)
+            analyzedArray = NSArray(objects: type, firstFlag!, secondFlag!, secondaryCommand!)
+            
+        } else if( action.caseInsensitiveCompare(VNScriptStringIsFlagEqualToFlag) == ComparisonResult.orderedSame ) {
+            
+            // Function definition
+            //
+            //  Name: .ISFLAGEQUALTOFLAG
+            //
+            //  Checks if two flags have the same numerical value. If they do, then a secondary command is run.
+            //
+            //  Parameters:
+            //
+            //      #1: Name of the first flag (string)
+            //
+            //      #2: Name of the second flag (string)
+            //
+            //      #3: Another command
+            //
+            //  Example: .ISFLAGEQUALTOFLAG:left_side:right_side:They're the same.
+            //
+            
+            if( command.count < 4 ) {
+                return nil;
+            }
+            
+            let firstFlag:NSString?     = command.object(at: 1) as? NSString
+            let secondFlag:NSString?    = command.object(at: 2) as? NSString
+            let extraCount              = command.count - 3; // This number = secondary command + secondary command's parameters
+            
+            if( firstFlag == nil || secondFlag == nil ) {
+                print("[VNScript] ERROR: Invalid variable name or value in .ISFLAGEQUALTOFLAG command");
+                return nil;
+            }
+            
+            let extraCommand:NSMutableArray = NSMutableArray(capacity: extraCount)
+            
+            for i in 3 ..< command.count  {
+                let partOfCommand:NSString = command.object(at: i) as! NSString
+                extraCommand.add(partOfCommand)
+            }
+            
+            let secondaryCommand:NSArray? = analyzedCommand(extraCommand)
+            if( secondaryCommand == nil ) {
+                print("[VNScript] ERROR: Could not translate secondary command of .ISFLAGEQUALTOFLAG");
+                return nil;
+            }
+            
+            type = VNScriptCommandIsFlagEqualToFlag as NSNumber
+            //analyzedArray = NSArray(objects: type, variableName!, expectedValue!, secondaryCommand!)
+            analyzedArray = NSArray(objects: type, firstFlag!, secondFlag!, secondaryCommand!)
+        
+        } else if action.caseInsensitiveCompare(VNScriptStringIncreaseFlagByFlag) == ComparisonResult.orderedSame {
+            
+            // Function definition
+            //
+            //  Name: .INCREASEFLAGBYFLAG
+            //
+            //  Increases the first flag by the value of the second flag
+            //
+            //  Parameters:
+            //
+            //      #1: Name of the first flag, which gets modified (string)
+            //
+            //      #2: The name of the second flag; the value of this flag gets added to the first flag (string)
+            //
+            //  Example: .INCREASEFLAGBYFLAG:nine_thousand:and_one
+            //
+            
+            if command.count < 3 {
+                return nil
+            }
+            
+            let firstFlag:NSString?     = command.object(at: 1) as? NSString
+            let secondFlag:NSString?    = command.object(at: 2) as? NSString
+            
+            if firstFlag == nil || secondFlag == nil {
+                print("[VNScript] ERROR: Invalid variable name or value in .INCREASEFLAGBYFLAG command");
+                return nil
+            }
+            
+            type = VNScriptCommandIncreaseFlagByFlag as NSNumber
+            analyzedArray = NSArray(objects: type, firstFlag!, secondFlag!)
+            
+        } else if action.caseInsensitiveCompare(VNScriptStringDecreaseFlagByFlag) == ComparisonResult.orderedSame {
+            
+            // Function definition
+            //
+            //  Name: .DECREASEFLAGBYFLAG
+            //
+            //  Decreases the first flag by the value of the second flag
+            //
+            //  Parameters:
+            //
+            //      #1: Name of the first flag, which gets modified (string)
+            //
+            //      #2: The name of the second flag, which is used to subtract a value from the first flag (string)
+            //
+            //  Example: .DECREASEFLAGBYFLAG:seventy:just_one_i_guess
+            //
+            
+            if command.count < 3 {
+                return nil
+            }
+            
+            let firstFlag:NSString?     = command.object(at: 1) as? NSString
+            let secondFlag:NSString?    = command.object(at: 2) as? NSString
+            
+            if firstFlag == nil || secondFlag == nil {
+                print("[VNScript] ERROR: Invalid variable name or value in .DECREASEFLAGBYFLAG command");
+                return nil
+            }
+            
+            type = VNScriptCommandDecreaseFlagByFlag as NSNumber
+            analyzedArray = NSArray(objects: type, firstFlag!, secondFlag!)
+            
         }
         
         
