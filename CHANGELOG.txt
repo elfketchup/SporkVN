@@ -1,3 +1,6 @@
+version 1.2.3 October 1, 2023
+. Added "fade in" UI feature for when the user needs to make a choice, as having the boxes fade in very quickly (about 0.2 seconds) looks nicer than the choices just instantly appearing on screen. 
+
 version 1.2.2 Sep-2-2023
 . Added commands for comparing the numerical value of flags against other flags.
 . Added commands for modifying flags using the values stored in other flags.

@@ -46,6 +46,8 @@
 	<integer>0</integer>
 	<key>choicebox offset y</key>
 	<integer>0</integer>
+	<key>choicebox fadein</key>
+	<true/>
 	<key>speechbox text color</key>
 	<dict>
 		<key>r</key>
