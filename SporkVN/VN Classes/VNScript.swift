@@ -76,6 +76,8 @@ let VNScriptCommandIsFlagEqualToFlag        = 145
 let VNScriptCommandIsFlagMoreThanFlag       = 146
 let VNScriptCommandIncreaseFlagByFlag       = 147
 let VNScriptCommandDecreaseFlagByFlag       = 148
+let VNScriptCommandShowChoiceAndJump        = 149
+let VNScriptCommandShowChoiceAndModify      = 150
 
 // The command strings. Each one starts with a dot (the parser will only check treat a line as a command if it starts
 // with a dot), and is followed by some parameters, separated by colons.
@@ -126,6 +128,8 @@ let VNScriptStringIsFlagEqualToFlag         = ".isflagequaltoflag"   // Runs a c
 let VNScriptStringIsFlagMoreThanFlag        = ".isflagmorethanflag"  // Runs a command if the first flag's value is greater than the second flag
 let VNScriptStringIncreaseFlagByFlag        = ".increaseflagbyflag"  // Increases flag by however much another flag's value is
 let VNScriptStringDecreaseFlagByFlag        = ".decreaseflagbyflag"  // Subtracts the second flag's value from the first flag
+let VNScriptStringShowChoiceAndJump         = ".showchoiceandjump"   // Shows a line of dialogue and then displays choice at the same time
+let VNScriptStringShowChoiceAndModify       = ".showchoiceandmodify" // Shows a line of dialogue and then displays choice (for modifying flag)
 
 // Script syntax
 let VNScriptSeparationString               = ":"
@@ -2126,6 +2130,109 @@ class VNScript {
             type = VNScriptCommandDecreaseFlagByFlag as NSNumber
             analyzedArray = NSArray(objects: type, firstFlag!, secondFlag!)
             
+        } else if action.caseInsensitiveCompare(VNScriptStringShowChoiceAndJump) == ComparisonResult.orderedSame {
+            
+            // Function definition
+            //
+            //  Name: .SHOWCHOICEANDJUMP
+            //
+            //  This displays a line of dialogue and simultaneously presents the player with multiple choices. Each choice
+            //  causes the scene to jump to a different "conversation" (or rather, an array in the script dictionary).
+            //  The function can have multipe parameters, but the number should always be odd-numbered.
+            //
+            //  Parameters:
+            //
+            //      #1. The line of dialogue to display (string) (example: "What do you want to do next?")
+            //
+            //      #2: The name of the first action (shows up on button when player decides) (string) (example: "Run away")
+            //
+            //      #3: The name of the conversation to jump to (string) (example: "fleeing sequence")
+            //
+            //      ...these variables can be repeated multiple times.
+            //
+            //  Example: .JUMPONCHOICE:"What do you want to do?":"Hug someone":hug sequence:"Glomp someone":glomp sequence
+            //
+            
+            // Figure out how many choices there are
+            let numberOfChoices:Int = (command.count - 2) / 2;
+            
+            // Check if there's not enough data
+            if( numberOfChoices < 1 || command.count < 4 ) {
+                return nil;
+            }
+            
+            // Create some arrays; one will hold the text that appears to the player, while the other will hold
+            // the names of the conversations/arrays that the script will switch to depending on the player's choice.
+            let choiceText:NSMutableArray   = NSMutableArray(capacity: numberOfChoices)
+            let destinations:NSMutableArray = NSMutableArray(capacity: numberOfChoices)
+            
+            // After determining the number of choices that exist, use a loop to match each choice text with the
+            // name of the conversation that each choice would correspond to. Then add both to the appropriate arrays.
+            for i in 0 ..< numberOfChoices { //for( int i = 0; i < numberOfChoices; i++ ) {
+                
+                // This variable will hold 1 and then every odd number after. It starts at one because index "zero"
+                // is where the actual .JUMPONCHOICE string is stored.
+                let indexOfChoice = 2 + (2 * i);
+                
+                // Add choice data to the two separate arrays
+                choiceText.add( command.object(at: indexOfChoice) )
+                destinations.add( command.object(at: indexOfChoice+1) )
+            }
+            
+            type            = VNScriptCommandShowChoiceAndJump as NSNumber
+            let dialogue    = command.object(at: 1) as! NSString
+            analyzedArray   = NSArray(objects: type, dialogue, choiceText, destinations)
+        } else if action.caseInsensitiveCompare(VNScriptStringShowChoiceAndModify) == ComparisonResult.orderedSame {
+            // Function definition
+            //
+            //  Name: .SHOWCHOICEANDMODIFY
+            //
+            //  This is the quicker version of .MODIFYFLAGBYCHOICE, and it shows a line of dialogue and also a choice
+            //  at the same time (instead of there being a slight delay between the two commands, which is what normally happens).
+            //
+            //  Parameters:
+            //
+            //      #1: The line of dialogue/narration to display (string)
+            //
+            //      #1: The text label that will appear on the choice buttons (string)
+            //
+            //      #2: The name of the flag/variable to be modified (string)
+            //
+            //      #3: The amount to modify the flag/variable by (integer)
+            //
+            //      ...these variables can be repeated multiple times.
+            //
+            //  Example: .SHOWCHOICEANDMODIFY:"Do you want to be nice about it?":"Be nice":niceness:1:"Be rude":niceness:-1
+            //
+            
+            let numberOfChoices = (command.count - 2) / 3; // the first two items in the array aren't part of the choices (if you know what I mean)
+            
+            // Create some empty mutable arrays
+            let choiceText:NSMutableArray       = NSMutableArray(capacity: numberOfChoices)
+            let variableNames:NSMutableArray    = NSMutableArray(capacity: numberOfChoices)
+            let variableValues:NSMutableArray   = NSMutableArray(capacity: numberOfChoices)
+            
+            for i in 0 ..< numberOfChoices  {
+                // This is used as an offset in order to get the right index numbers for the 'command' array.
+                // It starts at 2 and then jumps to every third number thereafter (from 1 to 4, 7, 10, 13, etc).
+                let nameIndex = 2 + (i * 3);
+                
+                // Get the parameters for the command array
+                let text:NSString   = command.object(at: nameIndex) as! NSString // Text to show to player
+                let name:NSString   = command.object(at: nameIndex+1) as! NSString // The name of the flag to modify
+                let check:NSString  = command.object(at: nameIndex+2) as! NSString // The amount to modify the flag by
+                
+                let convertedToNumber = NSNumber(value: check.integerValue)
+                
+                // Move each value to the appropriate array
+                choiceText.add(text)
+                variableNames.add(name)
+                variableValues.add(convertedToNumber)
+            }
+            
+            type = VNScriptCommandShowChoiceAndModify as NSNumber
+            let dialogue = command.object(at: 1) as! NSString
+            analyzedArray = NSArray(objects: type, dialogue, choiceText, variableNames, variableValues)
         }
         
         

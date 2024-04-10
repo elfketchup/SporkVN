@@ -569,6 +569,7 @@ class SMRecord {
         
         store.setValue(currentDate, forKey: SMRecordDateSavedKey)
         store.setValue(recordAsData, forKey: SMRecordDataSavedKey)
+        store.synchronize() // iCloud might not immediately store the new data, but this lets it know there IS new data
         
         print("[SMRecord] Did finish attempting to save data to the cloud.")
         

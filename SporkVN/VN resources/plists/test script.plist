@@ -49,12 +49,20 @@
 		<string>.ISFLAGLESSTHAN:matsuri_color:1:You shouldn&apos;t see this.</string>
 		<string>Well, that&apos;s that for now!</string>
 	</array>
+	<key>showchoicejumptest</key>
+	<array>
+		<string>Alright, we&apos;re going to test the .SHOWCHOICEANDJUMP command.</string>
+		<string>.SHOWCHOICEANDJUMP:Do you want to go to the moon or to Mars?:The Moon, baby!:spacemoon:Mars is cooler:spacemars</string>
+	</array>
 	<key>start</key>
 	<array>
 		<string>.setspeaker:Mysterious Narrator!</string>
 		<string>Hello.</string>
 		<string>.SETBACKGROUND:pond.png</string>
 		<string>Hey, a background!</string>
+		<string>.SHOWCHOICEANDMODIFY:Is Naruto going to become Hokage?:Yeah, believe it:hokage:1:Nah fam:hokage:0:Kakashi first though?:hokage:1</string>
+		<string>.ISFLAG:hokage:1:Yeah, he&apos;s going to become the Seventh Hokage!</string>
+		<string>.ISFLAG:hokage:0:Wow, I guess you don&apos;t believe in the Number One Most Surprising Ninja, huh?</string>
 		<string>.SETFLAG:ninethousand:9000</string>
 		<string>.SETFLAG:one:1</string>
 		<string>.SETFLAG:overninethousand:9001</string>
@@ -120,6 +128,21 @@
 		<string>.ISFLAG:matsuri_color:0:You like the non-colored version better?</string>
 		<string>.JUMPONFLAG:matsuri_color:1:color</string>
 		<string>.SETCONVERSATION:sketch</string>
+	</array>
+	<key>spacemars</key>
+	<array>
+		<string>You&apos;re right, it&apos;s better to go to Mars.</string>
+		<string>Maybe you can find the rover that went there.</string>
+		<string>Also, at least there&apos;s some atmosphere.</string>
+		<string>Even if it&apos;s just CO2.</string>
+		<string>I wonder if all that red would get weird after a while?</string>
+	</array>
+	<key>spacemoon</key>
+	<array>
+		<string>Let&apos;s be real, the moon would be more practical.</string>
+		<string>And a moon base would be pretty awesome.</string>
+		<string>Plus you can look up at the sky and see Earth, which is pretty awesome.</string>
+		<string>I wonder if there&apos;s any flags left standing on the moon?</string>
 	</array>
 </dict>
 </plist>

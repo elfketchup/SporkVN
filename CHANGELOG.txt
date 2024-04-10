@@ -1,3 +1,6 @@
+version 1.2.4 April 9, 2024
+. Added .SHOWCHOICEANDJUMP and .SHOWCHOICEANDMODIFY commands, which are really just .JUMPONCHOICE and .MODIFYFLAGBYCHOICE, but they're "faster." By this, I mean that they display a line of dialogue AND the choice buttons at the same time, which is slighly faster than the original commands, in which dialogue would be displayed by one command, and then the command to bring up buttons for the player to choose would be done on another command. This is probably negligible unless your game includes many, many commands / choice segments for the player, in which case they'll probably notice eventually and get annoyed by that tiny delay. Maybe.
+
 version 1.2.3 October 1, 2023
 . Added "fade in" UI feature for when the user needs to make a choice, as having the boxes fade in very quickly (about 0.2 seconds) looks nicer than the choices just instantly appearing on screen. 
 

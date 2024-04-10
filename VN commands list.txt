@@ -754,3 +754,44 @@ Example: .addsprite:girl.png:NO
   Example: .DECREASEFLAGBYFLAG:seventy:just_one_i_guess
 
 ================
+
+  Name: .SHOWCHOICEANDJUMP
+
+  This displays a line of dialogue and simultaneously presents the player with multiple choices. Each choice
+  causes the scene to jump to a different "conversation" (or rather, an array in the script dictionary).
+  The function can have multipe parameters, but the number should always be odd-numbered.
+
+  Parameters:
+
+      #1. The line of dialogue to display (string) (example: "What do you want to do next?")
+
+      #2: The name of the first action (shows up on button when player decides) (string) (example: "Run away")
+
+      #3: The name of the conversation to jump to (string) (example: "fleeing sequence")
+
+      ...these variables can be repeated multiple times.
+
+  Example: .JUMPONCHOICE:"What do you want to do?":"Hug someone":hug sequence:"Glomp someone":glomp sequence
+
+================
+
+  Name: .SHOWCHOICEANDMODIFY
+
+  This is the quicker version of .MODIFYFLAGBYCHOICE, and it shows a line of dialogue and also a choice
+  at the same time (instead of there being a slight delay between the two commands, which is what normally happens).
+
+  Parameters:
+
+      #1: The line of dialogue/narration to display (string)
+
+      #1: The text label that will appear on the choice buttons (string)
+
+      #2: The name of the flag/variable to be modified (string)
+
+      #3: The amount to modify the flag/variable by (integer)
+
+      ...these variables can be repeated multiple times.
+
+  Example: .SHOWCHOICEANDMODIFY:"Do you want to be nice about it?":"Be nice":niceness:1:"Be rude":niceness:-1
+
+================

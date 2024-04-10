@@ -147,6 +147,7 @@ let VNSceneBackgroundYKey               = "background y"
 let VNSceneTypewriterTextCanSkip        = "typewriter text can skip"
 let VNSceneTypewriterTextSpeed          = "typewriter text speed"
 let VNSceneSavedOverriddenSpeechboxKey  = "overridden speechbox" // used to store speechbox sprites modified by .SETSPEECHBOX in saves
+let VNSceneChoiceSetsKey                = "choice sets" // stores choice sets that can be modified on the fly and dislayed whenever
 let VNSceneChoiceboxFadeinKey           = "choicebox fadein" // determines whether or not choiceboxes fade in (instead of just appear instantly)
 let VNSceneChoiceboxFadeTimeKey         = "choicebox fade time" // how quickly the choice box fades into view (in seconds)
 
@@ -188,6 +189,7 @@ let VNSceneModeEnded                = 300 // There isn't any more script data to
 
 // Transition types (currently unused, but can be used to transition to other types of SKScene subclasses)
 let VNSceneTransitionTypeNone       = 00
+let VNSceneNodeChoiceButtonStartingPercentage  = CGFloat(0.63) // A percentage of the screen height, is used for positioning buttons during choices
 
 private var VNSceneNodeSharedInstance:VNSceneNode? = nil
 
@@ -289,6 +291,9 @@ class VNSceneNode : SKNode {
     // Used to handle SpriteKit's weird text-display quirks
     var TWInvisibleText:SMTextNode? = nil
     
+    // Choice sets, used to store dynamically added/removed choices
+    var choiceSets = NSMutableDictionary()
+    
     // MARK: Initialization
     
     override init() {
@@ -336,6 +341,7 @@ class VNSceneNode : SKNode {
         sprites         = NSMutableDictionary()
         record          = NSMutableDictionary(dictionary: allSettings!)
         flags           = NSMutableDictionary(dictionary: SMRecord.sharedRecord.flags())
+        choiceSets      = NSMutableDictionary(dictionary: SMRecord.sharedRecord.choiceSetsFromRecord())
         // Also set the defaults for text-skipping behavior
         noSkippingUntilTextIsShown = false
         
@@ -1116,6 +1122,151 @@ class VNSceneNode : SKNode {
             print("[VNScene] All child nodes have been removed.");
         }
     }
+    
+    // MARK: - Choice sets
+
+    // Adds a destination:"choice text" string combination to a choice set that's been stored in the choice sets dictionary
+    func addToChoiceSet(setName:String, destination:String, choiceText:String) {
+        var choiceSetObject : NSMutableDictionary? = nil
+
+        if let savedSet = choiceSets.object(forKey: setName) as? NSMutableDictionary {
+            //choiceSetObject = NSMutableDictionary(dictionary: savedSet)
+            choiceSetObject = savedSet
+        } else {
+            choiceSetObject = NSMutableDictionary()
+            choiceSets.setValue(choiceSetObject, forKey: setName)
+        }
+
+        choiceSetObject!.setValue(choiceText, forKey: destination)
+
+        //print("Choice sets currently are: \(choiceSets)")
+    }
+
+    // Removes an existing destination/choice combination from a Choice Set
+    func removeFromChoiceSet(setName:String, destination:String) {
+        if let savedSet = choiceSets.object(forKey: setName) as? NSMutableDictionary {
+            savedSet.removeObject(forKey: destination)
+        }
+    }
+
+    // Remove an entire Choice Set
+    func wipeChoiceSet(setName:String) {
+        choiceSets.removeObject(forKey: setName)
+    }
+
+    // Display a choice set
+    func displayChoiceSet(setName:String) {
+        if let savedSet = choiceSets.object(forKey: setName) as? NSMutableDictionary {
+
+            if savedSet.count < 1 {
+                print("[VNSceneNode] WARNING: There were no choices found in the Choice Set \(setName), so nothing was displayed.")
+                return
+            }
+
+            self.createSafeSave() // Always create safe-save before doing something volatile
+
+            let choiceTexts = NSMutableArray()
+            let destinations = NSMutableArray()
+
+            // Populate the arrays
+            for currentDestination in savedSet.allKeys {
+                let destinationText = currentDestination as! String
+                let currentChoiceText = savedSet.object(forKey: destinationText) as! String
+                destinations.add(destinationText)
+                choiceTexts.add(currentChoiceText)
+
+                //print("displayChoiceSet: Adding Destination [\(destinationText)] with Choice Text [\(currentChoiceText)]")
+            }
+
+
+            //let choiceTexts = command.object(at: 1) as! NSArray   // Get the strings to display for individual choices
+            //let destinations = command.object(at: 2) as! NSArray  // Get the names of the conversations to "jump" to
+            let numberOfChoices = choiceTexts.count                 // Calculate number of choices
+
+            // Make sure the arrays that hold the data are prepared
+            buttons.removeAllObjects()
+            choices.removeAllObjects()
+
+            // Come up with some position data
+            let screenWidth = viewSize.width
+            let screenHeight = viewSize.height
+
+            for i in 0 ..< numberOfChoices  {
+                let buttonImageName     = SMStringFromDictionary(viewSettings, nameOfObject: VNSceneViewButtonFilenameKey) //viewSettings.objectForKey(VNSceneViewButtonFilenameKey) as! NSString
+                let button:SKSpriteNode = SKSpriteNode(imageNamed: buttonImageName)
+
+                // Calculate the amount of space (including space between buttons) that each button will take up, and then
+                // figure out where and how to position the buttons (factoring in margins / spaces between buttons). Generally,
+                // the button in the middle of the menu of choices will show up in the middle of the screen with this formula.
+                let spaceBetweenButtons:CGFloat = button.frame.size.height * 0.2;
+                let buttonHeight:CGFloat        = button.frame.size.height;
+                let totalButtonSpace:CGFloat    = buttonHeight + spaceBetweenButtons;
+                //let heightPercentage            = VNSceneNodeChoiceButtonStartingPercentage // usually 0.70 or 70% of the screen height
+                let heightPercentage            = choiceButtonStartingYFactor(numberOfChoices: numberOfChoices)
+                let startingPosition:CGFloat    = (screenHeight * heightPercentage) - ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
+                let buttonY:CGFloat             = startingPosition + ( CGFloat(i) * totalButtonSpace );
+
+                //print("displayChoiceSet: buttonY = \(buttonY) | startingPosition = \(startingPosition) | choiceButtonOffsetY = \(choiceButtonOffsetY)")
+
+                // Set button position
+                button.position = CGPoint( x: (screenWidth * 0.5) + choiceButtonOffsetX, y: buttonY );
+                button.zPosition = VNSceneButtonsLayer;
+                button.name = "\(i)" //button.name = [NSString stringWithFormat:@"%d", i)
+                self.addChild(button)
+
+                // Set color and add to array
+                button.color = buttonUntouchedColors
+                buttons.add(button)
+
+                // Determine where the text should be positioned inside the button
+                var labelWithinButtonPos = CGPoint( x: button.frame.size.width * 0.5, y: button.frame.size.height * 0.35 );
+
+                if( UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
+
+                    // The position of the text inside the button has to be adjusted, since the actual font size on the iPad isn't exactly
+                    // twice as large, but modified with some custom code. This results in having to do some custom positioning as well!
+                    labelWithinButtonPos.y = CGFloat(button.frame.size.height * 0.31)
+                }
+
+                // Create the button label
+                /*CCLabelTTF* buttonLabel = [CCLabelTTF labelWithString:[choiceTexts objectAtIndex:i]
+                 fontName:[viewSettings.objectForKey(VNSceneViewFontNameKey]
+                 fontSize:[[viewSettings.objectForKey(VNSceneViewFontSizeKey] floatValue]
+                 dimensions:button.boundingBox.size)*/
+                let labelFontName = SMStringFromDictionary(viewSettings, nameOfObject: VNSceneViewFontNameKey)//viewSettings.objectForKey(VNSceneViewFontNameKey) as NSString
+                let labelFontSize = SMNumberFromDictionary(viewSettings, nameOfObject: VNSceneViewFontSizeKey)//viewSettings.objectForKey(VNSceneViewFontSizeKey) as NSNumber
+
+                let buttonLabel = SKLabelNode(fontNamed: labelFontName)
+                // Set label properties
+                buttonLabel.text = choiceTexts.object(at: i) as! NSString as String
+                buttonLabel.fontSize = CGFloat( labelFontSize.floatValue )
+                buttonLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center // Center the text in the button
+
+                // Handle positioning for the text
+                var buttonLabelYPos = 0 - (button.size.height * 0.20)
+
+                if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+                    buttonLabelYPos = 0 - (button.size.height * 0.20)
+                }
+
+                buttonLabel.position = CGPoint(x: 0.0, y: buttonLabelYPos)
+                buttonLabel.zPosition = VNSceneButtonTextLayer
+
+                // set button text color
+                buttonLabel.color = buttonTextColor;
+                buttonLabel.colorBlendFactor = 1.0;
+                buttonLabel.fontColor = buttonTextColor;
+
+                button.addChild(buttonLabel)
+                button.colorBlendFactor = 1.0 // Needed to "color" the sprite; it wouldn't have any color-blending otherwise
+
+                choices.add( destinations.object(at: i) )
+            }
+
+            mode = VNSceneModeChoiceWithJump
+        }
+    }
+    
     // MARK: Misc and Utility
     
     // Updates data regarding speed (and whether or not typewriter mode should be enabled). This should only get called occasionally,
@@ -1271,9 +1422,10 @@ class VNSceneNode : SKNode {
         //if( safeSave != nil ) {
         if safeSave.count > 1 {
             
-            let localFlags = safeSave.object(forKey: "flags") as! NSDictionary
-            let localRecord = safeSave.object(forKey: "record") as! NSMutableDictionary
+            let localFlags          = safeSave.object(forKey: "flags") as! NSDictionary
+            let localRecord         = safeSave.object(forKey: "record") as! NSMutableDictionary
             let aliasesFromSafeSave = safeSave.object(forKey: "aliases") as! NSDictionary
+            let localChoiceSets     = safeSave.object(forKey: "choicesets") as! NSDictionary
             
             //let recordedFlags = SMRecord.sharedRecord.flags()
             
@@ -1281,6 +1433,10 @@ class VNSceneNode : SKNode {
             //SMDictionaryAddEntriesFromAnotherDictionary(SMRecord.sprite)
             SMRecord.sharedRecord.addExistingFlags(fromDictionary: aliasesFromSafeSave)
             SMRecord.sharedRecord.addExistingFlags(fromDictionary: localFlags)
+            
+            // safe choice sets as well
+            SMRecord.sharedRecord.saveChoiceSetsToRecord(dictionary: localChoiceSets)
+            
             dictToSave.setValue(localRecord, forKey: SMRecordActivityDataKey)
             //SMRecord.sharedRecord.setActivityDict(dictToSave)
             SMRecord.sharedRecord.setActivityDictionary(dictionary: dictToSave)
@@ -1310,6 +1466,7 @@ class VNSceneNode : SKNode {
         //[[SMRecord sharedRecord].flags addEntriesFromDictionary:flags)
         //SMRecord.sharedRecord.addExistingFlags(flags)
         SMRecord.sharedRecord.addExistingFlags(fromDictionary: flags)
+        SMRecord.sharedRecord.saveChoiceSetsToRecord(dictionary: choiceSets)
         
         // Update script data and then load it into the activity dictionary.
         updateScriptInfo()                                                  // Update all index and conversation data
@@ -1349,6 +1506,7 @@ class VNSceneNode : SKNode {
         safeSave = NSMutableDictionary(dictionary: ["flags":flagsCopy,
                                                     "aliases":self.localSpriteAliases.copy(),
                                                     "record":record,
+                                                    "choicesets":choiceSets,
                                                     VNSceneSavedScriptInfoKey:scriptInfo])
         
         /*safeSave = NSMutableDictionary(dictionaryLiteral: flagsCopy, "flags",
@@ -1905,6 +2063,27 @@ class VNSceneNode : SKNode {
         return adjustedPlusOffsets;
     }
     
+    // When calculating the heights for buttons during choice segments, this determines the starting Y value factor (represented
+    // as a percentage of the screen height. For example, this usually defaults to 0.60 or 60%, but if there are more choices, this
+    // might go as high as 70% of the screen height.
+    func choiceButtonStartingYFactor(numberOfChoices:Int) -> CGFloat {
+        var result = VNSceneNodeChoiceButtonStartingPercentage // this is usually 0.60 or 60% of the screen height
+        let choiceNumberCutoff = 3 // above this value, the original starting point will need to be moved
+        let heightCutoff = CGFloat(0.75) // can't use a value higher than this
+
+        if numberOfChoices > choiceNumberCutoff {
+            let numberOfChoicesAboveStandard = numberOfChoices - choiceNumberCutoff
+
+            result = result + CGFloat(numberOfChoicesAboveStandard) * 0.03
+        }
+
+        if result > heightCutoff {
+            result = heightCutoff
+        }
+
+        return result
+    }
+    
     // Since the speech label's size changes every time the text changes, this also has to be repositioned each time
     // a new line of dialogue is shown.
     //- (CGPoint)updatedTextPosition
@@ -1951,6 +2130,58 @@ class VNSceneNode : SKNode {
     
     /** Script Processing **/
     
+    // Displays dialogue / narration. This is put into a function because currently, there are multiple possible commands that can display
+    // dialogue and I don't to copy and paste the same code into each section... much easier to just call it from a function. I'll probably
+    // have to implement some similar functions for other things that keep getting used multiple times intstead of copying and pasting.
+    // This code has gotten so awkward and convoluted over the years!
+    func sayDialogue(line:String) {
+        if TWModeEnabled == false {
+            // Speech opacity is set to zero, making it invisible. Remember, speech is supposed to "fade in"
+            // instead of instantly appearing, since an instant appearance can be visually jarring to players.
+            speech!.alpha = 0.0;
+            speech!.text = line
+            record.setValue(line, forKey: VNSceneSpeechToDisplayKey) // Copy text to save-game record
+            
+            // Now have the text fade into full visibility.
+            let fadeIn:SKAction = SKAction.fadeIn(withDuration: speechTransitionSpeed) //[SKAction fadeInWithDuration:speechTransitionSpeed)
+            speech!.run(fadeIn)
+            
+            // If the speech-box isn't visible (or at least not fully visible), then it should fade-in as well
+            if( speechBox!.alpha < 0.9 ) {
+                let fadeInSpeechBox = SKAction.fadeIn(withDuration: speechTransitionSpeed)
+                speechBox!.run(fadeInSpeechBox)
+            }
+            
+            speech!.anchorPoint = CGPoint(x: 0, y: 1.0);
+            speech!.position = updatedTextPosition()
+            
+        } else {
+            //let parameter1AsString = command.object(at: 1) as! NSString
+            
+            // Reset counter
+            TWTimer                     = 0
+            //TWFullText                  = String(describing: command.object(at: 1))//parameter1AsString as String
+            TWFullText                  = line
+            TWCurrentText               = ""
+            TWNumberOfCurrentCharacters = 0
+            TWNumberOfTotalCharacters   = NSString(string: TWFullText).length
+            TWPreviousNumberOfCurrentChars = 0;
+            
+            //[record setValue:parameter1 forKey:VNSceneSpeechToDisplayKey];
+            record.setValue(line, forKey: VNSceneSpeechToDisplayKey)
+            
+            speech!.text = " "// parameter1AsString
+            speechBox!.alpha = 1.0;
+            speech!.anchorPoint = CGPoint(x: 0, y: 1.0)
+            speech!.position = updatedTextPosition()
+            
+            TWInvisibleText!.text = String(describing: line) //parameter1AsString as String
+            TWInvisibleText!.anchorPoint = CGPoint(x: 0, y: 1.0)
+            TWInvisibleText!.position = updatedTextPosition()
+            TWInvisibleText!.alpha = 0.0
+        }
+    }
+    
     // This is the most important function; it breaks down the data stored in each line of the script and actually
     // does something useful with it.
     //- (void)processCommand:(NSArray *)command
@@ -1994,6 +2225,11 @@ class VNSceneNode : SKNode {
         // Check if the command is really just "display a regular line of text"
         if( type == VNScriptCommandSayLine ) {
             
+            //let dialogueLine = command.object(at: 1) as! String
+            let dialogueLine = String(describing: command.object(at: 1))
+            sayDialogue(line: dialogueLine)
+            
+            /*
             if TWModeEnabled == false {
                 // Speech opacity is set to zero, making it invisible. Remember, speech is supposed to "fade in"
                 // instead of instantly appearing, since an instant appearance can be visually jarring to players.
@@ -2046,7 +2282,7 @@ class VNSceneNode : SKNode {
                 TWInvisibleText!.anchorPoint = CGPoint(x: 0, y: 1.0)
                 TWInvisibleText!.position = updatedTextPosition()
                 TWInvisibleText!.alpha = 0.0
-            }
+            }*/
             
             return;
         }
@@ -2472,7 +2708,12 @@ class VNSceneNode : SKNode {
                 let spaceBetweenButtons:CGFloat   = button.frame.size.height * 0.2;
                 let buttonHeight:CGFloat          = button.frame.size.height;
                 let totalButtonSpace:CGFloat      = buttonHeight + spaceBetweenButtons;
-                let startingPosition:CGFloat      = (screenHeight * 0.5) + ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
+                
+                // maybe this works better?
+                let heightPercentage              = choiceButtonStartingYFactor(numberOfChoices: numberOfChoices)
+                let startingPosition:CGFloat      = (screenHeight * heightPercentage) - ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
+                
+                //let startingPosition:CGFloat      = (screenHeight * 0.5) + ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
                 let buttonY:CGFloat               = startingPosition + ( CGFloat(i) * totalButtonSpace );
                 
                 // Set button position
@@ -2879,7 +3120,7 @@ class VNSceneNode : SKNode {
             for i in 0 ..< numberOfChoices {
                 
                 let loopIndex = CGFloat( i )
-                let choiceCount = CGFloat( numberOfChoices )
+                //let choiceCount = CGFloat( numberOfChoices )
                 
                 let buttonFilename = viewSettings.object(forKey: VNSceneViewButtonFilenameKey) as! NSString
                 let button = SKSpriteNode(imageNamed: buttonFilename as String)
@@ -2890,7 +3131,11 @@ class VNSceneNode : SKNode {
                 let spaceBetweenButtons   = button.frame.size.height * 0.2; // 20% of button sprite height
                 let buttonHeight          = button.frame.size.height;
                 let totalButtonSpace      = buttonHeight + spaceBetweenButtons; // total used-up space = 120% of button height
-                let startingPosition      = (screenHeight * 0.5) + ( ( choiceCount * 0.5 ) * totalButtonSpace ) + choiceButtonOffsetY
+                //let startingPosition      = (screenHeight * 0.5) + ( ( choiceCount * 0.5 ) * totalButtonSpace ) + choiceButtonOffsetY
+                
+                let heightPercentage              = choiceButtonStartingYFactor(numberOfChoices: numberOfChoices)
+                let startingPosition:CGFloat      = (screenHeight * heightPercentage) - ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
+                
                 let buttonY               = startingPosition + ( loopIndex * totalButtonSpace ); // This button's position
                 
                 // Set button position and other attributes
@@ -2955,8 +3200,8 @@ class VNSceneNode : SKNode {
             
             mode = VNSceneModeChoiceWithFlag
             
-            print("CHOICES array is \(choices)")
-            print("CHOICE EXTRAS array is \(choiceExtras)")
+            //print("CHOICES array is \(choices)")
+            //print("CHOICE EXTRAS array is \(choiceExtras)")
             
             
         // This command will cause VNScene to switch conversations if a certain flag holds a particular value.
@@ -3166,6 +3411,378 @@ class VNSceneNode : SKNode {
             
             scaleSprite(spriteName as String, scalingAmount: scaleNumber.doubleValue, duration: durationNumber.doubleValue)
             
+        case VNScriptCommandAddToChoiceSet:
+
+            let setName     = command.object(at: 1) as! String
+            let destination = command.object(at: 2) as! String
+            let choiceText  = command.object(at: 3) as! String
+            addToChoiceSet(setName: setName, destination: destination, choiceText: choiceText)
+
+        case VNScriptCommandRemoveFromChoiceSet:
+
+            let setName = command.object(at: 1) as! String
+            let destination = command.object(at: 2) as! String
+
+            removeFromChoiceSet(setName: setName, destination: destination)
+
+        case VNScriptCommandWipeChoiceSet:
+            //print("stuff happens")
+
+            let setName = command.object(at: 1) as! String
+            wipeChoiceSet(setName: setName)
+
+        case VNScriptCommandShowChoiceSet:
+
+            let setName = command.object(at: 1) as! String
+            displayChoiceSet(setName: setName)
+
+        // This checks if a particular flag is GREATER THAN a certain value. If it does, then it executes ANOTHER command (which starts
+        // at the third parameter and continues to whatever comes afterwards).
+        case VNScriptCommandIsFlagMoreThanFlag:
+
+            let firstFlag = String(describing: command.object(at: 1))
+            let secondFlag = String(describing: command.object(at: 2))
+            let secondaryCommand = command.object(at: 3) as! NSArray
+
+            let firstFlagNumber:NSNumber? = flags.object(forKey: firstFlag) as? NSNumber
+            if firstFlagNumber == nil {
+                return;
+            }
+
+            let secondFlagNumber:NSNumber? = flags.object(forKey: secondFlag) as? NSNumber
+            if secondFlagNumber == nil {
+                return
+            }
+
+            let firstValue = firstFlagNumber!.intValue
+            let secondValue = secondFlagNumber!.intValue
+
+            // halts processing if the first value is NOT greater than the second value
+            if( firstValue <= secondValue ) {
+                return;
+            }
+
+            self.processCommand(secondaryCommand)
+
+            let secondaryCommandType = (secondaryCommand.object(at: 0) as! NSNumber).intValue
+            if( secondaryCommandType != VNScriptCommandChangeConversation ) {
+                script!.currentIndex -= 1
+            }
+
+        // This checks if a flag is LESS THAN another flag's value, and executes another command if it's true.
+        case VNScriptCommandIsFlagLessThanFlag:
+            let firstFlag = String(describing: command.object(at: 1))
+            let secondFlag = String(describing: command.object(at: 2))
+            let secondaryCommand = command.object(at: 3) as! NSArray
+
+            let firstFlagNumber:NSNumber? = flags.object(forKey: firstFlag) as? NSNumber
+            if firstFlagNumber == nil {
+                return;
+            }
+
+            let secondFlagNumber:NSNumber? = flags.object(forKey: secondFlag) as? NSNumber
+            if secondFlagNumber == nil {
+                return
+            }
+
+            let firstValue = firstFlagNumber!.intValue
+            let secondValue = secondFlagNumber!.intValue
+
+            // halts processing if the first value is NOT LESS than the second value
+            if( firstValue >= secondValue ) {
+                return;
+            }
+
+            self.processCommand(secondaryCommand)
+
+            let secondaryCommandType = (secondaryCommand.object(at: 0) as! NSNumber).intValue
+            if( secondaryCommandType != VNScriptCommandChangeConversation ) {
+                script!.currentIndex -= 1
+            }
+
+        // Check if two flags are of equal numerical value, and if so, then execute another command
+        case VNScriptCommandIsFlagEqualToFlag:
+            let firstFlag = String(describing: command.object(at: 1))
+            let secondFlag = String(describing: command.object(at: 2))
+            let secondaryCommand = command.object(at: 3) as! NSArray
+
+            let firstFlagNumber:NSNumber? = flags.object(forKey: firstFlag) as? NSNumber
+            if firstFlagNumber == nil {
+                return;
+            }
+
+            let secondFlagNumber:NSNumber? = flags.object(forKey: secondFlag) as? NSNumber
+            if secondFlagNumber == nil {
+                return
+            }
+
+            let firstValue = firstFlagNumber!.intValue
+            let secondValue = secondFlagNumber!.intValue
+
+            // halts processing if the first value is NOT LESS than the second value
+            if( firstValue != secondValue ) {
+                return;
+            }
+
+            self.processCommand(secondaryCommand)
+
+            let secondaryCommandType = (secondaryCommand.object(at: 0) as! NSNumber).intValue
+            if( secondaryCommandType != VNScriptCommandChangeConversation ) {
+                script!.currentIndex -= 1
+            }
+
+        case VNScriptCommandIncreaseFlagByFlag:
+            let firstFlag   = String(describing: command.object(at: 1))
+            let secondFlag  = String(describing: command.object(at: 2))
+
+            var firstValue = Int(0)
+            var secondValue = Int(0)
+
+            if let firstFlagObject = flags.object(forKey: firstFlag) as? NSNumber {
+                firstValue = firstFlagObject.intValue
+            }
+            if let secondFlagObject = flags.object(forKey: secondFlag) as? NSNumber {
+                secondValue = secondFlagObject.intValue
+            }
+
+            let finalValue = firstValue + secondValue
+            let updatedFlag = NSNumber(value: finalValue)
+
+            flags.setValue(updatedFlag, forKey: firstFlag)
+
+        case VNScriptCommandDecreaseFlagByFlag:
+            let firstFlag   = String(describing: command.object(at: 1))
+            let secondFlag  = String(describing: command.object(at: 2))
+
+            var firstValue = Int(0)
+            var secondValue = Int(0)
+
+            if let firstFlagObject = flags.object(forKey: firstFlag) as? NSNumber {
+                firstValue = firstFlagObject.intValue
+            }
+            if let secondFlagObject = flags.object(forKey: secondFlag) as? NSNumber {
+                secondValue = secondFlagObject.intValue
+            }
+
+            let finalValue = firstValue - secondValue
+            let updatedFlag = NSNumber(value: finalValue)
+
+            flags.setValue(updatedFlag, forKey: firstFlag)
+            
+            
+        case VNScriptCommandShowChoiceAndJump:
+            
+            let dialogue = command.object(at: 1) as! String
+            
+            sayDialogue(line: dialogue)
+            
+            self.createSafeSave() // Always create safe-save before doing something volatile
+            
+            let choiceTexts = command.object(at: 2) as! NSArray   // Get the strings to display for individual choices
+            let destinations = command.object(at: 3) as! NSArray  // Get the names of the conversations to "jump" to
+            let numberOfChoices = choiceTexts.count                 // Calculate number of choices
+            
+            // Make sure the arrays that hold the data are prepared
+            buttons.removeAllObjects()
+            choices.removeAllObjects()
+            
+            // Come up with some position data
+            let screenWidth = viewSize.width
+            let screenHeight = viewSize.height
+            
+            for i in 0 ..< numberOfChoices  {
+                
+                let buttonImageName     = SMStringFromDictionary(viewSettings, nameOfObject: VNSceneViewButtonFilenameKey) //viewSettings.objectForKey(VNSceneViewButtonFilenameKey) as! NSString
+                let button:SKSpriteNode = SKSpriteNode(imageNamed: buttonImageName)
+                
+                // Calculate the amount of space (including space between buttons) that each button will take up, and then
+                // figure out where and how to position the buttons (factoring in margins / spaces between buttons). Generally,
+                // the button in the middle of the menu of choices will show up in the middle of the screen with this formula.
+                let spaceBetweenButtons:CGFloat   = button.frame.size.height * 0.2;
+                let buttonHeight:CGFloat          = button.frame.size.height;
+                let totalButtonSpace:CGFloat      = buttonHeight + spaceBetweenButtons;
+                //let startingPosition:CGFloat      = (screenHeight * 0.5) + ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
+                let heightPercentage              = choiceButtonStartingYFactor(numberOfChoices: numberOfChoices)
+                let startingPosition:CGFloat      = (screenHeight * heightPercentage) - ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
+                let buttonY:CGFloat               = startingPosition + ( CGFloat(i) * totalButtonSpace );
+                
+                // Set button position
+                button.position = CGPoint( x: (screenWidth * 0.5) + choiceButtonOffsetX, y: buttonY );
+                button.zPosition = VNSceneButtonsLayer;
+                button.name = "\(i)" //button.name = [NSString stringWithFormat:@"%d", i)
+                self.addChild(button)
+                
+                // Set color and add to array
+                button.color = buttonUntouchedColors
+                buttons.add(button)
+                
+                // Determine where the text should be positioned inside the button
+                var labelWithinButtonPos = CGPoint( x: button.frame.size.width * 0.5, y: button.frame.size.height * 0.35 );
+                
+                if( UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
+                    
+                    // The position of the text inside the button has to be adjusted, since the actual font size on the iPad isn't exactly
+                    // twice as large, but modified with some custom code. This results in having to do some custom positioning as well!
+                    labelWithinButtonPos.y = CGFloat(button.frame.size.height * 0.31)
+                }
+                
+                // Create the button label
+                let labelFontName = SMStringFromDictionary(viewSettings, nameOfObject: VNSceneViewFontNameKey)//viewSettings.objectForKey(VNSceneViewFontNameKey) as NSString
+                let labelFontSize = SMNumberFromDictionary(viewSettings, nameOfObject: VNSceneViewFontSizeKey)//viewSettings.objectForKey(VNSceneViewFontSizeKey) as NSNumber
+                
+                let buttonLabel = SKLabelNode(fontNamed: labelFontName)
+                // Set label properties
+                buttonLabel.text = choiceTexts.object(at: i) as! NSString as String
+                buttonLabel.fontSize = CGFloat( labelFontSize.floatValue )
+                buttonLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center // Center the text in the button
+                
+                // Handle positioning for the text
+                var buttonLabelYPos = 0 - (button.size.height * 0.20)
+                
+                if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+                    buttonLabelYPos = 0 - (button.size.height * 0.20)
+                }
+                
+                buttonLabel.position = CGPoint(x: 0.0, y: buttonLabelYPos)
+                buttonLabel.zPosition = VNSceneButtonTextLayer
+                
+                // set button text color
+                buttonLabel.color = buttonTextColor;
+                buttonLabel.colorBlendFactor = 1.0;
+                buttonLabel.fontColor = buttonTextColor;
+                
+                button.addChild(buttonLabel)
+                button.colorBlendFactor = 1.0 // Needed to "color" the sprite; it wouldn't have any color-blending otherwise
+                
+                choices.add( destinations.object(at: i) )
+                
+                if choiceboxFadein == true {
+                    // fade in the box
+                    button.alpha = 0.0
+                    
+                    if choiceboxFadeSpeed <= 0.0 {
+                        choiceboxFadeSpeed = 0.1
+                    }
+                    
+                    let fadeInAction = SKAction.fadeIn(withDuration: choiceboxFadeSpeed)
+                    button.run(fadeInAction)
+                }
+            }
+            
+            mode = VNSceneModeChoiceWithJump
+            
+            
+        // This command presents the user with a choice menu. When the user makes a choice, it results in the value of a flag
+        // being modified by a certain amount (just like if the .MODIFYFLAG command had been used).
+        case VNScriptCommandShowChoiceAndModify:
+            
+            let dialogue = command.object(at: 1) as! String
+            sayDialogue(line: dialogue)
+            
+            // Create "safe" autosave before doing something as volatile as presenting a choice menu
+            self.createSafeSave()
+            
+            let choiceTexts     = command.object(at: 2) as! NSArray
+            let variableNames   = command.object(at: 3) as! NSArray
+            let variableValues  = command.object(at: 4) as! NSArray
+            let numberOfChoices = choiceTexts.count
+            
+            // Prepare the arrays
+            buttons.removeAllObjects()
+            choices.removeAllObjects()
+            choiceExtras.removeAllObjects()
+            
+            let screenWidth = viewSize.width
+            let screenHeight = viewSize.height
+            
+            // The following loop creates the buttons (and their label "child nodes") and adds them to an array. It also
+            // loads the flag modification data into their own arrays.
+            for i in 0 ..< numberOfChoices {
+                
+                let loopIndex = CGFloat( i )
+                //let choiceCount = CGFloat( numberOfChoices )
+                
+                let buttonFilename = viewSettings.object(forKey: VNSceneViewButtonFilenameKey) as! NSString
+                let button = SKSpriteNode(imageNamed: buttonFilename as String)
+                
+                // Calculate the amount of space (including space between buttons) that each button will take up, and then
+                // figure out the position of the button that's being made. Ideally, the middle of the choice menu will also be the middle
+                // of the screen. Of course, if you have a LOT of choices, there may be more buttons than there is space to put them!
+                let spaceBetweenButtons   = button.frame.size.height * 0.2; // 20% of button sprite height
+                let buttonHeight          = button.frame.size.height;
+                let totalButtonSpace      = buttonHeight + spaceBetweenButtons; // total used-up space = 120% of button height
+                
+                let heightPercentage              = choiceButtonStartingYFactor(numberOfChoices: numberOfChoices)
+                let startingPosition:CGFloat      = (screenHeight * heightPercentage) - ( ( CGFloat(numberOfChoices / 2) ) * totalButtonSpace ) + choiceButtonOffsetY
+                
+                //let startingPosition      = (screenHeight * 0.5) + ( ( choiceCount * 0.5 ) * totalButtonSpace ) + choiceButtonOffsetY
+                let buttonY               = startingPosition + ( loopIndex * totalButtonSpace ); // This button's position
+                
+                // Set button position and other attributes
+                button.position     = CGPoint( x: (screenWidth * 0.5) + choiceButtonOffsetX, y: buttonY );
+                //button.color        = [[CCColor alloc] initWithCcColor3b:buttonUntouchedColors)
+                button.color        = buttonUntouchedColors;
+                button.zPosition    = VNSceneButtonsLayer;
+                
+                self.addChild(button)
+                buttons.add(button)
+                
+                // Determine where the text should be positioned inside the button
+                var labelWithinButtonPos = CGPoint( x: button.frame.size.width * 0.5, y: button.frame.size.height * 0.35 );
+                if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+                    labelWithinButtonPos.y = button.frame.size.height * 0.31;
+                }
+                
+                // Create button label, set the position of the text, and add this label to the main 'button' sprite
+                let labelFontName       = SMStringFromDictionary(viewSettings, nameOfObject: VNSceneViewFontNameKey)
+                let labelFontSizeNumber = SMNumberFromDictionary(viewSettings, nameOfObject: VNSceneViewFontSizeKey)
+                let labelFontSize       = CGFloat( labelFontSizeNumber.doubleValue )
+                
+                let buttonLabel = SKLabelNode(fontNamed: labelFontName)
+                buttonLabel.fontSize = labelFontSize
+                buttonLabel.text = choiceTexts.object(at: i) as! NSString as String
+                buttonLabel.zPosition = VNSceneButtonsLayer
+                buttonLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+                
+                // set button text color
+                buttonLabel.color = buttonTextColor;
+                buttonLabel.colorBlendFactor = 1.0;
+                buttonLabel.fontColor = buttonTextColor;
+                
+                // Position Y coordinate
+                var buttonLabelY:CGFloat = 0 - (button.size.height * 0.20)
+                
+                if( UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad ) {
+                    buttonLabelY = 0 - (button.size.height * 0.20)
+                }
+                
+                buttonLabel.position = CGPoint(x: 0, y: buttonLabelY)
+                
+                button.addChild(buttonLabel)
+                button.colorBlendFactor = 1.0;
+                
+                // Set up choices
+                choices.add(variableNames.object(at: i))
+                choiceExtras.add(variableValues.object(at: i))
+                
+                if choiceboxFadein == true {
+                    // fade in the box
+                    button.alpha = 0.0
+                    
+                    if choiceboxFadeSpeed <= 0.0 {
+                        choiceboxFadeSpeed = 0.1
+                    }
+                    
+                    let fadeInAction = SKAction.fadeIn(withDuration: choiceboxFadeSpeed)
+                    button.run(fadeInAction)
+                }
+            }
+            
+            mode = VNSceneModeChoiceWithFlag
+            
+            //print("CHOICES array is \(choices)")
+            //print("CHOICE EXTRAS array is \(choiceExtras)")
+                
         default:
             print("[VNScene] WARNING: Unknown command found in script. The command's NSArray is: %@", command);
         } // switch
