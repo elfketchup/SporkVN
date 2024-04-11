@@ -158,10 +158,10 @@ class VNScript {
     // Loads the script from a dictionary with a lot of other data (such as specific conversation names, indexes, etc).
     init?(info:NSDictionary) {
     
-        let filenameValue:NSString?       = info.object(forKey: VNScriptFilenameKey) as? NSString
-        let conversationValue:NSString?   = info.object(forKey: VNScriptConversationNameKey) as? NSString
-        let currentIndexValue:NSNumber?      = info.object(forKey: VNScriptCurrentIndexKey) as? NSNumber
-        let indexesDoneValue:NSNumber?       = info.object(forKey: VNScriptIndexesDoneKey) as? NSNumber
+        let filenameValue:NSString?         = info.object(forKey: VNScriptFilenameKey) as? NSString
+        let conversationValue:NSString?     = info.object(forKey: VNScriptConversationNameKey) as? NSString
+        let currentIndexValue:NSNumber?     = info.object(forKey: VNScriptCurrentIndexKey) as? NSNumber
+        let indexesDoneValue:NSNumber?      = info.object(forKey: VNScriptIndexesDoneKey) as? NSNumber
         
         if filenameValue == nil || conversationValue == nil {
             print("[VNScript] ERROR: Invalid parameters")
@@ -186,7 +186,6 @@ class VNScript {
     // Load the script from a Property List (.plist) file in the app bundle. Make sure to not include the ".plist" in the file name.
     // For example, if the script is stored as "ThisScript.plist" in the bundle, just pass in "ThisScript" as the parameter.
     func didLoadFile( _ nameOfFile:String, convoName:String) -> Bool {
-        
         let filepath:String? = Bundle.main.path(forResource: nameOfFile, ofType: "plist")
         if filepath == nil {
             print("[VNScript] ERROR: Cannot load file; filepath was invalid.")
@@ -204,7 +203,7 @@ class VNScript {
         // Load the data
         prepareScript(dict!)
 
-        if changeConversationTo(convoName) == false {
+        if changeConversationTo(nameOfConversation: convoName) == false {
             print("[VNScript] WARNING: Could not load conversation named: \(convoName)");
         }
         
@@ -227,34 +226,30 @@ class VNScript {
         // easier for the program to process. This "outer" for loop will get all the conversation names and the loops
         // inside this one will translate each conversation.
         for conversationKey in dict.allKeys {
-            
-            //let loadedArray:NSArray = dict.objectForKey(conversationKey) as NSArray
-            //if let originalArray = loadedArray as? NSArray {
-            
-            let originalArray:NSArray = dict.object(forKey: conversationKey) as! NSArray
-            
-            if( originalArray.count > 0 ) {
-                
-                let translatedArray:NSMutableArray = NSMutableArray(capacity: originalArray.count)
-                
-                for someIndex in originalArray {
+            // Make sure that whatever's getting loaded is an array. Otherwise, it's possible that the app will crash when trying to
+            // load the script, just because someone might accidentally put a non-NSArray object in the property list (which is annoyingly
+            // easy to do, as by default, all new objects are created as String objects).
+            if let originalArray = dict.object(forKey: conversationKey) as? NSArray {
+                if( originalArray.count > 0 ) {
+                    let translatedArray:NSMutableArray = NSMutableArray(capacity: originalArray.count)
                     
-                    if let line = someIndex as? NSString {
+                    for someIndex in originalArray {
                         
-                        //println("[line:NSString] \(line)");
-                        
-                        let commandFromLine = line.components(separatedBy: VNScriptSeparationString) as NSArray
-                        let translatedLine:NSArray? = analyzedCommand( commandFromLine )
-                        
-                        if( translatedLine != nil ) {
-                            translatedArray.add(translatedLine!)
-                            //println("[translated line:NSArray] \(translatedLine!)")
+                        if let line = someIndex as? NSString {
+                            //println("[line:NSString] \(line)");
+                            let commandFromLine = line.components(separatedBy: VNScriptSeparationString) as NSArray
+                            let translatedLine:NSArray? = analyzedCommand( commandFromLine )
+                            
+                            if( translatedLine != nil ) {
+                                translatedArray.add(translatedLine!)
+                                //println("[translated line:NSArray] \(translatedLine!)")
+                            }
                         }
                     }
+                    
+                    let convoKey:NSString = conversationKey as! NSString
+                    translatedScript.setValue(translatedArray, forKey: convoKey as String)
                 }
-                
-                let convoKey:NSString = conversationKey as! NSString
-                translatedScript.setValue(translatedArray, forKey: convoKey as String)
             }
         }
         
@@ -270,7 +265,6 @@ class VNScript {
     }
     
     func info() -> NSDictionary {
-        
         // Store index data
         let indexesDoneValue:NSNumber   = NSNumber(value: indexesDone)
         let currentIndexValue:NSNumber  = NSNumber(value: currentIndex)
@@ -290,19 +284,19 @@ class VNScript {
         return dictForScript
     }
     
-    func changeConversationTo(_ nameOfConversation:String) -> Bool {
-        
+    func changeConversationTo(nameOfConversation:String) -> Bool {
+        // make sure there's actually something in the data object
         if( self.data != nil ) {
-            
-            conversation = data!.object(forKey: nameOfConversation) as? NSArray
-            if( conversation != nil ) {
-                
+            // also make sure that whatever's getting loaded is actually an NSArray object
+            if let theNewConversation = data!.object(forKey: nameOfConversation) as? NSArray {
+                conversation            = theNewConversation
                 self.conversationName   = nameOfConversation
                 self.currentIndex       = 0
                 self.indexesDone        = 0
                 self.maxIndexes         = self.conversation!.count
-                
                 return true
+            } else {
+                print("[VNScript] changeConversationTo - ERROR: Attempted to load conversation named \(nameOfConversation), but it was an invalid object type!")
             }
         }
         

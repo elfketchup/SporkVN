@@ -528,6 +528,16 @@ func SMDoubleFromDictionary( _ dict:NSDictionary, nameOfObject:String ) -> Doubl
     return SMNumberFromDictionary(dict, nameOfObject: nameOfObject).doubleValue
 }
 
+// MARK: - Array helper functions
+
+// Because NSMutableArray.addObjects(from: someNSArray) will just produce some dumb
+// "'NSArray' is not convertible to '[Any]' error message.
+func SMArrayAddObjectsToMutableArray(destination:NSMutableArray, sourceArray:NSArray) {
+    for element in sourceArray {
+        destination.add(element)
+    }
+}
+
 // MARK: - Misc functions
 /*
  Stuff that really doesn't fit elsewhere

@@ -60,9 +60,6 @@
 		<string>Hello.</string>
 		<string>.SETBACKGROUND:pond.png</string>
 		<string>Hey, a background!</string>
-		<string>.SHOWCHOICEANDMODIFY:Is Naruto going to become Hokage?:Yeah, believe it:hokage:1:Nah fam:hokage:0:Kakashi first though?:hokage:1</string>
-		<string>.ISFLAG:hokage:1:Yeah, he&apos;s going to become the Seventh Hokage!</string>
-		<string>.ISFLAG:hokage:0:Wow, I guess you don&apos;t believe in the Number One Most Surprising Ninja, huh?</string>
 		<string>.SETFLAG:ninethousand:9000</string>
 		<string>.SETFLAG:one:1</string>
 		<string>.SETFLAG:overninethousand:9001</string>
