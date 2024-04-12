@@ -1,34 +1,28 @@
  SporkVN - a visual novel framework
 ==================================
 
-SporkVN is a visual novel framework, based on EKVN, and rewritten in Swift. It can be used to create
-short dialogue scenes for games, or full-length "visual novel" games (or anything in between).
-It has a simple "scripting language" for creating scenes, support for branching story paths,
-built-in autosave features, and a customizable user interface.
+SporkVN is a visual novel framework based on EKVN and rewritten in Swift. It can be used to create
+short dialogue scenes for games, or it can also be used to create a regular "visual novel" game,
+or anything in between. It has a simple scripting language for creating scenes and dialogue and
+applying simple effects, support for branching story paths, a built-in autosave feature, and a
+user interface that can be customized in code.
 
-(At the time of this writing, EKVN is the more stable project; SporkVN is more of a part-experiment,
-part-learning-experience; the goal being to port an existing project written in Objective-C -- in this
-case, EVKN -- to Swift and have it have the same functionality. So if you just want some stable code
-for use in an actual visual novel, you may be better off using EKVN instead.)
+That said, SporkVN is part "learning project" and partly a "quick and simple" programming project
+that's meant to be easy to modify so that it can be easily adapted to work with different games.
+In theory, it can be added to just about any 2D game written in Swift + SpriteKit (it could 
+probably be adapted to work on 3D games built with Metal... again, in theory). By design, it's meant
+to be small and not have all that many features; if you want a visual novel framework with
+lots of features and good support, you may want to check out something like [Ren'Py](https://github.com/renpy/renpy),
+which has many features and which works on multiple platforms.
 
 To start projects with SporkVN, you'll need:
 
-   1. A Mac, preferably running the latest version of macOS (Sierra, at the time of this writing)
-   2. Xcode 8 or newer - http://developer.apple.com/xcode
-   3. iOS 10 
+   1. A Mac, preferably running the latest version of macOS
+   2. The latest version of Xode - http://developer.apple.com/xcode
+   3. iOS 15 or newer 
    
 (And if you want to distribute games on the App Store, you'll also need to be a part of Apple's
 iOS Developer Program! -> https://developer.apple.com/devcenter/ios/ )
-
-(Another NOTE: Since SpriteKit — unlike cocos2d — doesn’t support text labels that auto-wrap,
-SporkVN uses the DSMultilineLabelNode project to have text that auto-wraps. The GitHub
-page for that can be found at: https://github.com/downrightsimple/DSMultilineLabelNode )
-
-
-Contact
--------
-
-Twitter: http://twitter.com/elfketchup
 
 Getting Started
 ===============
@@ -53,7 +47,7 @@ Some notes on porting to Swift
 While the original EKVN project and its SpriteKit-powered spinoff were written in Objective-C, SporkVN
 has been (as you might have guessed) rewritten in Swift. This presents some issues, since the original projects
 were designed to take advantage of Objective-C's unique features, namely the fact that Objective-C is a
-dynamically-typed language, while Swift is designed to be more static-typed/type-safe. 
+dynamically-typed language, while Swift is designed to be more static-typed and type-safe. 
 
 While this normally is only an issue while programming in Swift, it also affects other things that aren't directly
 related to the code... namely, Property Lists (which EKVN makes heavy use of). In the days of the original EKVN, 
@@ -77,8 +71,8 @@ switching to Swift.
 Getting Started, Part 1: Starting a new project
 -----------------------------------------------
 
-[WARNING: This is a little outdated and the documentation has yet to be updated to iOS 10 / Swift 3.0,
-but it should work well enough to get you started]
+[WARNING: This is a little outdated and the documentation has yet to be updated to the latest versions of
+iOS and Swift, but it should work well enough to get you started]
 
 (This assumes that you've downloaded the "SporkVN” project that has all the code and resource files 
 that you'll need to get started)
@@ -482,7 +476,7 @@ MIT License
 
 SporkVN is released under the MIT License
 
-Copyright (c) 2011-2023 James Briones
+Copyright (c) 2011-2024 James Briones
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
