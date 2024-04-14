@@ -132,8 +132,8 @@ let VNScriptStringShowChoiceAndJump         = ".showchoiceandjump"   // Shows a 
 let VNScriptStringShowChoiceAndModify       = ".showchoiceandmodify" // Shows a line of dialogue and then displays choice (for modifying flag)
 
 // Script syntax
-let VNScriptSeparationString               = ":"
-let VNScriptNilValue                       = "nil"
+let VNScriptSeparationString                = ":"
+let VNScriptNilValue                        = "nil"
 
 
 /** CLASSES **/
@@ -152,12 +152,8 @@ class VNScript {
     var maxIndexes: Int     = 0
     var isFinished: Bool    = false
     
-    //init(nameOfFile:String, withConversationNamed:String) {
-    //}
-    
     // Loads the script from a dictionary with a lot of other data (such as specific conversation names, indexes, etc).
     init?(info:NSDictionary) {
-    
         let filenameValue:NSString?         = info.object(forKey: VNScriptFilenameKey) as? NSString
         let conversationValue:NSString?     = info.object(forKey: VNScriptConversationNameKey) as? NSString
         let currentIndexValue:NSNumber?     = info.object(forKey: VNScriptCurrentIndexKey) as? NSNumber
@@ -219,7 +215,6 @@ class VNScript {
     // This processes the script, converting the data from its original Property List format into something
     // that can be used by VNLayer. (This new, converted format is stored in VNScript's "data" dictionary)
     func prepareScript(_ dict:NSDictionary) {
-        
         let translatedScript:NSMutableDictionary = NSMutableDictionary(capacity: dict.count)
         
         // Go through each NSArray (conversation) in the script and translate each conversation into something that's
@@ -253,11 +248,6 @@ class VNScript {
             }
         }
         
-        //println("[TRANSLATED SCRIPT] \(translatedScript)")
-        
-        //self.data! = NSDictionary(translatedScript)
-        //var finishedDict:NSDictionary = NSDictionary(translatedScript)
-        //data = translatedScript.copy() as? NSMutableDictionary
         data = translatedScript
         if( data == nil ) {
             print("[VNScript] ERROR: Data is invalid.")
@@ -272,16 +262,12 @@ class VNScript {
         let conversationValue:NSString  = NSString(string: conversationName!)
         let filenameValue:NSString      = NSString(string: filename!)
         
-        /*let dictForScript:NSDictionary = NSDictionary(dictionaryLiteral:   indexesDoneValue,VNScriptIndexesDoneKey,
-                                                                        currentIndexValue,VNScriptCurrentIndexKey,
-                                                                        conversationValue,VNScriptConversationNameKey,
-                                                                        filenameValue, VNScriptFilenameKey)*/
-        let dictForScript = NSDictionary(dictionary: [  VNScriptIndexesDoneKey      :indexesDoneValue,
-                                                        VNScriptCurrentIndexKey     :currentIndexValue,
-                                                        VNScriptConversationNameKey :conversationValue,
-                                                        VNScriptFilenameKey         :filenameValue])
+        let dictionaryForScript = NSDictionary(dictionary: [  VNScriptIndexesDoneKey      :indexesDoneValue,
+                                                              VNScriptCurrentIndexKey     :currentIndexValue,
+                                                              VNScriptConversationNameKey :conversationValue,
+                                                              VNScriptFilenameKey         :filenameValue])
         
-        return dictForScript
+        return dictionaryForScript
     }
     
     func changeConversationTo(nameOfConversation:String) -> Bool {
@@ -305,7 +291,6 @@ class VNScript {
     
     func commandAtLine(_ line:Int) -> NSArray? {
         if( conversation != nil ) {
-            
             if( line < conversation!.count) {
                 return conversation!.object(at: line) as? NSArray
             }
@@ -348,22 +333,14 @@ class VNScript {
     
     // someCommand is an array of strings
     func analyzedCommand(_ command:NSArray) -> NSArray? {
+        var analyzedArray:NSArray?  = nil
+        var type:NSNumber           = NSNumber(value: 0)
         
-        var analyzedArray:NSArray? = nil
-        var type:NSNumber = NSNumber(value: 0)
-        
-        let firstString:NSString = command.object(at: 0) as! NSString
-        let thatFirstStr = firstString as String
-        //let firstCharacter = Array(thatFirstStr.characters)[0]
-        //let characterArray = Array(thatFirstStr.characters)
-        //let characterArray = Array(thatFirstStr.ch)
-        //let firstCharacter = characterArray[0]
-        //let firstCharacter = thatFirstStr.first as Character! // this works in Swift4
-        let firstCharacter = SMStringCharacterAtIndex(thatFirstStr, indexPosition: 0)
+        let firstString:NSString    = command.object(at: 0) as! NSString
+        let thatFirstStr            = firstString as String
+        let firstCharacter          = SMStringCharacterAtIndex(string: thatFirstStr, indexPosition: 0)
         
         if command.count < 2 || firstCharacter != "." {
-            
-            //var fixedString:NSMutableString = NSMutableString("%@", command.objectAtIndex(0))
             var fixedString = "\(thatFirstStr)"
             if( command.count > 1 ) {
                 
@@ -2176,6 +2153,7 @@ class VNScript {
             type            = VNScriptCommandShowChoiceAndJump as NSNumber
             let dialogue    = command.object(at: 1) as! NSString
             analyzedArray   = NSArray(objects: type, dialogue, choiceText, destinations)
+            
         } else if action.caseInsensitiveCompare(VNScriptStringShowChoiceAndModify) == ComparisonResult.orderedSame {
             // Function definition
             //
@@ -2228,7 +2206,6 @@ class VNScript {
             let dialogue = command.object(at: 1) as! NSString
             analyzedArray = NSArray(objects: type, dialogue, choiceText, variableNames, variableValues)
         }
-        
         
         return analyzedArray
     }

@@ -289,7 +289,7 @@ class SMTextNode : SKSpriteNode {
             // use a regular offset position, if one is provided
             if _offsetFromOrigin.x != 0.0 || _offsetFromOrigin.y != 0.0 {
                 //let updatedPosition = SMPositionAddTwoPositions(first: self.position, second: _offsetFromOrigin)
-                let updatedPosition = SMPositionAddTwoPositions(self.position, second: _offsetFromOrigin)
+                let updatedPosition = SMPositionAddTwoPositions(first: self.position, second: _offsetFromOrigin)
                 self.position = updatedPosition
             }
             
@@ -321,7 +321,7 @@ class SMTextNode : SKSpriteNode {
             basePosition.x = originForOffset.x + halfWidthOfSprite + halfWidthOfText
         }
         
-        self.position = SMPositionAddTwoPositions(basePosition, second: _offsetFromOrigin)
+        self.position = SMPositionAddTwoPositions(first: basePosition, second: _offsetFromOrigin)
     }
     
     // MARK: - Textures and images
@@ -347,9 +347,9 @@ class SMTextNode : SKSpriteNode {
         
         // set paragraphy style information
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping // for multi-line
-        paragraphStyle.alignment = horizontalAlignmentToUse
-        paragraphStyle.lineSpacing = 1
+        paragraphStyle.lineBreakMode    = NSLineBreakMode.byWordWrapping // for multi-line
+        paragraphStyle.alignment        = horizontalAlignmentToUse
+        paragraphStyle.lineSpacing      = 1
         
         var font = UIFont(name: _fontName, size: _fontSize)
         
@@ -360,10 +360,10 @@ class SMTextNode : SKSpriteNode {
         }
         
         let textAttributes = [
-            NSAttributedString.Key.foregroundColor : _fontColor,
-            NSAttributedString.Key.paragraphStyle : paragraphStyle,
-            NSAttributedString.Key.font : font!
-            ] as [NSAttributedString.Key : Any]
+            NSAttributedString.Key.foregroundColor  : _fontColor,
+            NSAttributedString.Key.paragraphStyle   : paragraphStyle,
+            NSAttributedString.Key.font             : font!
+            ] as [NSAttributedString.Key            : Any]
         
         // if an invalid paragraph width was passed in, use default screen width as the paragraph width instead
         if _paragraphWidth <= 0 {
@@ -381,14 +381,14 @@ class SMTextNode : SKSpriteNode {
         let stringObject = NSString(string: inputText) // Convert text to NSString format
         let textRectSize = CGSize(width: paragraphWidth, height: paragraphHeight)
         
-        var textRect = stringObject.boundingRect(with: textRectSize,
-                                                 options: [NSStringDrawingOptions.usesLineFragmentOrigin,NSStringDrawingOptions.truncatesLastVisibleLine],
-                                                 attributes: textAttributes,
-                                                 context: nil)
+        var textRect = stringObject.boundingRect(with:          textRectSize,
+                                                 options:       [NSStringDrawingOptions.usesLineFragmentOrigin,NSStringDrawingOptions.truncatesLastVisibleLine],
+                                                 attributes:    textAttributes,
+                                                 context:       nil)
         
         // round up to "valid" values
-        textRect.size.height = ceil(textRect.size.height)
-        textRect.size.width = ceil(textRect.size.width)
+        textRect.size.height    = ceil(textRect.size.height)
+        textRect.size.width     = ceil(textRect.size.width)
         
         // if any of these dimensions are still zero, then there's no valid image data that can be returned
         if textRect.size.width == 0.0 || textRect.size.height == 0.0 {

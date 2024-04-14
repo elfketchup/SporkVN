@@ -25,55 +25,38 @@ class VNSystemCall {
     
     //- (void)sendCall:(NSArray*)callData
     func sendCall(_ callData:NSArray) {
-        
         if( callData.count < 2 ) {
             return
         }
+    
+        let typeString  = callData.object(at: 0) as! NSString
+        let extras      = callData.object(at: 1) as! NSArray
         
-    
-        let typeString:NSString = callData.object(at: 0) as! NSString // = [callData objectAtIndex:0];
-        let extras:NSArray = callData.object(at: 1) as! NSArray //[callData objectAtIndex:1];
-    
         // Check what kind TYPE parameter is
-        
         if typeString.caseInsensitiveCompare("nslog") == ComparisonResult.orderedSame {
-    
             // Use NSLog to record whatever diagnostic data may have been sent from the VN system
-            //NSLog(@"[VNSystemCall] %@", [extras objectAtIndex:0]);
             let printout:NSString = extras.object(at: 0) as! NSString
             print("[VNSystemCall] \(printout)")
-    
+            
         } else if typeString.caseInsensitiveCompare("autosave") == ComparisonResult.orderedSame {
-    
             // Do a basic autosave of the VN system
-            //[self autosave];
             autosave()
         }
     }
     
     func autosave() {
-    
-        // Try to get the current VN scene (if it exists)
-        //VNScene* currentVNScene = [VNScene currentVNScene];
-        //var currentVNScene? = VNScene.sharedScene()
-        //let currentVNScene:VNScene? = VNScene.sharedScene
-        let currentVNScene:VNSceneNode? = VNSceneNode.sharedScene
-    
-        // Now check if the scene exists at all
-        if( currentVNScene != nil ) {
-    
+        // Try and find if there's any actual scene running right now; if your game is purely a visual novel, there should be
+        // one, but if you're just adding VNSceneNode on top of a much larger game, then who knows.
+        if let currentVNScene = VNSceneNode.sharedScene {
             // Check if the scene can't be saved due to it being created/loaded way too recently
-            if( currentVNScene!.wasJustLoadedFromSave == true ) {
-    
+            if( currentVNScene.wasJustLoadedFromSave == true ) {
+                // no point auto-saving if the game was just loaded
                 print("[VNSystemCall] Cannot autosave; game was just loaded too recently.");
                 return;
-    
             } else {
-    
                 // In THEORY, it should be possible to save the game now...
                 print("[VNSystemCall] Autosaving...");
-                //[currentVNScene saveToRecord]; // Attemp to autosave
-                currentVNScene!.saveToRecord()
+                currentVNScene.saveToRecord()
             }
         } else {
             print("[VNSystemCall] Cannot autosave, no current VNSceneNode object detected.")

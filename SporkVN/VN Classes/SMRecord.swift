@@ -112,18 +112,6 @@ class SMRecord {
         return format.string(from: date)
     }
     
-    /*
-    // Set all time/date information in a save slot to the current time.
-    func updateDateInDictionary(dictionary:NSDictionary) {
-        // Get the current time, and then create a string displaying a human-readable version of the current time
-        let theTimeRightNow:Date    = Date()
-        let stringWithCurrentTime   = stringFromDate(date: theTimeRightNow)
-        
-        // Set date information in the dictionary
-        dictionary.setValue(theTimeRightNow,        forKey:SMRecordDateSavedKey)        // Save NSDate object
-        dictionary.setValue(stringWithCurrentTime,  forKey:SMRecordDateSavedAsString)   // Save human-readable string
-    }*/
-    
     // MARK: - Record
     
     // Create new save data for a brand new game. The dictionary has no "real" data, but has several placeholders
@@ -132,7 +120,6 @@ class SMRecord {
         let tempRecord = NSMutableDictionary()
         
         // Fill the record with default data
-        //updateDateInDictionary(dictionary: tempRecord)      // Set current date as "the time when this was saved"
         resetActivityInformation(inDictionary: tempRecord)  // Fill the activity dictionary with dummy data
         
         // Create a flags dictionary with some default "dummy" data in it
@@ -154,6 +141,7 @@ class SMRecord {
         // This function will check if any of the following objects are missing, since a successful save should have put all of this into device memory
         let lastSavedDate:Date?     = UserDefaults.standard.object(forKey: SMRecordDateSavedKey) as? Date
         let previousSaveData:Data?  = UserDefaults.standard.object(forKey: SMRecordDataSavedKey) as? Data
+        
         // If neither of these things exist, then SMRecord will believe there is no saved data
         if( lastSavedDate == nil || previousSaveData == nil ) {
             return false
@@ -187,9 +175,10 @@ class SMRecord {
     func recordFromData(data:Data) -> NSDictionary? {
         let unarchiver                  = try! NSKeyedUnarchiver(forReadingFrom: data)
         unarchiver.requiresSecureCoding = false
+        
         if let dictionaryFromData       = unarchiver.decodeObject(forKey: SMRecordDataKey) as? NSDictionary {
             unarchiver.finishDecoding()
-            print("Dictionary from data: \(dictionaryFromData)")
+            //print("Dictionary from data: \(dictionaryFromData)")
             return NSDictionary(dictionary: dictionaryFromData)
         }
         
@@ -278,13 +267,13 @@ class SMRecord {
     func addExistingSpriteAliases(dictionary:NSDictionary) {
         if dictionary.count > 0 {
             let spriteAliasDictionary = self.spriteAliases()
-            SMDictionaryAddEntriesFromAnotherDictionary(spriteAliasDictionary, source: dictionary)
+            SMDictionaryAddEntriesFromAnotherDictionary(destination: spriteAliasDictionary, source: dictionary)
         }
     }
     
     // Add a single sprite alias to the dictionary of sprite aliases stored by the record
     func setSpriteAlias(named:String, withUpdatedValue:String) {
-        if SMStringLength(named) < 1 || SMStringLength(withUpdatedValue) < 1 {
+        if SMStringLength(string: named) < 1 || SMStringLength(string: withUpdatedValue) < 1 {
             return
         }
         
@@ -329,7 +318,7 @@ class SMRecord {
     // Opens a PLIST file and copies all items in it to EKRecord as flags.
     // Can choose whether or not to overwrite existing flags that have the same names.
     func addFlagsFromFile(named:String, overrideExistingFlags:Bool) {
-        let rootDictionary = SMDictionaryFromFile(named)
+        let rootDictionary = SMDictionaryFromFile(filename: named)
         if rootDictionary == nil {
             print("[EKRecord] WARNING: Could not load flags as the dictionary file could not be loaded.")
             return;
@@ -359,7 +348,6 @@ class SMRecord {
             }
         } // end for loop
     } // end function
-
     
     // This removes any existing flag data and overwrites it with a blank dictionary that has dummy values
     func resetAllFlags() {
@@ -370,8 +358,6 @@ class SMRecord {
         // Set this "dummy data" dictionary as the flags data
         self.setFlags(dictionary: dummyFlags)
     }
-    
-    
     
     // Adds a dictionary of flags to the Flags data stored in SMRecord
     func addExistingFlags(fromDictionary:NSDictionary) {
