@@ -48,6 +48,8 @@
 	<integer>0</integer>
 	<key>choicebox fadein</key>
 	<true/>
+	<key>choicebox blink speed</key>
+	<integer>0</integer>
 	<key>speechbox text color</key>
 	<dict>
 		<key>r</key>

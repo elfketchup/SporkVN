@@ -84,6 +84,8 @@ let VNSceneViewSpeechboxColorKey            = "speechbox color"      // color sp
 let VNSceneViewSpeechboxTextColorKey        = "speechbox text color" // color of text in speech box (both dialogue and speaker name)
 let VNSceneViewChoiceButtonOffsetX          = "choicebox offset x"
 let VNSceneViewChoiceButtonOffsetY          = "choicebox offset y"
+let VNSceneViewChoiceButtonBlinkSpeedKey    = "choicebox blink speed" // duration of "blink" (fade in/out) in seconds. 0 means no blink.
+let VNSceneViewChoiceButtonBlinkMinOpacity  = "choicebox blink minimum opacity" // minimum alpha used when fading out to blink
 
 // Resource dictionary keys
 let VNSceneViewSpeechTextKey                = "speech text"
@@ -166,6 +168,8 @@ let VNSceneModeEnded                = 300 // There isn't any more script data to
 let VNSceneTransitionTypeNone       = 00
 let VNSceneNodeChoiceButtonStartingPercentage  = CGFloat(0.63) // A percentage of the screen height, is used for positioning buttons during choices
 
+// MARK: - VNSceneNode class
+
 private var VNSceneNodeSharedInstance:VNSceneNode? = nil
 
 /*
@@ -241,6 +245,8 @@ class VNSceneNode : SKNode {
     var choiceButtonOffsetY             = CGFloat(0)
     var choiceboxFadein                 = true
     var choiceboxFadeSpeed              = TimeInterval(0.2)
+    var choiceboxBlinkSpeed             = TimeInterval(0) // default of zero means no blink; anything higher is the blink duration in seconds
+    var choiceboxMinimumOpacity         = CGFloat(0.5)
     
     var previousScene:SKScene?          = nil
     var allSettings:NSDictionary?
@@ -934,6 +940,25 @@ class VNSceneNode : SKNode {
         if let choiceboxFadeSpeedValue = viewSettings.object(forKey: VNSceneChoiceboxFadeTimeKey) as? NSNumber {
             choiceboxFadeSpeed = TimeInterval(choiceboxFadeSpeedValue.doubleValue)
         }
+        
+        // choicebox blink settings
+        if let choiceboxBlinkSpeedValue = viewSettings.object(forKey: VNSceneViewChoiceButtonBlinkSpeedKey) as? NSNumber {
+            choiceboxBlinkSpeed = TimeInterval( choiceboxBlinkSpeedValue.doubleValue )
+            
+            if choiceboxBlinkSpeed < 0 {
+                choiceboxBlinkSpeed = 0
+            }
+        }
+        if let choiceboxBlinkMinimumOpacityValue = viewSettings.object(forKey: VNSceneViewChoiceButtonBlinkMinOpacity) as? NSNumber {
+            choiceboxMinimumOpacity = CGFloat( choiceboxBlinkMinimumOpacityValue.doubleValue )
+            
+            if choiceboxMinimumOpacity < 0 {
+                choiceboxMinimumOpacity = 0
+            }
+            if choiceboxMinimumOpacity > 1.0 {
+                choiceboxMinimumOpacity = 1.0
+            }
+        }
     }
     
     // Removes unused character sprites (CCSprite objects) from memory.
@@ -1123,9 +1148,23 @@ class VNSceneNode : SKNode {
                     let fadeInAction = SKAction.fadeIn(withDuration: choiceboxFadeSpeed)
                     button.run(fadeInAction)
                 }
-            }
-        }
-    }
+                
+                // Make all the child nodes of the button blink, assuming there's a valid blink duration (basically anything above zero)
+                if choiceboxBlinkSpeed > 0 && button.children.count > 0 {
+                    for childNodeInChoicebox in button.children {
+                        let blinkActionDuration = choiceboxBlinkSpeed * 0.5 // uses half the total duration because the duration is spread across two different actions
+                        let blinkFadeOut        = SKAction.fadeAlpha(to: choiceboxMinimumOpacity, duration: blinkActionDuration )
+                        let blinkFadeIn         = SKAction.fadeAlpha(to: 1.0, duration: blinkActionDuration)
+                        let blinkSequence       = SKAction.sequence([blinkFadeOut, blinkFadeIn])
+                        let blinkForever        = SKAction.repeatForever(blinkSequence)
+                        
+                        // apply repeated blinking action to this child node
+                        childNodeInChoicebox.run( blinkForever )
+                    }
+                }
+            } // if let button
+        } // end for loop
+    } // end addButtonsToScene
     
     // MARK: - Choice sets
 
@@ -1689,8 +1728,16 @@ class VNSceneNode : SKNode {
                         
                         let button = currentButton as! SKSpriteNode
                         
+                        // remove actions and sub-children from the button's child nodes
+                        if button.children.count > 0 {
+                            for childNodeInButton in button.children {
+                                childNodeInButton.removeAllActions()
+                                childNodeInButton.removeAllChildren()
+                            }
+                        }
+                        
+                        button.removeAllActions()
                         button.removeAllChildren()
-                        //[button removeFromParent)
                         button.removeFromParent()
                     }
                 }
@@ -1732,6 +1779,15 @@ class VNSceneNode : SKNode {
                     for currentButton in buttons {
                         let button:SKSpriteNode = currentButton as! SKSpriteNode
                         
+                        // remove the actions and child nodes from the button's child nodes
+                        if button.children.count > 0 {
+                            for childNodeInButton in button.children {
+                                childNodeInButton.removeAllActions()
+                                childNodeInButton.removeAllChildren()
+                            }
+                        }
+                        
+                        button.removeAllActions()
                         button.removeAllChildren()
                         button.removeFromParent()
                     }

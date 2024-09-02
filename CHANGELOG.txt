@@ -1,3 +1,6 @@
+version 1.2.4.2 September 1, 2024
+. Adds "choicebox blinking" feature. When the player has to make a choice in the game, there's now the option to turn on "blinking," where the text in the buttons for choices will fade to 0.5 opacity and then return to full opacity, a.k.a. "blinking." The speed and minimum opacity can be customized. You may like it, or you might think it's a cheap UI gimmick.
+
 version 1.2.4.1 April 10, 2024
 . This update is focused mostly on making code for creating and displaying buttons during player choice segments more streamlined. If you need to tweak the formula for how buttons are displayed/positioned, you'd only have to do it from one function, instead of having to change multiple seemingly unrelated lines of code in different areas. Now if only I could remember to clean up the rest of the code!
 
