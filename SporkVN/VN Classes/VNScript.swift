@@ -78,6 +78,8 @@ let VNScriptCommandIncreaseFlagByFlag       = 147
 let VNScriptCommandDecreaseFlagByFlag       = 148
 let VNScriptCommandShowChoiceAndJump        = 149
 let VNScriptCommandShowChoiceAndModify      = 150
+let VNScriptCommandSetChoiceMinOpacity      = 151
+let VNScriptCommandSetChoiceBlinkSpeed      = 152
 
 // The command strings. Each one starts with a dot (the parser will only check treat a line as a command if it starts
 // with a dot), and is followed by some parameters, separated by colons.
@@ -130,6 +132,8 @@ let VNScriptStringIncreaseFlagByFlag        = ".increaseflagbyflag"  // Increase
 let VNScriptStringDecreaseFlagByFlag        = ".decreaseflagbyflag"  // Subtracts the second flag's value from the first flag
 let VNScriptStringShowChoiceAndJump         = ".showchoiceandjump"   // Shows a line of dialogue and then displays choice at the same time
 let VNScriptStringShowChoiceAndModify       = ".showchoiceandmodify" // Shows a line of dialogue and then displays choice (for modifying flag)
+let VNScriptStringSetChoiceMinOpacity       = ".setchoiceminimumopacity" // Sets minimum opacity of choicebox blinking
+let VNScriptStringSetChoiceBlinkSpeed       = ".setchoiceblinkspeed" // Sets speed (in seconds) of choicebox blinking
 
 // Script syntax
 let VNScriptSeparationString                = ":"
@@ -2155,6 +2159,7 @@ class VNScript {
             analyzedArray   = NSArray(objects: type, dialogue, choiceText, destinations)
             
         } else if action.caseInsensitiveCompare(VNScriptStringShowChoiceAndModify) == ComparisonResult.orderedSame {
+            
             // Function definition
             //
             //  Name: .SHOWCHOICEANDMODIFY
@@ -2205,6 +2210,47 @@ class VNScript {
             type = VNScriptCommandShowChoiceAndModify as NSNumber
             let dialogue = command.object(at: 1) as! NSString
             analyzedArray = NSArray(objects: type, dialogue, choiceText, variableNames, variableValues)
+            
+        } else if action.caseInsensitiveCompare(VNScriptStringSetChoiceMinOpacity) == ComparisonResult.orderedSame {
+            
+            // Function definition
+            //
+            //  Name: .SETCHOICEMINIMUMOPACITY
+            //
+            //  Sets the minimum opacity (from 0.0 to 1.0) of the choicebox blinking feature.
+            //
+            //  Parameters:
+            //
+            //      #1: The amount (from 0.0 to 1.0) of alpha for the child nodes in the choicebox. (double)
+            //
+            //  Example: .SETCHOICEMINIMUMOPACITY:0.5
+            //
+            
+            type = VNScriptCommandSetChoiceMinOpacity as NSNumber
+            let minOpacityValue = parameter1.doubleValue
+            
+            analyzedArray = NSArray(objects: type, NSNumber(floatLiteral: minOpacityValue))
+            
+        } else if action.caseInsensitiveCompare(VNScriptStringSetChoiceBlinkSpeed) == ComparisonResult.orderedSame {
+            
+            // Function definition
+            //
+            //  Name: .SETCHOICEBLINKSPEED
+            //
+            //  Sets the blink speed (in seconds) for how long choicebox child nodes blink.
+            //
+            //  Parameters:
+            //
+            //      #1: The amount of time in seconds that the blinking duration occurs. (double)
+            //
+            //  Example: .SETCHOICEBLINKSPEED:5.0
+            //
+            
+            type = VNScriptCommandSetChoiceBlinkSpeed as NSNumber
+            let blinkSpeed = parameter1.doubleValue
+            
+            analyzedArray = NSArray(objects: type, NSNumber(floatLiteral: blinkSpeed))
+            
         }
         
         return analyzedArray

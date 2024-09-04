@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css">
   <title></title>
   <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2299.7">
+  <meta name="CocoaVersion" content="2487.7">
   <style type="text/css">
     p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; -webkit-text-stroke: #000000; min-height: 16.0px}
     p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; -webkit-text-stroke: #000000}
@@ -767,6 +767,71 @@
 <p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#2: The name of the second flag, which is used to subtract a value from the first flag (string)</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .DECREASEFLAGBYFLAG:seventy:just_one_i_guess</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .SHOWCHOICEANDJUMP</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>This displays a line of dialogue and simultaneously presents the player with multiple choices. Each choice</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>causes the scene to jump to a different "conversation" (or rather, an array in the script dictionary).</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>The function can have multipe parameters, but the number should always be odd-numbered.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1. The line of dialogue to display (string) (example: "What do you want to do next?")</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#2: The name of the first action (shows up on button when player decides) (string) (example: "Run away")</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#3: The name of the conversation to jump to (string) (example: "fleeing sequence")</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>...these variables can be repeated multiple times.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .JUMPONCHOICE:"What do you want to do?":"Hug someone":hug sequence:"Glomp someone":glomp sequence</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .SHOWCHOICEANDMODIFY</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>This is the quicker version of .MODIFYFLAGBYCHOICE, and it shows a line of dialogue and also a choice</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>at the same time (instead of there being a slight delay between the two commands, which is what normally happens).</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: The line of dialogue/narration to display (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: The text label that will appear on the choice buttons (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#2: The name of the flag/variable to be modified (string)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#3: The amount to modify the flag/variable by (integer)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>...these variables can be repeated multiple times.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .SHOWCHOICEANDMODIFY:"Do you want to be nice about it?":"Be nice":niceness:1:"Be rude":niceness:-1</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .SETCHOICEMINIMUMOPACITY</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Sets the minimum opacity (from 0.0 to 1.0) of the choicebox blinking feature.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: The amount (from 0.0 to 1.0) of alpha for the child nodes in the choicebox. (double)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .SETCHOICEMINIMUMOPACITY:0.5</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1">================</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Name: .SETCHOICEBLINKSPEED</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Sets the blink speed (in seconds) for how long choicebox child nodes blink.</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Parameters:</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span>#1: The amount of time in seconds that the blinking duration occurs. (double)</span></p>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span>Example: .SETCHOICEBLINKSPEED:5.0</span></p>
 <p class="p1"><span class="s1"></span><br></p>
 <p class="p2"><span class="s1">================</span></p>
 </body>

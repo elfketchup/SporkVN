@@ -795,3 +795,27 @@ Example: .addsprite:girl.png:NO
   Example: .SHOWCHOICEANDMODIFY:"Do you want to be nice about it?":"Be nice":niceness:1:"Be rude":niceness:-1
 
 ================
+
+  Name: .SETCHOICEMINIMUMOPACITY
+
+  Sets the minimum opacity (from 0.0 to 1.0) of the choicebox blinking feature.
+
+  Parameters:
+
+      #1: The amount (from 0.0 to 1.0) of alpha for the child nodes in the choicebox. (double)
+
+  Example: .SETCHOICEMINIMUMOPACITY:0.5
+
+================
+
+  Name: .SETCHOICEBLINKSPEED
+
+  Sets the blink speed (in seconds) for how long choicebox child nodes blink.
+
+  Parameters:
+
+      #1: The amount of time in seconds that the blinking duration occurs. (double)
+
+  Example: .SETCHOICEBLINKSPEED:5.0
+
+================

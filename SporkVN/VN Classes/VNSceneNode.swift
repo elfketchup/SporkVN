@@ -135,6 +135,8 @@ let VNSceneOverrideSpeechFontKey    = "override speech font"
 let VNSceneOverrideSpeechSizeKey    = "override speech size"
 let VNSceneOverrideSpeakerFontKey   = "override speaker font"
 let VNSceneOverrideSpeakerSizeKey   = "override speaker size"
+let VNSceneOverrideChoiceMinOpacity = "override choice min opacity"
+let VNSceneOverrideChoiceBlinkSpeed = "override choice blink speed"
 
 // Graphics/display stuff
 let VNSceneViewSettingsFileName     = "vnscene view settings"
@@ -895,7 +897,34 @@ class VNSceneNode : SKNode {
         speechTransitionSpeed   = (viewSettings.object(forKey: VNSceneViewTextTransitionSpeedKey) as! NSNumber).doubleValue
         speakerTransitionSpeed  = (viewSettings.object(forKey: VNSceneViewNameTransitionSpeedKey) as! NSNumber).doubleValue
         
-        // Part 6: Load overrides, if any are found
+        // Part 6: Load choicebox settings (especially regarding blinking)
+        if let choiceboxBlinkSpeedValue = viewSettings.object(forKey: VNSceneViewChoiceButtonBlinkSpeedKey) as? NSNumber {
+            choiceboxBlinkSpeed = TimeInterval( choiceboxBlinkSpeedValue.doubleValue )
+            
+            if choiceboxBlinkSpeed < 0 {
+                choiceboxBlinkSpeed = 0
+            }
+        }
+        if let choiceboxBlinkMinimumOpacityValue = viewSettings.object(forKey: VNSceneViewChoiceButtonBlinkMinOpacity) as? NSNumber {
+            choiceboxMinimumOpacity = CGFloat( choiceboxBlinkMinimumOpacityValue.doubleValue )
+            
+            if choiceboxMinimumOpacity < 0 {
+                choiceboxMinimumOpacity = 0
+            }
+            if choiceboxMinimumOpacity > 1.0 {
+                choiceboxMinimumOpacity = 1.0
+            }
+        }
+        
+        // Override those settings from saves, if they exist
+        if let overrideChoiceBlinkSpeed = record.object(forKey: VNSceneOverrideChoiceBlinkSpeed) as? NSNumber {
+            choiceboxBlinkSpeed = TimeInterval( overrideChoiceBlinkSpeed.doubleValue )
+        }
+        if let overrideChoiceMinOpacity = record.object(forKey: VNSceneOverrideChoiceMinOpacity) as? NSNumber {
+            choiceboxMinimumOpacity = CGFloat( overrideChoiceMinOpacity.doubleValue )
+        }
+        
+        // Part 7: Load other overrides, if any are found
         let overrideSpeechFont:NSString?    = record.object(forKey: VNSceneOverrideSpeechFontKey) as? NSString
         let overrideSpeakerFont:NSString?   = record.object(forKey: VNSceneOverrideSpeakerFontKey) as? NSString
         let overrideSpeechSize:NSNumber?    = record.object(forKey: VNSceneOverrideSpeechSizeKey) as? NSNumber
@@ -927,7 +956,7 @@ class VNSceneNode : SKNode {
             choiceButtonOffsetY = CGFloat(valueForChoiceboxOffsetY.doubleValue)
         }
         
-        // Part 7: Load extra features
+        // Part 8: Load extra features
         let blockSkippingUntilTextIsDone:NSNumber? = viewSettings.object(forKey: VNSceneViewNoSkipUntilTextShownKey) as? NSNumber
         if( blockSkippingUntilTextIsDone != nil ) {
             noSkippingUntilTextIsShown = blockSkippingUntilTextIsDone!.boolValue
@@ -939,25 +968,6 @@ class VNSceneNode : SKNode {
         }
         if let choiceboxFadeSpeedValue = viewSettings.object(forKey: VNSceneChoiceboxFadeTimeKey) as? NSNumber {
             choiceboxFadeSpeed = TimeInterval(choiceboxFadeSpeedValue.doubleValue)
-        }
-        
-        // choicebox blink settings
-        if let choiceboxBlinkSpeedValue = viewSettings.object(forKey: VNSceneViewChoiceButtonBlinkSpeedKey) as? NSNumber {
-            choiceboxBlinkSpeed = TimeInterval( choiceboxBlinkSpeedValue.doubleValue )
-            
-            if choiceboxBlinkSpeed < 0 {
-                choiceboxBlinkSpeed = 0
-            }
-        }
-        if let choiceboxBlinkMinimumOpacityValue = viewSettings.object(forKey: VNSceneViewChoiceButtonBlinkMinOpacity) as? NSNumber {
-            choiceboxMinimumOpacity = CGFloat( choiceboxBlinkMinimumOpacityValue.doubleValue )
-            
-            if choiceboxMinimumOpacity < 0 {
-                choiceboxMinimumOpacity = 0
-            }
-            if choiceboxMinimumOpacity > 1.0 {
-                choiceboxMinimumOpacity = 1.0
-            }
         }
     }
     
@@ -3131,6 +3141,31 @@ class VNSceneNode : SKNode {
                 print("[VNSceneNode] WARNING: Could not create buttons for .SHOWCHOICEANDMODIFY command.")
             }
             
+        case VNScriptCommandSetChoiceMinOpacity:
+            if let updatedMinimumOpacity = command.object(at: 1) as? NSNumber {
+                let minOpacityValue     = SMClampDouble(input: updatedMinimumOpacity.doubleValue, min: 0.0, max: 1.0)
+                let valueAsNumber       = NSNumber(floatLiteral: minOpacityValue)
+                choiceboxMinimumOpacity = CGFloat( minOpacityValue )
+                
+                // store override value directly into the record
+                record.setValue(valueAsNumber, forKey: VNSceneOverrideChoiceMinOpacity)
+            } 
+            
+        case VNScriptCommandSetChoiceBlinkSpeed:
+            if let updatedBlinkSpeed = command.object(at: 1) as? NSNumber {
+                var blinkSpeedValue     = updatedBlinkSpeed.doubleValue
+                
+                // no negative values allowed
+                if blinkSpeedValue < 0 {
+                    blinkSpeedValue = 0.0
+                }
+                
+                let valueAsNumber       = NSNumber(floatLiteral: blinkSpeedValue)
+                choiceboxBlinkSpeed     = blinkSpeedValue
+                
+                // store the override in the record
+                record.setValue(valueAsNumber, forKey: VNSceneOverrideChoiceBlinkSpeed)
+            }
                 
         default:
             print("[VNSceneNode] WARNING: Unknown command found in script. The command's NSArray is: %@", command);
