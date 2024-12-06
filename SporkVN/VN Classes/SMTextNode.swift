@@ -355,8 +355,11 @@ class SMTextNode : SKSpriteNode {
         
         // If the font couldn't be successfully created, then just switch to a default font instead
         if font == nil {
-            font = UIFont(name: SMTextNodeDefaultFontName, size: _fontSize)
-            print("[SMTextNode] WARNING: The font you specified was unavailable, switching to \(SMTextNodeDefaultFontName) as default.")
+            //font = UIFont(name: SMTextNodeDefaultFontName, size: _fontSize)
+            //print("[SMTextNode] WARNING: The font you specified was unavailable, switching to \(SMTextNodeDefaultFontName) as default.")
+            
+            // The default font is Helvetica, but just for the sake of safety and future compatibility, this will default to whatever the system font is
+            font = UIFont.systemFont(ofSize: _fontSize)
         }
         
         let textAttributes = [
