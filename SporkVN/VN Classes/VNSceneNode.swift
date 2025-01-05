@@ -2377,7 +2377,7 @@ class VNSceneNode : SKNode {
                 speaker!.position       = self.updatedSpeakerPosition() //[self updatedSpeakerPosition)
                 
                 // Fade in the speaker name label
-                let fadeIn = SKAction.fadeIn(withDuration: speechTransitionSpeed)
+                let fadeIn = SKAction.fadeIn(withDuration: speakerTransitionSpeed)
                 speaker!.run(fadeIn)
             }
             
