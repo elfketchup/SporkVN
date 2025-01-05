@@ -11,7 +11,7 @@
 	<key>text transition speed</key>
 	<real>0.5</real>
 	<key>speaker name transition speed</key>
-	<real>0.5</real>
+	<real>0.1</real>
 	<key>speech horizontal margins</key>
 	<integer>0</integer>
 	<key>speech vertical margins</key>

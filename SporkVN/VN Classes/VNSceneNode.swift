@@ -269,10 +269,13 @@ class VNSceneNode : SKNode {
     var TWNumberOfCurrentCharacters     = 0
     var TWPreviousNumberOfCurrentChars  = 0
     var TWNumberOfTotalCharacters       = 0
-    var TWCurrentText                   = " "; // What's currently on the screen
-    var TWFullText                      = " "; // The entire line of text
+    var TWCurrentText                   = " " // What's currently on the screen
+    var TWFullText                      = " " // The entire line of text
+    var TWCurrentSpeakerText            = " "
+    var TWFullSpeakerText               = " "
     // Used to handle SpriteKit's weird text-display quirks
     var TWInvisibleText:SMTextNode? = nil
+    var TWInvisibleSpeakerText:SMTextNode? = nil
     
     // Choice sets, used to store dynamically added/removed choices
     var choiceSets = NSMutableDictionary()
@@ -781,7 +784,7 @@ class VNSceneNode : SKNode {
         let originalSpeechPos   = CGPoint(x: originalSpeechPosX, y: originalSpeechPosY)
         
         let bottomLeftCornerOfSpeechBox = SMUtility.Position.bottomLeftCornerOfSKNode(node: speechBox!);
-        speech!.position                = SMUtility.Position.sumOfTwoPositions(first: originalSpeechPos, second: bottomLeftCornerOfSpeechBox);
+        speech!.position                = SMUtility.Position.addTwoPoints(first: originalSpeechPos, second: bottomLeftCornerOfSpeechBox);
         speech!.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         speech!.zPosition               = VNSceneTextLayer;
         speech!.name                    = VNSceneTagSpeechText;
@@ -1913,9 +1916,9 @@ class VNSceneNode : SKNode {
         // Adjust slightly so that the label isn't jammed up against the upper-left corner; there should be a bit of margins
         let adjustment:CGPoint = CGPoint( x: widthOfSpeechBox * 0.02, y: heightOfSpeechBox * -0.05 );
         // Store adjustments
-        let cornerPlusAdjustments:CGPoint = SMUtility.Position.sumOfTwoPositions(first: topLeftCornerOfSpeechBox, second: adjustment);
+        let cornerPlusAdjustments:CGPoint = SMUtility.Position.addTwoPoints(first: topLeftCornerOfSpeechBox, second: adjustment);
         // Add custom offsets
-        let adjustedPlusOffsets:CGPoint = SMUtility.Position.sumOfTwoPositions(first: cornerPlusAdjustments, second: speakerNameOffsets);
+        let adjustedPlusOffsets:CGPoint = SMUtility.Position.addTwoPoints(first: cornerPlusAdjustments, second: speakerNameOffsets);
         
         return adjustedPlusOffsets;
     }

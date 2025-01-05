@@ -288,8 +288,8 @@ class SMTextNode : SKSpriteNode {
         if _offsetSprite == nil {
             // use a regular offset position, if one is provided
             if _offsetFromOrigin.x != 0.0 || _offsetFromOrigin.y != 0.0 {
-                //let updatedPosition = SMPositionAddTwoPositions(first: self.position, second: _offsetFromOrigin)
-                let updatedPosition = SMUtility.Position.sumOfTwoPositions(first: self.position, second: _offsetFromOrigin)
+                //let updatedPosition = SMPositionaddTwoPoints(first: self.position, second: _offsetFromOrigin)
+                let updatedPosition = SMUtility.Position.addTwoPoints(first: self.position, second: _offsetFromOrigin)
                 self.position = updatedPosition
             }
             
@@ -321,7 +321,7 @@ class SMTextNode : SKSpriteNode {
             basePosition.x = originForOffset.x + halfWidthOfSprite + halfWidthOfText
         }
         
-        self.position = SMUtility.Position.sumOfTwoPositions(first: basePosition, second: _offsetFromOrigin)
+        self.position = SMUtility.Position.addTwoPoints(first: basePosition, second: _offsetFromOrigin)
     }
     
     // MARK: - Textures and images

@@ -55,10 +55,15 @@ class SMUtility {
         }
         
         // just adds two positions together to get a third
-        static func sumOfTwoPositions( first:CGPoint, second:CGPoint ) -> CGPoint {
+        static func addTwoPoints( first:CGPoint, second:CGPoint ) -> CGPoint {
             let x = first.x + second.x
             let y = first.y + second.y
             return CGPoint(x: x, y: y)
+        }
+        
+        // simple subtraction function, just because
+        static func subtractTwoPoints(first:CGPoint, second:CGPoint) -> CGPoint {
+            return CGPoint(x: first.x - second.x, y: first.y - second.y)
         }
         
         // Returns the position of the bottom-left corner of an SKNode object
@@ -69,6 +74,27 @@ class SMUtility {
             let y = (heightOfNode * (-0.5))
             return CGPoint(x: x, y: y)
         }
+        
+        // Used with some anchor-point related shenanigans
+        static func setPositionWithTemporaryAnchorPoint(sprite:SKSpriteNode, position:CGPoint, temporaryAnchorPoint:CGPoint ) {
+            let widthOfSprite   = sprite.frame.size.width
+            let heightOfSprite  = sprite.frame.size.height
+            let anchorX         = temporaryAnchorPoint.x
+            let anchorY         = temporaryAnchorPoint.y
+
+            // Initial position: upper-right corner of the sprite is at lower-left corner of coordinates
+            var sX:CGFloat = position.x + (widthOfSprite  * 0.5);
+            var sY:CGFloat = position.y + (heightOfSprite * 0.5);
+            
+            // Add adjustment due to 'someAnchorPoint'
+            sX = sX - (widthOfSprite * anchorX);
+            sY = sY - (heightOfSprite * anchorY);
+            
+            // Set adjusted position
+            sprite.position = CGPoint(x: sX, y: sY)
+        }
+        
+        
     }
     
     class Math {
@@ -80,6 +106,37 @@ class SMUtility {
             let lengthSquared   = CGFloat( p1.x * p2.x + p1.y * p2.y )
             let length          = CGFloat( sqrt( lengthSquared ) )
             return length;
+        }
+        
+        static func degreesToRadians(degrees:CGFloat) -> CGFloat {
+            return (degrees * 0.01745329252)
+        }
+
+        static func radiansToDegrees( radians:CGFloat ) -> CGFloat {
+            return (radians * 57.29577951)
+        }
+
+        // Gets the angle between origin and another object
+        static func findAngleBetweenPoints( original:CGPoint, target:CGPoint ) -> CGFloat {
+            let mX = target.x - original.x;
+            let mY = target.y - original.y;
+            var f = CGFloat( atan2(mX, mY) )
+            f = (f * 57.29577951); // PI * 180
+            
+            // The converted value is fine if the angle is between 0 degrees and 180, degrees, but beyond 180 it becomes
+            // a little unusual. 181 degrees will be -179, 182 will be -178, etc. Fortunately, this is easy to fix.
+            if( f < 0.0 ) {
+                f = 180.0 + (180.0 + f);
+            }
+            // Correct for excessive values
+            while( f > 360.0 ) {
+                f = f - 360.0;
+            }
+            while( f < 0.0 ) {
+                f = f + 360.0;
+            }
+            
+            return f; // This should be the correct angle now
         }
         
         // Clamp some numerical primite values
@@ -339,6 +396,21 @@ class SMUtility {
             }
             return audio
         }
+        
+        /*
+         Plays music by creating AVAudioPlayer and playing it. The object is also returned, so it can be
+         paused or stopped if necessary.
+         */
+        static func playMusic(filename:String, loopForever:Bool) -> AVAudioPlayer? {
+            if let musicAudioObject = soundFromFile(filename: filename) {
+                if loopForever == true {
+                    musicAudioObject.numberOfLoops = -1
+                }
+                musicAudioObject.play()
+                return musicAudioObject
+            }
+            return nil
+        }
     }
     
     class Dictionaries {
@@ -447,4 +519,4 @@ class SMUtility {
             return (finalValue + plusModifier)
         }
     }
-}
+} // SMUtility
