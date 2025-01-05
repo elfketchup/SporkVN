@@ -99,8 +99,8 @@ class VNTestScene : SKScene
         //println("Standard settings are: \n\n\(standardSettings)")
     
         // For the "Start New Game" button, get the values from the dictionary
-        let startLabelX = SMNumberInDictionaryToCGFloat(dictionary: standardSettings, objectName: VNTestSceneStartNewGameLabelX)
-        let startLabelY = SMNumberInDictionaryToCGFloat(dictionary: standardSettings, objectName: VNTestSceneStartNewGameLabelY)
+        let startLabelX = SMUtility.Dictionaries.CGFloatFromDictionary(dictionary: standardSettings, name: VNTestSceneStartNewGameLabelX)
+        let startLabelY = SMUtility.Dictionaries.CGFloatFromDictionary(dictionary: standardSettings, name: VNTestSceneStartNewGameLabelY)
         
         let startFontSize:CGFloat = CGFloat( (standardSettings.object(forKey: VNTestSceneStartNewGameSize) as! NSNumber).doubleValue )
         let startText   = standardSettings.object(forKey: VNTestSceneStartNewGameText) as! NSString
@@ -116,8 +116,8 @@ class VNTestScene : SKScene
         playLabel           = SMTextNode(fontNamed: startFont as String)
         playLabel!.text     = startText as String
         playLabel!.fontSize = startFontSize
-        playLabel!.color    = SMColorFromRGB(r: startColorR, g: startColorG, b: startColorB)
-        playLabel!.position = SMPositionWithNormalizedCoordinates(normalizedX: startLabelX, normalizedY: startLabelY)
+        playLabel!.color    = SMUtility.Color.fromRGB(r: startColorR, g: startColorG, b: startColorB)
+        playLabel!.position = SMUtility.Position.normalizedCoordinates(normalizedX: startLabelX, normalizedY: startLabelY)
         playLabel!.zPosition = VNTestSceneZForLabels
         
         self.addChild(playLabel!)
@@ -139,24 +139,24 @@ class VNTestScene : SKScene
         loadLabel               = SMTextNode(fontNamed: continueFont as String)
         loadLabel!.fontSize     = continueFontSize
         loadLabel!.text         = continueText as String
-        loadLabel!.position     = SMPositionWithNormalizedCoordinates( normalizedX: continueLabelX, normalizedY: continueLabelY )
-        loadLabel!.color        = SMColorFromRGB( r: continueColorR, g: continueColorG, b: continueColorB )
+        loadLabel!.position     = SMUtility.Position.normalizedCoordinates( normalizedX: continueLabelX, normalizedY: continueLabelY )
+        loadLabel!.color        = SMUtility.Color.fromRGB( r: continueColorR, g: continueColorG, b: continueColorB )
         loadLabel!.zPosition    = VNTestSceneZForLabels
         self.addChild(loadLabel!)
         
         // Load the title info
-        let titleX          = SMNumberInDictionaryToCGFloat(dictionary: standardSettings, objectName: VNTestSceneTitleX)
-        let titleY          = SMNumberInDictionaryToCGFloat(dictionary: standardSettings, objectName: VNTestSceneTitleY)
+        let titleX          = SMUtility.Dictionaries.CGFloatFromDictionary(dictionary: standardSettings, name: VNTestSceneTitleX)
+        let titleY          = SMUtility.Dictionaries.CGFloatFromDictionary(dictionary: standardSettings, name: VNTestSceneTitleY)
         let titleImageName  = standardSettings.object(forKey: VNTestSceneTitleImage) as! String
         title               = SKSpriteNode(imageNamed: titleImageName)
-        title!.position     = SMPositionWithNormalizedCoordinates(normalizedX: titleX, normalizedY: titleY)
+        title!.position     = SMUtility.Position.normalizedCoordinates(normalizedX: titleX, normalizedY: titleY)
         title!.zPosition    = VNTestSceneZForTitle
         self.addChild(title!)
         
         // Load background image
         let backgroundImageFilename     = standardSettings.object(forKey: VNTestSceneBackgroundImage) as! String
         backgroundImage                 = SKSpriteNode(imageNamed: backgroundImageFilename)
-        backgroundImage!.position       = SMPositionWithNormalizedCoordinates(normalizedX: 0.5, normalizedY: 0.5)
+        backgroundImage!.position       = SMUtility.Position.normalizedCoordinates(normalizedX: 0.5, normalizedY: 0.5)
         backgroundImage!.zPosition      = VNTestSceneZForBackgroundImage
         self.addChild(backgroundImage!)
     
@@ -236,25 +236,25 @@ class VNTestScene : SKScene
     func loadSavedGame()
     {
         //if SMRecord.sharedRecord.hasAnySavedData() == false {
-        if SMRecord.sharedRecord.hasSavedLocalData() == false { //&& SMRecord.sharedRecord.hasSavedCloudData() == false {
+        if SMRecord.hasSavedLocalData() == false { //&& SMRecord.sharedRecord.hasSavedCloudData() == false {
             print("[VNTestScene] ERROR: No saved data, cannot continue game!");
             return;
         }
     
         // The following's not very pretty, but it is pretty useful...
-        print("[VNTestScene] For diagnostics purporses, here's a flag dump from EKRecord:\n   \(SMRecord.sharedRecord.flags())")
+        print("[VNTestScene] For diagnostics purporses, here's a flag dump from EKRecord:\n   \(SMRecord.flags())")
     
         // Load saved-game records from EKRecord. The activity dictionary holds data about what the last thing the user was doing
         // (presumably, watching a scene), how far the player got, relevent data that needs to be reloaded, etc.
         //let activityRecords = SMRecord.sharedRecord.activityDict()
-        let activityRecords = SMRecord.sharedRecord.dictionaryOfActivityInformation()
-        let lastActivity:NSString? = activityRecords.object(forKey: SMRecordActivityTypeKey) as? NSString
+        let activityRecords = SMRecord.dictionaryOfActivityInformation()
+        let lastActivity:NSString? = activityRecords.object(forKey: SMRecord.ActivityTypeKey) as? NSString
         if lastActivity == nil {
             print("[VNTestScene] ERROR: No previous activity found. No saved game can be loaded.");
             return;
         }
         
-        let savedData = activityRecords.object(forKey: SMRecordActivityDataKey) as! NSDictionary
+        let savedData = activityRecords.object(forKey: SMRecord.ActivityDataKey) as! NSDictionary
         print("[VNTestScene] Saved data is \(savedData)")
     
         // Unlike when the player is starting a new game, the name of the script to load doesn't have to be passed.
@@ -296,16 +296,11 @@ class VNTestScene : SKScene
     
     func playBackgroundMusic( filename:String )
     {
-        if SMStringLength(string: filename) < 1 {
+        if SMUtility.Strings.lengthOf(string: filename) < 1 {
             return;
         }
-        
         self.stopMenuMusic()
-        
-        //backgroundMusic = smaudio
-        //OALSimpleAudio.sharedInstance().playBg(filename, loop: true)
-        
-        backgroundMusic = SMAudioSoundFromFile(filename: filename)
+        backgroundMusic = SMUtility.Audio.soundFromFile(filename: filename)
         
         if backgroundMusic == nil  {
             print("[VNTestScene] ERROR: Could not load background music from file named: \(filename)")
@@ -325,12 +320,12 @@ class VNTestScene : SKScene
             let touch = t 
             let touchPos = touch.location(in: self)
             
-            if SMBoundingBoxOfSprite(sprite: playLabel!).contains(touchPos) == true {
+            if SMUtility.Collision.boundingBoxOfSprite(sprite: playLabel!).contains(touchPos) == true {
                 self.stopMenuMusic()
                 self.startNewGame()
             }
             
-            if( SMBoundingBoxOfSprite(sprite: loadLabel!).contains(touchPos) ) {
+            if( SMUtility.Collision.boundingBoxOfSprite(sprite: loadLabel!).contains(touchPos) ) {
                 if loadLabel!.alpha > 0.98 {
                     self.stopMenuMusic()
                     self.loadSavedGame()
@@ -346,23 +341,18 @@ class VNTestScene : SKScene
     }
 
     override init(size: CGSize) {
-        
         super.init(size: size)
-        
-        SMSetScreenSizeInPoints(width: size.width, height: size.height)
-        
-        let previousSaveData = SMRecord.sharedRecord.hasSavedLocalData()
-        isPlayingMusic = false
-        
+        SMUtility.Screen.setSize(screenWidth: size.width, screenHeight: size.height)
+        // determine if there's any previously saved data
+        let previousSaveData = SMRecord.hasSavedLocalData()
+        isPlayingMusic = false // disable music for now
         self.loadUI()
-        
         // If there's no previous data, then the "Continue" / "Load Game" label will be partially transparent.
         if previousSaveData == false {
             loadLabel!.alpha = 0.5
         } else {
             loadLabel!.alpha = 1.0
         }
-        
         self.isUserInteractionEnabled = true
     }
     

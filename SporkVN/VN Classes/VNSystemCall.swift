@@ -20,24 +20,19 @@ Currently, this class only supports the first two uses, and only at the most bas
 modify/extend this class for their own purposes.
 
 */
-
+@MainActor
 class VNSystemCall {
-    
-    //- (void)sendCall:(NSArray*)callData
     func sendCall(_ callData:NSArray) {
         if( callData.count < 2 ) {
             return
         }
-    
         let typeString  = callData.object(at: 0) as! NSString
         let extras      = callData.object(at: 1) as! NSArray
-        
         // Check what kind TYPE parameter is
         if typeString.caseInsensitiveCompare("nslog") == ComparisonResult.orderedSame {
             // Use NSLog to record whatever diagnostic data may have been sent from the VN system
             let printout:NSString = extras.object(at: 0) as! NSString
             print("[VNSystemCall] \(printout)")
-            
         } else if typeString.caseInsensitiveCompare("autosave") == ComparisonResult.orderedSame {
             // Do a basic autosave of the VN system
             autosave()

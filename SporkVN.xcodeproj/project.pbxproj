@@ -26,7 +26,7 @@
 		1AE58974277AAB21007F7227 /* VNTestScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE5896D277AAB21007F7227 /* VNTestScene.swift */; };
 		1AE58975277AAB21007F7227 /* VNSceneNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE5896E277AAB21007F7227 /* VNSceneNode.swift */; };
 		1AE58976277AAB21007F7227 /* VNScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE5896F277AAB21007F7227 /* VNScript.swift */; };
-		1AE58977277AAB21007F7227 /* SMUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE58970277AAB21007F7227 /* SMUtils.swift */; };
+		1AE58977277AAB21007F7227 /* SMUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE58970277AAB21007F7227 /* SMUtility.swift */; };
 		1AE58978277AAB21007F7227 /* VNSystemCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE58971277AAB21007F7227 /* VNSystemCall.swift */; };
 /* End PBXBuildFile section */
 
@@ -51,7 +51,7 @@
 		1AE5896D277AAB21007F7227 /* VNTestScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNTestScene.swift; sourceTree = "<group>"; };
 		1AE5896E277AAB21007F7227 /* VNSceneNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNSceneNode.swift; sourceTree = "<group>"; };
 		1AE5896F277AAB21007F7227 /* VNScript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNScript.swift; sourceTree = "<group>"; };
-		1AE58970277AAB21007F7227 /* SMUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMUtils.swift; sourceTree = "<group>"; };
+		1AE58970277AAB21007F7227 /* SMUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMUtility.swift; sourceTree = "<group>"; };
 		1AE58971277AAB21007F7227 /* VNSystemCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNSystemCall.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -136,7 +136,7 @@
 				1AE5896D277AAB21007F7227 /* VNTestScene.swift */,
 				1AE5896E277AAB21007F7227 /* VNSceneNode.swift */,
 				1AE5896F277AAB21007F7227 /* VNScript.swift */,
-				1AE58970277AAB21007F7227 /* SMUtils.swift */,
+				1AE58970277AAB21007F7227 /* SMUtility.swift */,
 				1AE58971277AAB21007F7227 /* VNSystemCall.swift */,
 			);
 			path = "VN Classes";
@@ -170,7 +170,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1320;
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					1AE5892B277AA90F007F7227 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -225,7 +225,7 @@
 				1AE58973277AAB21007F7227 /* SMRecord.swift in Sources */,
 				1AE58976277AAB21007F7227 /* VNScript.swift in Sources */,
 				1AE58938277AA90F007F7227 /* GameViewController.swift in Sources */,
-				1AE58977277AAB21007F7227 /* SMUtils.swift in Sources */,
+				1AE58977277AAB21007F7227 /* SMUtility.swift in Sources */,
 				1AE58972277AAB21007F7227 /* SMTextNode.swift in Sources */,
 				1AE58978277AAB21007F7227 /* VNSystemCall.swift in Sources */,
 				1AE58974277AAB21007F7227 /* VNTestScene.swift in Sources */,
@@ -293,6 +293,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -354,6 +355,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -387,6 +389,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -395,7 +398,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.elfketchup.SporkVN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -415,6 +418,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -423,7 +427,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.elfketchup.SporkVN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

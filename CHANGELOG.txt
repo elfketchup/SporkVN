@@ -1,3 +1,8 @@
+version 1.2.5 - January 4, 2025
+. This project now uses Swift 6. Maybe this was a bad idea...?
+. SMUtils has been rewritten to use static class functions instead of global functions because it looks a little neater. 
+. SMRecord has also been rewritten to use static class functions too.
+
 version 1.2.4.3 - September 4, 2024
 . Added .SETCHOICEMINIMUMOPACITY and .SETCHOICEBLINKSPEED to dynamically adjust the blink speed and minimum opacity for "choicebox blinking," that is, the child nodes in a choicebox fading in and out. Usually the only child nodes would just be text, but theoretically you could add images and other things too. When the minimum opacity and blink speed are adjusted via script commands, the values will be saved and restored whenever the game is loaded from a save.
 

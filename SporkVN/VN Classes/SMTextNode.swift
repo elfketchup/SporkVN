@@ -234,19 +234,19 @@ class SMTextNode : SKSpriteNode {
         }
         
         if let colorRValue = dictionary.object(forKey: SMTextNodeFontColorRKey) as? NSNumber {
-            r = SMClampDouble(input: colorRValue.doubleValue, min: 0.0, max: 1.0)
+            r = SMUtility.Math.clampDouble(input: colorRValue.doubleValue, min: 0.0, max: 1.0)
             useCustomColor = true
         }
         if let colorGValue = dictionary.object(forKey: SMTextNodeFontColorGKey) as? NSNumber {
-            g = SMClampDouble(input: colorGValue.doubleValue, min: 0.0, max: 1.0)
+            g = SMUtility.Math.clampDouble(input: colorGValue.doubleValue, min: 0.0, max: 1.0)
             useCustomColor = true
         }
         if let colorBValue = dictionary.object(forKey: SMTextNodeFontColorGKey) as? NSNumber {
-            b = SMClampDouble(input: colorBValue.doubleValue, min: 0.0, max: 1.0)
+            b = SMUtility.Math.clampDouble(input: colorBValue.doubleValue, min: 0.0, max: 1.0)
             useCustomColor = true
         }
         if let colorAlphavalue = dictionary.object(forKey: SMTextNodeAlphaKey) as? NSNumber {
-            a = SMClampDouble(input: colorAlphavalue.doubleValue, min: 0.0, max: 1.0)
+            a = SMUtility.Math.clampDouble(input: colorAlphavalue.doubleValue, min: 0.0, max: 1.0)
             useCustomColor = true
         }
         
@@ -268,13 +268,13 @@ class SMTextNode : SKSpriteNode {
     func offsetTypeFromString(string:String) -> SMTextNodeOffsetFromSpriteType {
         var result = SMTextNodeOffsetFromSpriteType.CenteredOnSprite // assume center by default
         
-        if SMStringsAreSame(first: string, second: SMTextNodeOffsetFromSpriteTypeStringCentered) {
+        if SMUtility.Strings.areSame(first: string, second: SMTextNodeOffsetFromSpriteTypeStringCentered) {
             result = .AboveSprite
-        } else if SMStringsAreSame(first: string, second: SMTextNodeOffsetFromSpriteTypeStringBelow) {
+        } else if SMUtility.Strings.areSame(first: string, second: SMTextNodeOffsetFromSpriteTypeStringBelow) {
             result = .BelowSprite
-        } else if SMStringsAreSame(first: string, second: SMTextNodeOffsetFromSpriteTypeStringLeft) {
+        } else if SMUtility.Strings.areSame(first: string, second: SMTextNodeOffsetFromSpriteTypeStringLeft) {
             result = .LeftOfSprite
-        } else if SMStringsAreSame(first: string, second: SMTextNodeOffsetFromSpriteTypeStringRight) {
+        } else if SMUtility.Strings.areSame(first: string, second: SMTextNodeOffsetFromSpriteTypeStringRight) {
             result = .RightOfSprite
         }
         
@@ -289,7 +289,7 @@ class SMTextNode : SKSpriteNode {
             // use a regular offset position, if one is provided
             if _offsetFromOrigin.x != 0.0 || _offsetFromOrigin.y != 0.0 {
                 //let updatedPosition = SMPositionAddTwoPositions(first: self.position, second: _offsetFromOrigin)
-                let updatedPosition = SMPositionAddTwoPositions(first: self.position, second: _offsetFromOrigin)
+                let updatedPosition = SMUtility.Position.sumOfTwoPositions(first: self.position, second: _offsetFromOrigin)
                 self.position = updatedPosition
             }
             
@@ -321,7 +321,7 @@ class SMTextNode : SKSpriteNode {
             basePosition.x = originForOffset.x + halfWidthOfSprite + halfWidthOfText
         }
         
-        self.position = SMPositionAddTwoPositions(first: basePosition, second: _offsetFromOrigin)
+        self.position = SMUtility.Position.sumOfTwoPositions(first: basePosition, second: _offsetFromOrigin)
     }
     
     // MARK: - Textures and images

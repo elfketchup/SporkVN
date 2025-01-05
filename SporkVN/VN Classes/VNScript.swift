@@ -342,7 +342,7 @@ class VNScript {
         
         let firstString:NSString    = command.object(at: 0) as! NSString
         let thatFirstStr            = firstString as String
-        let firstCharacter          = SMStringCharacterAtIndex(string: thatFirstStr, indexPosition: 0)
+        let firstCharacter          = SMUtility.Strings.characterAtIndex(string: thatFirstStr, index: 0)
         
         if command.count < 2 || firstCharacter != "." {
             var fixedString = "\(thatFirstStr)"

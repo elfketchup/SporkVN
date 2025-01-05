@@ -172,12 +172,14 @@ let VNSceneNodeChoiceButtonStartingPercentage  = CGFloat(0.63) // A percentage o
 
 // MARK: - VNSceneNode class
 
+@MainActor
 private var VNSceneNodeSharedInstance:VNSceneNode? = nil
 
 /*
  VNSceneNode does all the heavy lifting for dialogue / visual-novel scenes. Display dialogue, characters, user interfaces,
  playing audio, etc... ideally, this should be broken up into smaller classes that do all those things independently.
  */
+@MainActor
 class VNSceneNode : SKNode {
     
     var script:VNScript?
@@ -293,7 +295,7 @@ class VNSceneNode : SKNode {
     }
     
     func loadDataOnView(view:SKView) {
-        SMSetScreenDataFromView(view: view); // Get view and screen size data; this is used to position UI elements
+        SMUtility.Screen.setSizeFromView(view: view) // Get view and screen size data; this is used to position UI elements
     
         //let fooW = view.frame.size.width
         //let fooH = view.frame.size.height
@@ -312,8 +314,8 @@ class VNSceneNode : SKNode {
         soundsLoaded    = NSMutableArray()
         sprites         = NSMutableDictionary()
         record          = NSMutableDictionary(dictionary: allSettings!)
-        flags           = NSMutableDictionary(dictionary: SMRecord.sharedRecord.flags())
-        choiceSets      = NSMutableDictionary(dictionary: SMRecord.sharedRecord.choiceSetsFromRecord())
+        flags           = NSMutableDictionary(dictionary: SMRecord.flags())
+        choiceSets      = NSMutableDictionary(dictionary: SMRecord.choiceSetsFromRecord())
         // Also set the defaults for text-skipping behavior
         noSkippingUntilTextIsShown = false
         
@@ -412,12 +414,12 @@ class VNSceneNode : SKNode {
     func playBGMusic( filename:String, willLoopForever:Bool ) {
         stopBGMusic()
         
-        if SMStringLength(string: filename) < 1 {
+        if SMUtility.Strings.lengthOf(string: filename) < 1 {
             print("[VNSceneNode] ERROR: Could not load background music because input filename is invalid.")
             return;
         }
         
-        backgroundMusic = SMAudioSoundFromFile(filename: filename)
+        backgroundMusic = SMUtility.Audio.soundFromFile(filename: filename)
         if backgroundMusic == nil {
             print("[VNSceneNode] ERROR: Could not load background music from file named: \(filename)")
             return;
@@ -433,7 +435,7 @@ class VNSceneNode : SKNode {
     
     //- (void)playSoundEffect:(NSString*)filename
     func playSoundEffect( filename:String ) {
-        if SMStringLength(string: filename) < 1 {
+        if SMUtility.Strings.lengthOf(string: filename) < 1 {
             print("[VNSceneNode] ERROR: Could not play sound effect because input filename was invalid.")
             return;
         }
@@ -724,8 +726,7 @@ class VNSceneNode : SKNode {
             let colorG = (speechBoxColorDictionary!.object(forKey: "g") as! NSNumber).intValue
             let colorB = (speechBoxColorDictionary!.object(forKey: "b") as! NSNumber).intValue
             
-            //let untouchedColor = SMColorFromRGB(untouchedR, g: untouchedG, b: untouchedB)
-            let theColor = SMColorFromRGB(r: colorR, g: colorG, b: colorB)
+            let theColor = SMUtility.Color.fromRGB(r: colorR, g: colorG, b: colorB)
             
             speechBoxColor = theColor
             print("[VNSceneNode] Speech box color set to \(theColor)")
@@ -779,8 +780,8 @@ class VNSceneNode : SKNode {
         let originalSpeechPosY  = speechBox!.size.height * 0.5 + CGFloat(verticalMargins) - CGFloat(speechYOffset)
         let originalSpeechPos   = CGPoint(x: originalSpeechPosX, y: originalSpeechPosY)
         
-        let bottomLeftCornerOfSpeechBox = SMPositionOfBottomLeftCornerOfSKNode(node: speechBox!);
-        speech!.position                = SMPositionAddTwoPositions(first: originalSpeechPos, second: bottomLeftCornerOfSpeechBox);
+        let bottomLeftCornerOfSpeechBox = SMUtility.Position.bottomLeftCornerOfSKNode(node: speechBox!);
+        speech!.position                = SMUtility.Position.sumOfTwoPositions(first: originalSpeechPos, second: bottomLeftCornerOfSpeechBox);
         speech!.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         speech!.zPosition               = VNSceneTextLayer;
         speech!.name                    = VNSceneTagSpeechText;
@@ -793,8 +794,8 @@ class VNSceneNode : SKNode {
             let colorG = (speechBoxTextColorDict!.object(forKey: "g") as! NSNumber).intValue
             let colorB = (speechBoxTextColorDict!.object(forKey: "b") as! NSNumber).intValue
             
-            //let untouchedColor = SMColorFromRGB(untouchedR, g: untouchedG, b: untouchedB)
-            let theColor = SMColorFromRGB(r: colorR, g: colorG, b: colorB)
+            //let untouchedColor = SMUtility.Color.fromRGB(untouchedR, g: untouchedG, b: untouchedB)
+            let theColor = SMUtility.Color.fromRGB(r: colorR, g: colorG, b: colorB)
             
             speechBoxTextColor = theColor
             //print("[VNSceneNode] Speech box color set to \(theColor)")
@@ -867,7 +868,7 @@ class VNSceneNode : SKNode {
             let untouchedG = (buttonUntouchedColorsDict!.object(forKey: "g") as! NSNumber).intValue
             let untouchedB = (buttonUntouchedColorsDict!.object(forKey: "b") as! NSNumber).intValue
             
-            let untouchedColor = SMColorFromRGB(r: untouchedR, g: untouchedG, b: untouchedB)
+            let untouchedColor = SMUtility.Color.fromRGB(r: untouchedR, g: untouchedG, b: untouchedB)
             
             buttonUntouchedColors = untouchedColor
             print("[VNSceneNode] Button untouched colors set to \(buttonUntouchedColors)")
@@ -879,7 +880,7 @@ class VNSceneNode : SKNode {
             let touchedG = (buttonTouchedColorsDict!.object(forKey: "g") as! NSNumber).intValue
             let touchedB = (buttonTouchedColorsDict!.object(forKey: "b") as! NSNumber).intValue
             
-            let touchedColor = SMColorFromRGB(r:  touchedR, g: touchedG, b: touchedB)
+            let touchedColor = SMUtility.Color.fromRGB(r:  touchedR, g: touchedG, b: touchedB)
             buttonTouchedColors = touchedColor
         }
         
@@ -888,7 +889,7 @@ class VNSceneNode : SKNode {
             let G = (buttonTextColorDict!.object(forKey: "g") as! NSNumber).intValue
             let B = (buttonTextColorDict!.object(forKey: "b") as! NSNumber).intValue
             
-            let theColor = SMColorFromRGB(r: R, g: G, b: B)
+            let theColor = SMUtility.Color.fromRGB(r: R, g: G, b: B)
             buttonTextColor = theColor
         }
         
@@ -1051,8 +1052,8 @@ class VNSceneNode : SKNode {
         }
         
         // Create button label, set the position of the text, and add this label to the main 'button' sprite
-        let labelFontName       = SMStringFromDictionary(dictionary: viewSettings, nameOfObject: VNSceneViewFontNameKey)
-        let labelFontSizeNumber = SMNumberFromDictionary(dictionary: viewSettings, nameOfObject: VNSceneViewFontSizeKey)
+        let labelFontName       = SMUtility.Dictionaries.stringFromDictionary(dictionary: viewSettings, name: VNSceneViewFontNameKey)
+        let labelFontSizeNumber = SMUtility.Dictionaries.numberFromDictionary(dictionary: viewSettings, name: VNSceneViewFontSizeKey)
         let labelFontSize       = CGFloat( labelFontSizeNumber.doubleValue )
         
         let buttonLabel         = SKLabelNode(fontNamed: labelFontName)
@@ -1235,7 +1236,7 @@ class VNSceneNode : SKNode {
             if let arrayOfButtons = arrayOfButtonSprites(numberOfButtons: choiceTexts.count) {
                 addLabelsToArrayOfButtons(arrayOfLabels: choiceTexts, arrayOfButtons: arrayOfButtons)
                 addButtonsToScene(arrayOfButtons: arrayOfButtons)
-                SMArrayAddObjectsToMutableArray(destination: choices, sourceArray: destinations)
+                SMUtility.Arrays.addObjectsToMutableArray(destination: choices, source: destinations)
                 mode = VNSceneModeChoiceWithJump
             } else {
                 print("[VNSceneNode] displayChoiceSet - WARNING: Could not create array of buttons!")
@@ -1391,7 +1392,7 @@ class VNSceneNode : SKNode {
         // when the game was saved (in this case, the activity is a VN scene), plus any specific details
         // of that activity (in this case, the script's data, which includes indexes, script name, etc.)
         let dictToSave = NSMutableDictionary()
-        dictToSave.setValue(VNSceneActivityType, forKey: SMRecordActivityTypeKey)
+        dictToSave.setValue(VNSceneActivityType, forKey: SMRecord.ActivityTypeKey)
         
         // Check if the "safe save" exists; if it does, then it should be used instead of whatever the current data is.
         //if( safeSave != nil ) {
@@ -1406,16 +1407,16 @@ class VNSceneNode : SKNode {
             
             //recordedFlags.addEntriesFromDictionary(localFlags)
             //SMDictionaryAddEntriesFromAnotherDictionary(SMRecord.sprite)
-            SMRecord.sharedRecord.addExistingFlags(fromDictionary: aliasesFromSafeSave)
-            SMRecord.sharedRecord.addExistingFlags(fromDictionary: localFlags)
+            SMRecord.addExistingFlags(fromDictionary: aliasesFromSafeSave)
+            SMRecord.addExistingFlags(fromDictionary: localFlags)
             
             // safe choice sets as well
-            SMRecord.sharedRecord.saveChoiceSetsToRecord(dictionary: localChoiceSets)
+            SMRecord.saveChoiceSetsToRecord(dictionary: localChoiceSets)
             
-            dictToSave.setValue(localRecord, forKey: SMRecordActivityDataKey)
+            dictToSave.setValue(localRecord, forKey: SMRecord.ActivityDataKey)
             //SMRecord.sharedRecord.setActivityDict(dictToSave)
-            SMRecord.sharedRecord.setActivityDictionary(dictionary: dictToSave)
-            if SMRecord.sharedRecord.saveToDevice() == false {
+            SMRecord.setActivityDictionary(dictionary: dictToSave)
+            if SMRecord.saveToDevice() == false {
                 print("[VNSceneNode] WARNING: Attempt to save game data to device data encountered an error.")
             }
             
@@ -1440,14 +1441,14 @@ class VNSceneNode : SKNode {
         // other classes and game systems can modify the flags as well!
         //[[SMRecord sharedRecord].flags addEntriesFromDictionary:flags)
         //SMRecord.sharedRecord.addExistingFlags(flags)
-        SMRecord.sharedRecord.addExistingFlags(fromDictionary: flags)
-        SMRecord.sharedRecord.saveChoiceSetsToRecord(dictionary: choiceSets)
+        SMRecord.addExistingFlags(fromDictionary: flags)
+        SMRecord.saveChoiceSetsToRecord(dictionary: choiceSets)
         
         // Update script data and then load it into the activity dictionary.
-        updateScriptInfo()                                                  // Update all index and conversation data
-        dictToSave.setValue(record, forKey:SMRecordActivityDataKey)         // Load into activity dictionary
-        SMRecord.sharedRecord.setActivityDictionary(dictionary: dictToSave) // Save the activity dictionary into SMRecord
-        if SMRecord.sharedRecord.saveToDevice() == false {                  // Save all record data to device memory
+        updateScriptInfo()                                              // Update all index and conversation data
+        dictToSave.setValue(record, forKey:SMRecord.ActivityDataKey)    // Load into activity dictionary
+        SMRecord.setActivityDictionary(dictionary: dictToSave)          // Save the activity dictionary into SMRecord
+        if SMRecord.saveToDevice() == false {                           // Save all record data to device memory
             print("[VNSceneNode] WARNING: Attempt to save game data to device encountered an error.")
         }
         
@@ -1611,8 +1612,8 @@ class VNSceneNode : SKNode {
                     var canSkip = true
                     
                     if TWModeEnabled == true && TWCanSkip == false {
-                        let lengthOfTWCurrentText   = SMStringLength(string: TWCurrentText)
-                        let lengthOfTWFullText      = SMStringLength(string: TWFullText)
+                        let lengthOfTWCurrentText   = SMUtility.Strings.lengthOf(string: TWCurrentText)
+                        let lengthOfTWFullText      = SMUtility.Strings.lengthOf(string: TWFullText)
                         
                         if lengthOfTWCurrentText < lengthOfTWFullText {
                             canSkip = false
@@ -1624,7 +1625,7 @@ class VNSceneNode : SKNode {
                     }
                 } else {
                     // Only allow advancing/skipping if there's no text or if the opacity/alpha has reached 1.0
-                    if SMStringLength(string: speech!.text) < 1 || speech!.alpha >= 1.0 {
+                    if SMUtility.Strings.lengthOf(string: speech!.text) < 1 || speech!.alpha >= 1.0 {
                         script!.advanceIndex()
                     }
                 }
@@ -1821,11 +1822,8 @@ class VNSceneNode : SKNode {
                 //print("[VNSceneNode] The scene has ended. Flag data will be auto-saved.");
                 //print("[VNSceneNode] Remaining scene and activity data will be deleted.");
                 
-                // Save all necessary data
-                let theRecord = SMRecord.sharedRecord
-                
-                theRecord.addExistingFlags(fromDictionary: flags)
-                theRecord.resetActivityInformation(inDictionary: theRecord.record)
+                SMRecord.addExistingFlags(fromDictionary: flags)
+                SMRecord.resetActivityInformation(inDictionary: SMRecord.record)
                 
                 self.isFinished = true; // Mark as finished
                 purgeDataCreatedByScene()
@@ -1915,9 +1913,9 @@ class VNSceneNode : SKNode {
         // Adjust slightly so that the label isn't jammed up against the upper-left corner; there should be a bit of margins
         let adjustment:CGPoint = CGPoint( x: widthOfSpeechBox * 0.02, y: heightOfSpeechBox * -0.05 );
         // Store adjustments
-        let cornerPlusAdjustments:CGPoint = SMPositionAddTwoPositions(first: topLeftCornerOfSpeechBox, second: adjustment);
+        let cornerPlusAdjustments:CGPoint = SMUtility.Position.sumOfTwoPositions(first: topLeftCornerOfSpeechBox, second: adjustment);
         // Add custom offsets
-        let adjustedPlusOffsets:CGPoint = SMPositionAddTwoPositions(first: cornerPlusAdjustments, second: speakerNameOffsets);
+        let adjustedPlusOffsets:CGPoint = SMUtility.Position.sumOfTwoPositions(first: cornerPlusAdjustments, second: speakerNameOffsets);
         
         return adjustedPlusOffsets;
     }
@@ -2084,7 +2082,7 @@ class VNSceneNode : SKNode {
             // Position the sprite at the center; the position can be changed later. Usually, the command to change sprite positions
             // is almost immediately right after the command to add the sprite; the commands are executed so quickly that the user
             // shouldn't see any delay.
-            createdSprite!.position = SMPositionWithNormalizedCoordinates(normalizedX: 0.5, normalizedY: 0.5); // Sprite positioned at screen center
+            createdSprite!.position = SMUtility.Position.normalizedCoordinates(normalizedX: 0.5, normalizedY: 0.5); // Sprite positioned at screen center
             createdSprite!.zPosition = VNSceneCharacterLayer;
             addChild(createdSprite!)
             
@@ -2415,7 +2413,7 @@ class VNSceneNode : SKNode {
             if let arrayOfButtons = arrayOfButtonSprites(numberOfButtons: choiceTexts.count) {
                 addLabelsToArrayOfButtons(arrayOfLabels: choiceTexts, arrayOfButtons: arrayOfButtons)
                 addButtonsToScene(arrayOfButtons: arrayOfButtons)
-                SMArrayAddObjectsToMutableArray(destination: choices, sourceArray: destinations)
+                SMUtility.Arrays.addObjectsToMutableArray(destination: choices, source: destinations)
                 
                 mode = VNSceneModeChoiceWithJump
             } else {
@@ -2719,8 +2717,8 @@ class VNSceneNode : SKNode {
                 addButtonsToScene(arrayOfButtons: arrayOfButtons)
                 
                 // set up choices
-                SMArrayAddObjectsToMutableArray(destination: choices,       sourceArray: variableNames)
-                SMArrayAddObjectsToMutableArray(destination: choiceExtras,  sourceArray: variableValues)
+                SMUtility.Arrays.addObjectsToMutableArray(destination: choices,       source: variableNames)
+                SMUtility.Arrays.addObjectsToMutableArray(destination: choiceExtras,  source: variableValues)
                 
                 mode = VNSceneModeChoiceWithFlag
             } else {
@@ -2793,7 +2791,7 @@ class VNSceneNode : SKNode {
             // This will only change the font if the font name is of a "proper" length; no supported font on iOS
             // is shorter than 4 characters (as far as I know).
             //if countElements(speechFont) > 3 {
-            if SMStringLength(string: speechFont) > 3 {
+            if SMUtility.Strings.lengthOf(string: speechFont) > 3 {
                 
                 speech!.fontName = String(describing: command.object(at: 1))
                 
@@ -2824,7 +2822,7 @@ class VNSceneNode : SKNode {
             
             speakerFont = String(describing: command.object(at: 1))
             
-            if SMStringLength(string: speakerFont) > 3 {
+            if SMUtility.Strings.lengthOf(string: speakerFont) > 3 {
                 
                 speaker!.fontName = speakerFont
                 
@@ -3103,7 +3101,7 @@ class VNSceneNode : SKNode {
             if let arrayOfButtons = arrayOfButtonSprites(numberOfButtons: choiceTexts.count) {
                 addLabelsToArrayOfButtons(arrayOfLabels: choiceTexts, arrayOfButtons: arrayOfButtons)
                 addButtonsToScene(arrayOfButtons: arrayOfButtons)
-                SMArrayAddObjectsToMutableArray(destination: choices, sourceArray: destinations)
+                SMUtility.Arrays.addObjectsToMutableArray(destination: choices, source: destinations)
                 
                 mode = VNSceneModeChoiceWithJump
             } else {
@@ -3134,8 +3132,8 @@ class VNSceneNode : SKNode {
                 addLabelsToArrayOfButtons(arrayOfLabels: choiceTexts, arrayOfButtons: arrayOfButtons)
                 addButtonsToScene(arrayOfButtons: arrayOfButtons)
                 // add the extra info (flags/variables, and the amount to change them by)
-                SMArrayAddObjectsToMutableArray(destination: choices,       sourceArray: variableNames)
-                SMArrayAddObjectsToMutableArray(destination: choiceExtras,  sourceArray: variableValues)
+                SMUtility.Arrays.addObjectsToMutableArray(destination: choices,       source: variableNames)
+                SMUtility.Arrays.addObjectsToMutableArray(destination: choiceExtras,  source: variableValues)
                 mode = VNSceneModeChoiceWithFlag
             } else {
                 print("[VNSceneNode] WARNING: Could not create buttons for .SHOWCHOICEANDMODIFY command.")
@@ -3143,7 +3141,7 @@ class VNSceneNode : SKNode {
             
         case VNScriptCommandSetChoiceMinOpacity:
             if let updatedMinimumOpacity = command.object(at: 1) as? NSNumber {
-                let minOpacityValue     = SMClampDouble(input: updatedMinimumOpacity.doubleValue, min: 0.0, max: 1.0)
+                let minOpacityValue     = SMUtility.Math.clampDouble(input: updatedMinimumOpacity.doubleValue, min: 0.0, max: 1.0)
                 let valueAsNumber       = NSNumber(floatLiteral: minOpacityValue)
                 choiceboxMinimumOpacity = CGFloat( minOpacityValue )
                 
@@ -3363,7 +3361,7 @@ class VNSceneNode : SKNode {
             flagModifier = theFlag!.intValue
         }
         
-        let roll = SMRollDice(numberOfDice: numberOfDice, maximumRollValue: maximumSidesOfDice, plusModifier: flagModifier)
+        let roll = SMUtility.Dice.roll(numberOfDice: numberOfDice, maximumRollValue: maximumSidesOfDice, plusModifier: flagModifier)
         // Store results of roll in DICEROLL flag
         let diceRollResult = NSNumber(integerLiteral: roll)
         flags.setValue(diceRollResult, forKey: VNSceneDiceRollResultFlag)

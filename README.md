@@ -9,7 +9,7 @@ user interface that can be customized in code.
 
 That said, SporkVN is part "learning project" and partly a "quick and simple" programming project
 that's meant to be easy to modify so that it can be easily adapted to work with different games.
-In theory, it can be added to just about any 2D game written in Swift + SpriteKit (it could 
+In theory, it can be added to just about any 2D game written in Swift + SpriteKit (it could
 probably be adapted to work on 3D games built with Metal... again, in theory). By design, it's meant
 to be small and not have all that many features; if you want a visual novel framework with
 lots of features and good support, you may want to check out something like [Ren'Py](https://github.com/renpy/renpy),
@@ -19,8 +19,8 @@ To start projects with SporkVN, you'll need:
 
    1. A Mac, preferably running the latest version of macOS
    2. The latest version of Xode - http://developer.apple.com/xcode
-   3. iOS 15 or newer 
-   
+   3. iOS 16 or newer (will theoretically run on iOS 15 fine)
+
 (And if you want to distribute games on the App Store, you'll also need to be a part of Apple's
 iOS Developer Program! -> https://developer.apple.com/devcenter/ios/ )
 
@@ -47,18 +47,18 @@ Some notes on porting to Swift
 While the original EKVN project and its SpriteKit-powered spinoff were written in Objective-C, SporkVN
 has been (as you might have guessed) rewritten in Swift. This presents some issues, since the original projects
 were designed to take advantage of Objective-C's unique features, namely the fact that Objective-C is a
-dynamically-typed language, while Swift is designed to be more static-typed and type-safe. 
+dynamically-typed language, while Swift is designed to be more static-typed and type-safe.
 
 While this normally is only an issue while programming in Swift, it also affects other things that aren't directly
-related to the code... namely, Property Lists (which EKVN makes heavy use of). In the days of the original EKVN, 
+related to the code... namely, Property Lists (which EKVN makes heavy use of). In the days of the original EKVN,
 it was possible to store numerical values as Strings in Property Lists, but while Objective-C
 was alright with that, Swift will throw exceptions if tries to retrieve what it thinks should be a numerical value
 and instead finds a string. The moral of the story? If you're storing something that's meant to be a number (such
 as font sizes, or sprite coordinates), MAKE SURE that the Property List stores it as a Number. Unless there's regular
-non-numerical text mixed in (such as with scripts), in which case it's fine to leave it as a String (which is the 
+non-numerical text mixed in (such as with scripts), in which case it's fine to leave it as a String (which is the
 default value for objects stored in Property Lists).
 
-From personal experience, if a project written in Swift throws an exception and there's nothing that's "obviously" 
+From personal experience, if a project written in Swift throws an exception and there's nothing that's "obviously"
 wrong with the code, it's probably because an object was of the wrong "type" (String instead of Number, NSMutableArray
 instead of NSArray, etc). In short, always make sure that you know what type of object or data you're accessing.
 
@@ -74,7 +74,7 @@ Getting Started, Part 1: Starting a new project
 [WARNING: This is a little outdated and the documentation has yet to be updated to the latest versions of
 iOS and Swift, but it should work well enough to get you started]
 
-(This assumes that you've downloaded the "SporkVN” project that has all the code and resource files 
+(This assumes that you've downloaded the "SporkVN” project that has all the code and resource files
 that you'll need to get started)
 
 1. Open up Xcode
@@ -85,18 +85,18 @@ in this example we’ll set it to iPhone.
 
 3. Name your project.
 
-4. Copy over the files/folders you need (for simplicity's sake, this would normally be the  “VN Classes,” 
+4. Copy over the files/folders you need (for simplicity's sake, this would normally be the  “VN Classes,”
 “VN Resources,” and “Other” folders). Any files you don't need can be removed later.
 
-5. Drag the folders from Finder into the project files list in Xcode. (I would leave the 
+5. Drag the folders from Finder into the project files list in Xcode. (I would leave the
 "Copy items into destination group's folder" option checked)
 
 6. Click the project’s setting (see the top-most item in the Project navigator, which will be named after whatever
 your project’s name is). Scroll down to Deployment Info, and make sure the Deployment Target is set to 9.0 (or newer),
-and make sure that “Portrait” in Device Orientation is UNCHECKED. 
+and make sure that “Portrait” in Device Orientation is UNCHECKED.
 
     (NOTE: If you were developing for iPad or Universal devices, you would also have to go into the “Info” tab
-    and remove any mention of Portrait from “Supported interface orientations (iPad)” but if you’re only 
+    and remove any mention of Portrait from “Supported interface orientations (iPad)” but if you’re only
     developing for the iPhone, this shouldn’t be an issue.)
 
 7. In Build Settings, go to "Swift Compiler - Code Generation," and select "Objective-C Bridging Header."
@@ -125,7 +125,7 @@ lines to the function:
         skView.showsNodeCount = true
 
 10. Now, it’s time to add all the art / UI files. First, open “Images.xcassets” in the Project Navigator.
-Then, in Finder, navigate to where the “VN Resources” folder is stored, and then “demo art.” With Xcode 
+Then, in Finder, navigate to where the “VN Resources” folder is stored, and then “demo art.” With Xcode
 still open in the background, drag all the files in “demo art” to the “Images.xcassets” folder, right in
 the same column where “AppIcon” and “Spaceship” are stored.
 
@@ -139,7 +139,7 @@ different sizes.)
 Getting Started, Part 2: Main Menu
 ----------------------------------
 
-At this point, if you were to Build and then Run the project, you’d see the main menu for 
+At this point, if you were to Build and then Run the project, you’d see the main menu for
 the test app.
 
 Now, if you just want to use SporkVN for quick dialogue scenes, or you plan to code your own
@@ -165,7 +165,7 @@ The three most important values in the Main Menu settings (and by "most importan
   1. background image
   2. title image
   3. script to load
-  
+
 The first one is pretty self-explanatory. If you want to create your own game, you should
 supply your own background art. Due to the varying screen sizes among iOS devices, you may
 wind up supplying multiple images at different resolutions, but you could also be lazy
@@ -203,7 +203,7 @@ Moving on!
 
 The SECOND value ("title image") is just a title or logo image. Similar to the background
 images, you'll need two (or four, for the iPad), but there are no specific sizes required.
-Keep in mind, however, that images for the iPhone 4 (and newer) and the iPad 1 & 2 will 
+Keep in mind, however, that images for the iPhone 4 (and newer) and the iPad 1 & 2 will
 need to be twice as large as images for the old iPhone, and images for the iPad 3 and newer
 will need to be FOUR TIMES as large as images for the old iPhone. For the sake of image
 quality, I recommend creating the iPad 3+ images first, and then copying them and scaling
@@ -261,7 +261,7 @@ running in the Simulator, but it will have very different results on an actual i
 Now, back to the script you're writing. Try entering:
 
     .SETBACKGROUND:pond.png
-  
+
 Run it, and then... nothing really happens? Actually, something DID happen, except that
 the scene immediately ended afterwards, so it wasn't noticeable. Add the following line:
 
@@ -272,35 +272,35 @@ there's not much going on, and a visual novel about changing backgrounds is prob
 going to be overwhelmingly popular. So, here are a few more lines you can add (in this order):
 
     .ADDSPRITE:matsuri_close.png
-  
+
     Suddenly, an anime girl appears!
-  
+
     .SETSPEAKER:Matsuri
-  
+
     Hi, my name is Matsuri.
-  
+
     .SETSPEAKER:nil
-  
+
     You've now met your first character.
-  
+
     .PLAYMUSIC:music01
-  
+
     .ALIGNSPRITE:matsuri_close.png:left
-  
+
     .ALIGNSPRITE:matsuri_close.png:right
-  
+
     .ALIGNSPRITE:matsuri_close.png:center
-  
+
     Is she... dancing?
-  
+
     .PLAYMUSIC:nil
-  
+
     .REMOVESPRITE:matsuri_close.png
-  
+
     The music stops, and the girl disappears.
-  
+
     That wasn't strange at all.
-  
+
 Now, after you've entered those lines, try building and running the game. You should experience
 a strange (but working!) scene, especially if you've imported all of the files from SporkVN.
 (if you didn't, the app would have crashed since it would be missing some of the art / audio
@@ -313,22 +313,22 @@ Enter. A String object titled "New item" appears, change it to an Array object n
 then click the triangle and add the following lines:
 
     .ADDSPRITE:matsuri_close.png
-  
+
     Matsuri reappears, in color again!
-  
+
 Now click on the Root, but this time create an Array titled "sketch" with the following lines:
 
     .ADDSPRITE:sketchmatsuri_close.png
-  
+
     Matsuri reappears, but now she just looks like a sketch of an anime girl.
-  
+
 Go back to the "start" section, and at the end (after the line "That wasn't strange at all."),
 add the following lines:
 
     .SYSTEMCALL:autosave
 
     Would you prefer Matsuri to have color, or not?
-  
+
     .JUMPONCHOICE:"She should have color":color:No color is better:sketch
 
 Now, when you run the app, you'll be presented with a choice, and can choose which version
@@ -347,26 +347,26 @@ which can also be used for diverging story branches. Delete the last line (with 
 and replace it with the following
 
     .SETFLAG:matsuri_color:0
-  
+
     .MODIFYFLAGBYCHOICE:"She should have color":matsuri_color:1:No color is better:matsuri_color:0
-  
+
     Well, you've made your choice.
-  
+
     .ISFLAG:matsuri_color:1:You like the full-color version better, huh?
-  
+
     .ISFLAG:matsuri_color:0:You like the non-colored version better?
-  
+
     .ISFLAG:matsuri_color:1:.SETCONVERSATION:color
-  
+
     .SETCONVERSATION:sketch
-  
+
 Run your scene again, and you'll what happens: MOSTLY the same thing as last time! Now, you might
 be thinking "this latest version is actually more work! Why would I want to do it this way? The earlier
 version was easier!"
 
 In this example, yes, using Flags IS more work. But in a longer, more complex game, it might not
 be. If you had to jump to a different section each and every time the player made a choice (even
-really mundane choices), your game (and the accompanying script) could get very complicated in a 
+really mundane choices), your game (and the accompanying script) could get very complicated in a
 hurry. If, on the other hand, you used flags, you could just modify a flag here or there, and
 then with a few extra lines, the game would respond differently, without constantly jumping
 to different sections and dealing with the hassle of keeping track of all the branching paths.
@@ -374,14 +374,14 @@ to different sections and dealing with the hassle of keeping track of all the br
 Oh, and one more thing. You can change the last .ISFLAG command from
 
     .ISFLAG:matsuri_color:1:.SETCONVERSATION:color
-  
+
 into:
 
     .JUMPONFLAG:matsuri_color:1:color
-  
+
 This is a simpler way to change sections/conversations based on the values of certain flags.
-Also, another thing to keep in mind: All flags, when created, start with a value of ZERO, and 
-can be manually SET to a specific value by .SETFLAG, or MODIFIED by a particular value by 
+Also, another thing to keep in mind: All flags, when created, start with a value of ZERO, and
+can be manually SET to a specific value by .SETFLAG, or MODIFIED by a particular value by
 .MODIFYFLAG (and its user-interactive equivalent, .MODIFYFLAGBYCHOICE).
 
 And that's it for the scripting language! You now know enough commands to create a fairly complex
@@ -406,11 +406,11 @@ some copies stored in the VN Resources folder, the app actually pulls them direc
 the “Images.xcassets” folder. If you want to find/modify/replace these files, that’s where
 you should look!)
 
-If you overwrite them with images that use differents sizes, you MIGHT need to change the 
-values in the file “vnscene view settings.plist" so that the text displays properly. 
-Normally, SporkVN tries to  calculate where and how text should be laid out, though there's 
-no guarantee that the  auto-generated values will look good. In that case, tweaking the 
-view settings' values should be enough to get it looking good. In the most extreme scenario, 
+If you overwrite them with images that use differents sizes, you MIGHT need to change the
+values in the file “vnscene view settings.plist" so that the text displays properly.
+Normally, SporkVN tries to  calculate where and how text should be laid out, though there's
+no guarantee that the  auto-generated values will look good. In that case, tweaking the
+view settings' values should be enough to get it looking good. In the most extreme scenario,
 you may need to change the UI code yourself to get things to look exactly how you want to.
 
 Getting Started, Part 5: Coding
@@ -432,7 +432,7 @@ to do something like this:
     let vnscene = VNScene(size: self.view.frame.size, settings: settingsForScene)
     let skView = self.view as SKView
     skView.presentScene(vnscene)
-  
+
 This creates an entirely new VNScene object, and has it runs as the top-level SpriteKit scene,
 with a particular script.
 
@@ -447,7 +447,7 @@ you can just do something like this:
         let skView = self.view as SKView
         skView.presentScene(vnscene)
     }
-  
+
 If SporkVN has any saved data, then it will reload a previously-saved game, along with whatever
 text / sprites / audio / etc. it had when the game was saved.
 
@@ -455,7 +455,7 @@ Unlike cocos2d (which is used by the “original” EKVN), SporkVN has no “pop
 methods, meaning that when the VNScene ends, it will normally just fade to nothingness afterwards.
 However, VNScene has a ‘previousScene’ property. Assign it to a previously-running scene
 (the default is VNTestScene), and as soon as VNScene ends, it will transition back to previous scene,
-or to any other existing scene you might want to go to. 
+or to any other existing scene you might want to go to.
 
 (You can assign the ‘previousScene’ value any time before calling the ‘presentScene’ function.)
 
@@ -485,7 +485,7 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in 
+The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
