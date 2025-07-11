@@ -1,0 +1,221 @@
+LABEL start:
+
+.SETTYPEWRITERTEXT:120:NO
+
+Hey there.
+
+.SETBACKGROUND:skyspace.png
+
+First up, it's probably a good idea to have the dialogue box up.
+
+Unless you'd rather hide it.
+
+.SHOWSPEECH:NO
+
+.SETBACKGROUND:pond.png
+
+.SHOWSPEECH:YES
+
+A better way to do background transitions is to use .FADEOUT...
+
+Then switch the background, and then use .FADEIN so it looks like a smooth transition.
+
+.SHOWSPEECH:NO
+
+.FADEOUT:0.5
+
+.SETBACKGROUND:skyspace.png
+
+.FADEIN:0.5
+
+.SHOWSPEECH:YES
+
+You can also look at the file named "demo script.txt" that's in the app bundle to see the code for this.
+
+Changing some of the commands should give you first-hand experience in how things work.
+
+.ADDSPRITE:matsuri_close.png
+
+By default, character sprites appear in the middle of the screen.
+
+The best way to move them around is to use the .ALIGNSPRITE command.
+
+.ALIGNSPRITE:matsuri_close.png:LEFT
+
+If you want to remove them, one way is to just move them offscreen.
+
+.ALIGNSPRITE:matsuri_close.png:extreme left
+
+But that's not really a good solution.
+
+.ALIGNSPRITE:matsuri_close.png:center
+
+A better way is to just use the .REMOVESPRITE command.
+
+.REMOVESPRITE:matsuri_close.png
+
+Sometimes, there are situations where you have more than one character onscreen.
+
+.ADDSPRITE:matsuri_close.png
+
+.ALIGNSPRITE:matsuri_close.png:left
+
+.ADDSPRITE:sketchmatsuri_close.png
+
+.ALIGNSPRITE:sketchmatsuri_close.png:right
+
+You can use .ALIGNSPRITE to position them around.
+
+Then use the .SETSPEAKER command to help the player know who's speaking.
+
+.SETSPEAKER:Sketched character
+
+Like this.
+
+.SETSPEAKER:Fully-colored character
+
+Or like this.
+
+.SETSPEAKER:nil
+
+Use .SETSPEAKER:nil to remove any names.
+
+Of course, you could just make one character move closer to the center of the screen.
+
+.MOVESPRITE:matsuri_close.png:20:0:0.5
+
+.SETSPEAKER:Fully-colored character
+
+Having that character be more "in focus" can help players figure out who's speaking.
+
+.MOVESPRITE:matsuri_close.png:-20:0:0.5
+
+.setspeaker:nil
+
+And you can also force the game to autosave at certain points.
+
+Use the .SYSTEMCALL:AUTOSAVE command for this.
+
+I'll try it now...
+
+.SYSTEMCALL:AUTOSAVE
+
+And now the game has been autosaved.
+
+IF you were to quit the app now by pressing on the Home Button on your device...
+
+And then double-tapping the Home Button to (x) out of this app...
+
+If you "Continue" the game from the main screen, you'd be back at the autosave point.
+
+Anyways!
+
+Many visual novels will ask the player to make choices.
+
+The .JUMPONCHOICE command shows players a simple choice "menu."
+
+Then it sends them down different routes based on whatever they chose.
+
+To demonstrate, which of these two characters would you rather have onscreen?
+
+.JUMPONCHOICE:The fully-colored one:color_choice:The sketched one:sketch_choice:Neither:neither_choice
+
+
+
+LABEL color_choice:
+
+.REMOVESPRITE:sketchmatsuri_close.png
+
+.ALIGNSPRITE:matsuri_close.png:center
+
+.SETCONVERSATION:next_series
+
+
+
+LABEL sketch_choice:
+
+.REMOVESPRITE:matsuri_close.png
+
+.ALIGNSPRITE:sketchmatsuri_close.png:center
+
+.setconversation:next_series
+
+
+
+LABEL neither_choice:
+
+
+.REMOVESPRITE:matsuri_close.png
+
+.REMOVESPRITE:sketchmatsuri_close.png
+
+.setconversation:next_series
+
+
+
+LABEL next_series:
+
+
+You can also play sounds using the .PLAYSOUND command.
+
+For example, the sound of a wild animal roaring...
+
+.PLAYSOUND:roar1.caf
+
+You can also play music, and choose whether it loops indefinitely or not.
+
+.PLAYMUSIC:music01.mp3
+
+And, of course, you can also stop it if you like…
+
+Just use .PLAYMUSIC:nil command.
+
+.PLAYMUSIC:nil
+
+Another important feature are Flags. These are variables that store an integer (whole number) value.
+
+.SETFLAG:show_sky:1
+
+For example, the "show_sky" flag is set to 1.
+
+You could set it to zero by using the .MODIFYFLAG or .SETFLAG commands.
+
+But it could also be better to use player input for that.
+
+There's a .MODIFYFLAGBYCHOICE command that directly modifies flags based on a player's choices.
+
+For example...
+
+.MODIFYFLAGBYCHOICE:Show the sky:show_sky:0:Don't show the sky:show_sky:-1
+
+You can look at the code (in "demo script.plist") to see how it works.
+
+If you want certain things to happen based on the value of certain flags, there's the .ISFLAG command.
+
+If a particular flag holds a certain value, then a secondary command will be triggered.
+
+For example, let's say you chose the "Don't show the sky" command earlier.
+
+Right now, the "show_sky" flag would have been set to zero.
+
+.ISFLAG:show_sky:0:.SETBACKGROUND:pond.png
+
+And you would see a different background.
+
+Well, that's pretty much it for now. You know the important stuff.
+
+There are some advanced features, but you should read the documentation for that.
+
+Oh, one more thing.
+
+When a visual novel's script "ends," all its resources (graphics and audio) are removed.
+
+Music stops playing (though sound effects can continue, for some reason!)
+
+And any flags that were accessed or changed by the visual novel are forcibly saved.
+
+Anyways, I suppose that's it for now.
+
+Hopefully, you can use this to make some good games!
+
+Alright, bye for real this time.

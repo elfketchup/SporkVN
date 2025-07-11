@@ -18,9 +18,7 @@
 		1AE58964277AAB14007F7227 /* roar1.caf in Resources */ = {isa = PBXBuildFile; fileRef = 1AE5895D277AAB14007F7227 /* roar1.caf */; };
 		1AE58965277AAB14007F7227 /* music01.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1AE5895E277AAB14007F7227 /* music01.mp3 */; };
 		1AE58966277AAB14007F7227 /* vnscene view settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AE58960277AAB14007F7227 /* vnscene view settings.plist */; };
-		1AE58967277AAB14007F7227 /* demo script.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AE58961277AAB14007F7227 /* demo script.plist */; };
 		1AE58968277AAB14007F7227 /* main_menu.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AE58962277AAB14007F7227 /* main_menu.plist */; };
-		1AE58969277AAB14007F7227 /* test script.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AE58963277AAB14007F7227 /* test script.plist */; };
 		1AE58972277AAB21007F7227 /* SMTextNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE5896B277AAB21007F7227 /* SMTextNode.swift */; };
 		1AE58973277AAB21007F7227 /* SMRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE5896C277AAB21007F7227 /* SMRecord.swift */; };
 		1AE58974277AAB21007F7227 /* VNTestScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE5896D277AAB21007F7227 /* VNTestScene.swift */; };
@@ -28,6 +26,8 @@
 		1AE58976277AAB21007F7227 /* VNScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE5896F277AAB21007F7227 /* VNScript.swift */; };
 		1AE58977277AAB21007F7227 /* SMUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE58970277AAB21007F7227 /* SMUtility.swift */; };
 		1AE58978277AAB21007F7227 /* VNSystemCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE58971277AAB21007F7227 /* VNSystemCall.swift */; };
+		1AE687B22E20A5ED007AAFC2 /* demo script.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1AE687B12E20A5ED007AAFC2 /* demo script.txt */; };
+		1AE687B42E20ACD5007AAFC2 /* test script.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1AE687B32E20ACD5007AAFC2 /* test script.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,9 +43,7 @@
 		1AE5895D277AAB14007F7227 /* roar1.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = roar1.caf; sourceTree = "<group>"; };
 		1AE5895E277AAB14007F7227 /* music01.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music01.mp3; sourceTree = "<group>"; };
 		1AE58960277AAB14007F7227 /* vnscene view settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "vnscene view settings.plist"; sourceTree = "<group>"; };
-		1AE58961277AAB14007F7227 /* demo script.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "demo script.plist"; sourceTree = "<group>"; };
 		1AE58962277AAB14007F7227 /* main_menu.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = main_menu.plist; sourceTree = "<group>"; };
-		1AE58963277AAB14007F7227 /* test script.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "test script.plist"; sourceTree = "<group>"; };
 		1AE5896B277AAB21007F7227 /* SMTextNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMTextNode.swift; sourceTree = "<group>"; };
 		1AE5896C277AAB21007F7227 /* SMRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMRecord.swift; sourceTree = "<group>"; };
 		1AE5896D277AAB21007F7227 /* VNTestScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNTestScene.swift; sourceTree = "<group>"; };
@@ -53,6 +51,8 @@
 		1AE5896F277AAB21007F7227 /* VNScript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNScript.swift; sourceTree = "<group>"; };
 		1AE58970277AAB21007F7227 /* SMUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMUtility.swift; sourceTree = "<group>"; };
 		1AE58971277AAB21007F7227 /* VNSystemCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VNSystemCall.swift; sourceTree = "<group>"; };
+		1AE687B12E20A5ED007AAFC2 /* demo script.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "demo script.txt"; sourceTree = "<group>"; };
+		1AE687B32E20ACD5007AAFC2 /* test script.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "test script.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,9 +121,9 @@
 			isa = PBXGroup;
 			children = (
 				1AE58960277AAB14007F7227 /* vnscene view settings.plist */,
-				1AE58961277AAB14007F7227 /* demo script.plist */,
+				1AE687B12E20A5ED007AAFC2 /* demo script.txt */,
 				1AE58962277AAB14007F7227 /* main_menu.plist */,
-				1AE58963277AAB14007F7227 /* test script.plist */,
+				1AE687B32E20ACD5007AAFC2 /* test script.txt */,
 			);
 			path = plists;
 			sourceTree = "<group>";
@@ -200,13 +200,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1AE58967277AAB14007F7227 /* demo script.plist in Resources */,
 				1AE58964277AAB14007F7227 /* roar1.caf in Resources */,
+				1AE687B42E20ACD5007AAFC2 /* test script.txt in Resources */,
 				1AE5893B277AA90F007F7227 /* Main.storyboard in Resources */,
 				1AE58932277AA90F007F7227 /* GameScene.sks in Resources */,
 				1AE58968277AAB14007F7227 /* main_menu.plist in Resources */,
-				1AE58969277AAB14007F7227 /* test script.plist in Resources */,
 				1AE58966277AAB14007F7227 /* vnscene view settings.plist in Resources */,
+				1AE687B22E20A5ED007AAFC2 /* demo script.txt in Resources */,
 				1AE5893D277AA910007F7227 /* Assets.xcassets in Resources */,
 				1AE58940277AA910007F7227 /* LaunchScreen.storyboard in Resources */,
 				1AE58934277AA90F007F7227 /* Actions.sks in Resources */,

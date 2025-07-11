@@ -211,30 +211,29 @@ down the copies (you can do this in Preview, as well as most image editors).
 
 The THIRD value ("script to load") determines which script file will be used by SporkVN
 when the player taps on "New Game." The default value is "demo script" but you should
-change that to whatever your script is named (but don't include the ".plist" extension!)
-For example, if you store your script in a file titled "hisao.plist" then you should
-set the value of "script to load" to "hisao" ... oh, and unlike images, you don't
+change that to whatever your script is named (but don't include the ".txt" extension!)
+For example, if you store your script in a file titled "adventure.txt" then you should
+set the value of "script to load" to "adventure" ... oh, and unlike images, you don't
 need multiple versions of the same script for different devices. :)
 
 
 Getting Started, Part 3: The Scripting Language
 -----------------------------------------------
 
-The "scripts" are stored in what Xcode calls "Property List" files (extension ".plist").
-Each script is divided into sections (or "conversations," which in retrospect doesn't
-really make that much sense). The sections are Array objects, and each array holds a number
-of string objects, which make up the individual lines and commands of the "scripting language."
+Scripts are now stored in plaintext files (.TXT). Originally they were stored in .PLIST
+files, but thankfully that was a pain in the butt to work with. Now just make a .TXT file 
+whenever you want to create a script for the visual novel. Every script is broken up into 
+sections, which you create with 
 
-To start a new script, just create a property list file, click on the "Root" and hit Enter.
-You'll have a String object called "New item." Change this from a String to an Array,
-and title it "start" (without quotes, of course). You've now made your first "section" of the
-script. Remember that every script needs to have a section titled "start," since SporkVN
-specifically looks for this section (and starts here, no pun intended).
+LABEL (the name of the section):
 
-Now that you have a section, click on the triangle symbol that's at the left of the section's
-name, then hit Enter. A new string object will be added to the section. Whenever you click on
-a string and hit Enter, a new string will be inserted into the Array right below it (this is
-a good way to insert new commands between existing commands in the script).
+Each script needs to start with 
+
+LABEL start:
+
+The code always looks for that "start" label (with the colon after "start"). If your script
+has any branching logic, you will need more sections (more labels), with the actual dialogue
+and commands going under that label. 
 
 In this first line, type "Hello." (or whatever witty thing you can think to say). If you were
 to run this script right now, you would get a blank background, the and a dialogue box saying
@@ -307,16 +306,15 @@ a strange (but working!) scene, especially if you've imported all of the files f
 files).
 
 Most games do feature things like diverging story branches, multiple endings, etc. SporkVN scripts
-can hold multiple sections (or "Arrays," if you prefer), which represent the branching paths
-of a story (or script, in this case). Click on the "Root" object in the script, and then hit
-Enter. A String object titled "New item" appears, change it to an Array object named "color", and
-then click the triangle and add the following lines:
+can hold multiple sections. Add the following lines:
 
     .ADDSPRITE:matsuri_close.png
 
     Matsuri reappears, in color again!
 
-Now click on the Root, but this time create an Array titled "sketch" with the following lines:
+Then add
+
+    LABEL sketch:
 
     .ADDSPRITE:sketchmatsuri_close.png
 

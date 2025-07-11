@@ -1,6 +1,6 @@
 //
-//  VNSScript.swift
-//  EKVN Swift
+//  VNScript.swift
+//  SporkVN
 //
 //  Created by James on 10/16/14.
 //  Copyright (c) 2014 James Briones. All rights reserved.
@@ -114,8 +114,8 @@ let VNScriptStringSetSpeechFontSize         = ".setspeechfontsize"   // Changes 
 let VNScriptStringSetSpeakerFont            = ".setspeakerfont"      // Changes the font used by the speaker name
 let VNScriptStringSetSpeakerFontSize        = ".setspeakerfontsize"  // Changes font size for speaker
 let VNScriptStringSetTypewriterText         = ".settypewritertext"   // Typewriter text, in which dialogue appears one character at a time
-let VNScriptStringSetSpriteAlias            = ".setspritealias"      // Assigns a filename to a sprite alias
 let VNScriptStringSetSpeechbox              = ".setspeechbox"        // dynamically change speechbox sprite
+let VNScriptStringSetSpriteAlias            = ".setspritealias"      // Assigns a filename to a sprite alias
 let VNScriptStringFlipSprite                = ".flipsprite"          // flips sprite around (left/right or upside-down)
 let VNScriptStringRollDice                  = ".rolldice"            // rolls dice, retrieves value and stores in flag
 let VNScriptStringModifyChoiceboxOffset     = ".modifychoiceboxoffset" // adds X/Y offset to button coordinates during choices (default = 0,0)
@@ -139,6 +139,14 @@ let VNScriptStringSetChoiceBlinkSpeed       = ".setchoiceblinkspeed" // Sets spe
 let VNScriptSeparationString                = ":"
 let VNScriptNilValue                        = "nil"
 
+
+
+extension String {
+    // because I just love not caring about whether stuff is case sensitive or not
+    func hasPrefixIgnoringCase(_ prefix: String) -> Bool {
+        return self.range(of: prefix, options: [.anchored, .caseInsensitive]) != nil
+    }
+}
 
 /** CLASSES **/
 
@@ -183,40 +191,78 @@ class VNScript {
         }
     }
     
-    // Load the script from a Property List (.plist) file in the app bundle. Make sure to not include the ".plist" in the file name.
-    // For example, if the script is stored as "ThisScript.plist" in the bundle, just pass in "ThisScript" as the parameter.
+    // Load the script from a regular text file in the app bundle. Make sure to not include the ".txt" in the file name.
+    // For example, if the script is stored as "ThisScript.txt" in the bundle, just pass in "ThisScript" as the parameter.
     func didLoadFile( _ nameOfFile:String, convoName:String) -> Bool {
-        let filepath:String? = Bundle.main.path(forResource: nameOfFile, ofType: "plist")
+        let filepath: String? = Bundle.main.path(forResource: nameOfFile, ofType: "txt")
         if filepath == nil {
             print("[VNScript] ERROR: Cannot load file; filepath was invalid.")
             return false
         }
         
-        let dict:NSDictionary? = NSDictionary(contentsOfFile: filepath!)
-        if( dict == nil ) {
-            print("[VNScript] ERROR: Cannot load file; dictionary data is invalid")
+        // So this loop reads text lines and tries to sort them into data structures like back when I used to read
+        // scripts from .PLIST files, except now it reads it from .TXT files because that's significantly better.
+        do {
+            let content = try String(contentsOfFile: filepath!) // all the text in th efile
+            let lines = content.components(separatedBy: .newlines) // trying to break it up into individual lines
+            
+            let rawScript: NSMutableDictionary = NSMutableDictionary() // IT'S RAWWWWWWWWW
+            var currentConversation: String?
+            var currentArray: NSMutableArray?
+            
+            for line in lines {
+                let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.isEmpty { continue }
+                
+                //if trimmed.hasPrefix("label ") && trimmed.hasSuffix(":") {
+                if trimmed.hasPrefixIgnoringCase("label ") && trimmed.hasSuffix(":") {
+                    //print("hasPrefix and label is \(trimmed)")
+                    if let currentArray = currentArray, let currentConversation = currentConversation {
+                        rawScript.setObject(currentArray, forKey: currentConversation as NSCopying)
+                        //print("rawScript.setOject \(currentArray) forKey: \(currentConversation)")
+                    } else {
+                        // print("whaaaaaaaaaaat is going on with \(trimmed)") // ok never mind I figured it out
+                    }
+                    
+                    let labelStart = trimmed.index(trimmed.startIndex, offsetBy: 6)
+                    let labelEnd = trimmed.index(trimmed.endIndex, offsetBy: -1)
+                    currentConversation = String(trimmed[labelStart..<labelEnd]).trimmingCharacters(in: .whitespaces)
+                    
+                    currentArray = NSMutableArray()
+                } else if let currentArray = currentArray {
+                    currentArray.add(trimmed as NSString)
+                }
+            }
+            
+            // Add the last conversation if it exists
+            if let currentArray = currentArray, let currentConversation = currentConversation {
+                rawScript.setObject(currentArray, forKey: currentConversation as NSCopying)
+            }
+            
+            self.filename = nameOfFile // Copy filename
+            
+            // Load the data
+            prepareScript(rawScript)
+            
+            if changeConversationTo(nameOfConversation: convoName) == false {
+                print("[VNScript] WARNING: Could not load conversation named: \(convoName)");
+            }
+            
+            // Check if no valid data could be loaded from the file
+            if( self.data == nil ) {
+                print("[VNScript] ERROR: Could not load data.")
+                return false
+            }
+            
+            return true
+            
+        } catch {
+            print("[VNScript] ERROR: Cannot load file; \(error)")
             return false
         }
-    
-        self.filename = nameOfFile // Copy filename
-        
-        // Load the data
-        prepareScript(dict!)
-
-        if changeConversationTo(nameOfConversation: convoName) == false {
-            print("[VNScript] WARNING: Could not load conversation named: \(convoName)");
-        }
-        
-        // Check if no valid data could be loaded from the file
-        if( self.data == nil ) {
-            print("[VNScript] ERROR: Could not load data.")
-            return false
-        }
-        
-        return true
     }
     
-    // This processes the script, converting the data from its original Property List format into something
+    // This processes the script, converting the data from its original text format into something
     // that can be used by VNLayer. (This new, converted format is stored in VNScript's "data" dictionary)
     func prepareScript(_ dict:NSDictionary) {
         let translatedScript:NSMutableDictionary = NSMutableDictionary(capacity: dict.count)
@@ -1375,10 +1421,10 @@ class VNScript {
             //
             //      #2: The name of a static function to call (string)
             //
-            //		#3: (OPTIONAL) The name of another function, PRESUMABLY a function that belongs to the class
-            //			instance that was returned by the function called in #2 (string)
+            //        #3: (OPTIONAL) The name of another function, PRESUMABLY a function that belongs to the class
+            //            instance that was returned by the function called in #2 (string)
             //
-            //		#4: (OPTIONAL) A parameter to pass into the function called in #3 (string?)
+            //        #4: (OPTIONAL) A parameter to pass into the function called in #3 (string?)
             //
             //  Example: .CALLCODE:EKRecord:sharedRecord:flagNamed:times played
             //
