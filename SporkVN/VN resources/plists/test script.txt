@@ -1,73 +1,75 @@
 LABEL start:
-.setspeaker:Mysterious Narrator!
-Hello.
-.SETBACKGROUND:pond.png
-Hey, a background!
-.SETFLAG:ninethousand:9000
-.SETFLAG:one:1
-.SETFLAG:overninethousand:9001
-.ISFLAGMORETHANFLAG:overninethousand:ninethousand:Over Nine Thousand is indeed greater than Nine Thousand
-.SETFLAG:powerlevel:9001
-.ISFLAGEQUALTOFLAG:powerlevel:overninethousand:The power level is also Over Nine Thousand
-.SETFLAG:scouter:8999
-.ISFLAGLESSTHANFLAG:scouter:ninethousand:The scouter's max scan is under nine thousand.
-.INCREASEFLAGBYFLAG:scouter:one
-.ISFLAGEQUALTOFLAG:scouter:ninethousand:Actually, the scouter can now reach exactly nine thousand.
-I really hoped all those flag-related commands worked.
-.ROLLDICE:20
-.ADDTOCHOICESET:vacation spots:vacation in hawaii:"Hawaii"
-.ADDTOCHOICESET:vacation spots:vacation in thailand:"Thailand"
-.ADDTOCHOICESET:vacation spots:vacation in canada:"Canada"
-.ADDTOCHOICESET:vacation spots:vacation in europe:"Europe"
-Where do you want to go on vacation?
-.SHOWCHOICESET:vacation spots
-Also, I'm going to change the font name.
-.SETSPEECHFONT:Courier New
-How does this look?
-.ROLLDICE:6:10
-Now let's change the speaker font.
-.SETSPEAKERFONT:Times New Roman
-Now how does that look?
-.SETFLAG:luck_modifier:9999
-.ROLLDICE:6:10:luck_modifier
-Let's change some sizes too.
-.SETSPEAKERFONTSIZE:15.0
-.SETSPEECHFONTSIZE:13.0
-OK, that might be too tiny. But whatever, let's get on with it!
-.ADDSPRITE:matsuri_close.png
-Suddenly, an anime girl appears!
-.FLIPSPRITE:matsuri_close.png
-Gonna try and save the game now...
-.SYSTEMCALL:AUTOSAVE
-Also hopefully this got saved.
-.SETSPEAKER:Matsuri
-Hi, my name is Matsuri.
-.SETSPEAKER:nil
-You've now met your first character.
-.PLAYMUSIC:music01.mp3
-.ALIGNSPRITE:matsuri_close.png:left
-.ALIGNSPRITE:matsuri_close.png:right
-.ALIGNSPRITE:matsuri_close.png:center
-Is she... dancing?
-.PLAYMUSIC:nil
-.REMOVESPRITE:matsuri_close.png
-The music stops, and the girl disappears.
-That wasn't strange at all.
-.SETFLAG:betweenFlag:2
-.ISFLAGBETWEEN:betweenFlag:1:3:Hey, the betweenFlag is between 1 and 3!
-.SETFLAG:betweenFlag:0
-.ISFLAGBETWEEN:betweenFlag:1:3:Wait, betweenFlag is zero, so you shouldn't see this!
-.SETFLAG:betweenFlag:4
-.ISFLAGBETWEEN:betweenFlag:1:3:Woah, betweenFlag is FOUR so you shouldn't see this!
-.SYSTEMCALL:AUTOSAVE
-Would you prefer Matsuri to have color, or not?
-.SETFLAG:matsuri_color:0
-.MODIFYFLAGBYCHOICE:"She should have color":matsuri_color:1:No color is better:matsuri_color:0
-Well, you've made your choice.
-.ISFLAG:matsuri_color:1:You like the full-color version better, huh?
-.ISFLAG:matsuri_color:0:You like the non-colored version better?
-.JUMPONFLAG:matsuri_color:1:color
-.SETCONVERSATION:sketch
+    .setspeaker:Mysterious Narrator!
+    Hello.
+    .SETBACKGROUND:pond.png
+    Hey, a background!
+    .SETFLAG:ninethousand:9000
+    .SETFLAG:one:1
+    .SETFLAG:overninethousand:9001
+    .ISFLAGMORETHANFLAG:overninethousand:ninethousand:Over Nine Thousand is indeed greater than Nine Thousand
+    .SETFLAG:powerlevel:9001
+    .ISFLAGEQUALTOFLAG:powerlevel:overninethousand:The power level is also Over Nine Thousand
+    .SETFLAG:scouter:8999
+    .ISFLAGLESSTHANFLAG:scouter:ninethousand:The scouter's max scan is under nine thousand.
+    .INCREASEFLAGBYFLAG:scouter:one
+    .ISFLAGEQUALTOFLAG:scouter:ninethousand:Actually, the scouter can now reach exactly nine thousand.
+    I really hoped all those flag-related commands worked.
+    #THIS IS A COMMENT AND YOU SHOULDN'T SEE IT AT ALL
+    .SWITCHSCRIPT:demo script
+    .ROLLDICE:20
+    .ADDTOCHOICESET:vacation spots:vacation in hawaii:"Hawaii"
+    .ADDTOCHOICESET:vacation spots:vacation in thailand:"Thailand"
+    .ADDTOCHOICESET:vacation spots:vacation in canada:"Canada"
+    .ADDTOCHOICESET:vacation spots:vacation in europe:"Europe"
+    Where do you want to go on vacation?
+    .SHOWCHOICESET:vacation spots
+    Also, I'm going to change the font name.
+    .SETSPEECHFONT:Courier New
+    How does this look?
+    .ROLLDICE:6:10
+    Now let's change the speaker font.
+    .SETSPEAKERFONT:Times New Roman
+    Now how does that look?
+    .SETFLAG:luck_modifier:9999
+    .ROLLDICE:6:10:luck_modifier
+    Let's change some sizes too.
+    .SETSPEAKERFONTSIZE:15.0
+    .SETSPEECHFONTSIZE:13.0
+    OK, that might be too tiny. But whatever, let's get on with it!
+    .ADDSPRITE:matsuri_close.png
+    Suddenly, an anime girl appears!
+    .FLIPSPRITE:matsuri_close.png
+    Gonna try and save the game now...
+    .SYSTEMCALL:AUTOSAVE
+    Also hopefully this got saved.
+    .SETSPEAKER:Matsuri
+    Hi, my name is Matsuri.
+    .SETSPEAKER:nil
+    You've now met your first character.
+    .PLAYMUSIC:music01.mp3
+    .ALIGNSPRITE:matsuri_close.png:left
+    .ALIGNSPRITE:matsuri_close.png:right
+    .ALIGNSPRITE:matsuri_close.png:center
+    Is she... dancing?
+    .PLAYMUSIC:nil
+    .REMOVESPRITE:matsuri_close.png
+    The music stops, and the girl disappears.
+    That wasn't strange at all.
+    .SETFLAG:betweenFlag:2
+    .ISFLAGBETWEEN:betweenFlag:1:3:Hey, the betweenFlag is between 1 and 3!
+    .SETFLAG:betweenFlag:0
+    .ISFLAGBETWEEN:betweenFlag:1:3:Wait, betweenFlag is zero, so you shouldn't see this!
+    .SETFLAG:betweenFlag:4
+    .ISFLAGBETWEEN:betweenFlag:1:3:Woah, betweenFlag is FOUR so you shouldn't see this!
+    .SYSTEMCALL:AUTOSAVE
+    Would you prefer Matsuri to have color, or not?
+    .SETFLAG:matsuri_color:0
+    .MODIFYFLAGBYCHOICE:"She should have color":matsuri_color:1:No color is better:matsuri_color:0
+    Well, you've made your choice.
+    .ISFLAG:matsuri_color:1:You like the full-color version better, huh?
+    .ISFLAG:matsuri_color:0:You like the non-colored version better?
+    .JUMPONFLAG:matsuri_color:1:color
+    .SETCONVERSATION:sketch
 
 
 

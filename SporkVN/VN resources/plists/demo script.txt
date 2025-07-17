@@ -1,221 +1,222 @@
 LABEL start:
 
-.SETTYPEWRITERTEXT:120:NO
+    # comments exist now, so that makes these scripts easier to work on
+    # maybe I should have picked something other than these Python-style bash # characters for comments? Nah....
 
-Hey there.
+    .SETTYPEWRITERTEXT:120:NO
 
-.SETBACKGROUND:skyspace.png
+    Hey there.
 
-First up, it's probably a good idea to have the dialogue box up.
+    .SETBACKGROUND:skyspace.png
 
-Unless you'd rather hide it.
+    First up, it's probably a good idea to have the dialogue box up.
 
-.SHOWSPEECH:NO
+    Unless you'd rather hide it.
 
-.SETBACKGROUND:pond.png
+    .SHOWSPEECH:NO
 
-.SHOWSPEECH:YES
+    .SETBACKGROUND:pond.png
 
-A better way to do background transitions is to use .FADEOUT...
+    .SHOWSPEECH:YES
 
-Then switch the background, and then use .FADEIN so it looks like a smooth transition.
+    A better way to do background transitions is to use .FADEOUT...
 
-.SHOWSPEECH:NO
+    Then switch the background, and then use .FADEIN so it looks like a smooth transition.
 
-.FADEOUT:0.5
+    .SHOWSPEECH:NO
 
-.SETBACKGROUND:skyspace.png
+    .FADEOUT:0.5
 
-.FADEIN:0.5
+    .SETBACKGROUND:skyspace.png
 
-.SHOWSPEECH:YES
+    .FADEIN:0.5
 
-You can also look at the file named "demo script.txt" that's in the app bundle to see the code for this.
+    .SHOWSPEECH:YES
 
-Changing some of the commands should give you first-hand experience in how things work.
+    You can also look at the file named "demo script.txt" that's in the app bundle to see the code for this.
 
-.ADDSPRITE:matsuri_close.png
+    Changing some of the commands should give you first-hand experience in how things work.
 
-By default, character sprites appear in the middle of the screen.
+    .ADDSPRITE:matsuri_close.png
 
-The best way to move them around is to use the .ALIGNSPRITE command.
+    By default, character sprites appear in the middle of the screen.
 
-.ALIGNSPRITE:matsuri_close.png:LEFT
+    The best way to move them around is to use the .ALIGNSPRITE command.
 
-If you want to remove them, one way is to just move them offscreen.
+    .ALIGNSPRITE:matsuri_close.png:LEFT
 
-.ALIGNSPRITE:matsuri_close.png:extreme left
+    If you want to remove them, one way is to just move them offscreen.
 
-But that's not really a good solution.
+    .ALIGNSPRITE:matsuri_close.png:extreme left
 
-.ALIGNSPRITE:matsuri_close.png:center
+    But that's not really a good solution.
 
-A better way is to just use the .REMOVESPRITE command.
+    .ALIGNSPRITE:matsuri_close.png:center
 
-.REMOVESPRITE:matsuri_close.png
+    A better way is to just use the .REMOVESPRITE command.
 
-Sometimes, there are situations where you have more than one character onscreen.
+    .REMOVESPRITE:matsuri_close.png
 
-.ADDSPRITE:matsuri_close.png
+    Sometimes, there are situations where you have more than one character onscreen.
 
-.ALIGNSPRITE:matsuri_close.png:left
+    .ADDSPRITE:matsuri_close.png
 
-.ADDSPRITE:sketchmatsuri_close.png
+    .ALIGNSPRITE:matsuri_close.png:left
 
-.ALIGNSPRITE:sketchmatsuri_close.png:right
+    .ADDSPRITE:sketchmatsuri_close.png
 
-You can use .ALIGNSPRITE to position them around.
+    .ALIGNSPRITE:sketchmatsuri_close.png:right
 
-Then use the .SETSPEAKER command to help the player know who's speaking.
+    You can use .ALIGNSPRITE to position them around.
 
-.SETSPEAKER:Sketched character
+    Then use the .SETSPEAKER command to help the player know who's speaking.
 
-Like this.
+    .SETSPEAKER:Sketched character
 
-.SETSPEAKER:Fully-colored character
+    Like this.
 
-Or like this.
+    .SETSPEAKER:Fully-colored character
 
-.SETSPEAKER:nil
+    Or like this.
 
-Use .SETSPEAKER:nil to remove any names.
+    .SETSPEAKER:nil
 
-Of course, you could just make one character move closer to the center of the screen.
+    Use .SETSPEAKER:nil to remove any names.
 
-.MOVESPRITE:matsuri_close.png:20:0:0.5
+    Of course, you could just make one character move closer to the center of the screen.
 
-.SETSPEAKER:Fully-colored character
+    .MOVESPRITE:matsuri_close.png:20:0:0.5
 
-Having that character be more "in focus" can help players figure out who's speaking.
+    .SETSPEAKER:Fully-colored character
 
-.MOVESPRITE:matsuri_close.png:-20:0:0.5
+    Having that character be more "in focus" can help players figure out who's speaking.
 
-.setspeaker:nil
+    .MOVESPRITE:matsuri_close.png:-20:0:0.5
 
-And you can also force the game to autosave at certain points.
+    .setspeaker:nil
 
-Use the .SYSTEMCALL:AUTOSAVE command for this.
+    And you can also force the game to autosave at certain points.
 
-I'll try it now...
+    Use the .SYSTEMCALL:AUTOSAVE command for this.
 
-.SYSTEMCALL:AUTOSAVE
+    I'll try it now...
 
-And now the game has been autosaved.
+    .SYSTEMCALL:AUTOSAVE
 
-IF you were to quit the app now by pressing on the Home Button on your device...
+    And now the game has been autosaved.
 
-And then double-tapping the Home Button to (x) out of this app...
+    IF you were to quit the app now by pressing on the Home Button on your device...
 
-If you "Continue" the game from the main screen, you'd be back at the autosave point.
+    And then double-tapping the Home Button to (x) out of this app...
 
-Anyways!
+    If you "Continue" the game from the main screen, you'd be back at the autosave point.
 
-Many visual novels will ask the player to make choices.
+    Anyways!
 
-The .JUMPONCHOICE command shows players a simple choice "menu."
+    Many visual novels will ask the player to make choices.
 
-Then it sends them down different routes based on whatever they chose.
+    The .JUMPONCHOICE command shows players a simple choice "menu."
 
-To demonstrate, which of these two characters would you rather have onscreen?
+    Then it sends them down different routes based on whatever they chose.
 
-.JUMPONCHOICE:The fully-colored one:color_choice:The sketched one:sketch_choice:Neither:neither_choice
+    To demonstrate, which of these two characters would you rather have onscreen?
+
+    .JUMPONCHOICE:The fully-colored one:color_choice:The sketched one:sketch_choice:Neither:neither_choice
 
 
 
 LABEL color_choice:
 
-.REMOVESPRITE:sketchmatsuri_close.png
+    .REMOVESPRITE:sketchmatsuri_close.png
 
-.ALIGNSPRITE:matsuri_close.png:center
+    .ALIGNSPRITE:matsuri_close.png:center
 
-.SETCONVERSATION:next_series
+    .SETCONVERSATION:next_series
 
 
 
 LABEL sketch_choice:
 
-.REMOVESPRITE:matsuri_close.png
+    .REMOVESPRITE:matsuri_close.png
 
-.ALIGNSPRITE:sketchmatsuri_close.png:center
+    .ALIGNSPRITE:sketchmatsuri_close.png:center
 
-.setconversation:next_series
+    .setconversation:next_series
 
 
 
 LABEL neither_choice:
 
+    .REMOVESPRITE:matsuri_close.png
 
-.REMOVESPRITE:matsuri_close.png
+    .REMOVESPRITE:sketchmatsuri_close.png
 
-.REMOVESPRITE:sketchmatsuri_close.png
-
-.setconversation:next_series
+    .setconversation:next_series
 
 
 
 LABEL next_series:
 
+    You can also play sounds using the .PLAYSOUND command.
 
-You can also play sounds using the .PLAYSOUND command.
+    For example, the sound of a wild animal roaring...
 
-For example, the sound of a wild animal roaring...
+    .PLAYSOUND:roar1.caf
 
-.PLAYSOUND:roar1.caf
+    You can also play music, and choose whether it loops indefinitely or not.
 
-You can also play music, and choose whether it loops indefinitely or not.
+    .PLAYMUSIC:music01.mp3
 
-.PLAYMUSIC:music01.mp3
+    And, of course, you can also stop it if you like…
 
-And, of course, you can also stop it if you like…
+    Just use .PLAYMUSIC:nil command.
 
-Just use .PLAYMUSIC:nil command.
+    .PLAYMUSIC:nil
 
-.PLAYMUSIC:nil
+    Another important feature are Flags. These are variables that store an integer (whole number) value.
 
-Another important feature are Flags. These are variables that store an integer (whole number) value.
+    .SETFLAG:show_sky:1
 
-.SETFLAG:show_sky:1
+    For example, the "show_sky" flag is set to 1.
 
-For example, the "show_sky" flag is set to 1.
+    You could set it to zero by using the .MODIFYFLAG or .SETFLAG commands.
 
-You could set it to zero by using the .MODIFYFLAG or .SETFLAG commands.
+    But it could also be better to use player input for that.
 
-But it could also be better to use player input for that.
+    There's a .MODIFYFLAGBYCHOICE command that directly modifies flags based on a player's choices.
 
-There's a .MODIFYFLAGBYCHOICE command that directly modifies flags based on a player's choices.
+    For example...
 
-For example...
+    .MODIFYFLAGBYCHOICE:Show the sky:show_sky:0:Don't show the sky:show_sky:-1
 
-.MODIFYFLAGBYCHOICE:Show the sky:show_sky:0:Don't show the sky:show_sky:-1
+    You can look at the code (in "demo script.plist") to see how it works.
 
-You can look at the code (in "demo script.plist") to see how it works.
+    If you want certain things to happen based on the value of certain flags, there's the .ISFLAG command.
 
-If you want certain things to happen based on the value of certain flags, there's the .ISFLAG command.
+    If a particular flag holds a certain value, then a secondary command will be triggered.
 
-If a particular flag holds a certain value, then a secondary command will be triggered.
+    For example, let's say you chose the "Don't show the sky" command earlier.
 
-For example, let's say you chose the "Don't show the sky" command earlier.
+    Right now, the "show_sky" flag would have been set to zero.
 
-Right now, the "show_sky" flag would have been set to zero.
+    .ISFLAG:show_sky:0:.SETBACKGROUND:pond.png
 
-.ISFLAG:show_sky:0:.SETBACKGROUND:pond.png
+    And you would see a different background.
 
-And you would see a different background.
+    Well, that's pretty much it for now. You know the important stuff.
 
-Well, that's pretty much it for now. You know the important stuff.
+    There are some advanced features, but you should read the documentation for that.
 
-There are some advanced features, but you should read the documentation for that.
+    Oh, one more thing.
 
-Oh, one more thing.
+    When a visual novel's script "ends," all its resources (graphics and audio) are removed.
 
-When a visual novel's script "ends," all its resources (graphics and audio) are removed.
+    Music stops playing (though sound effects can continue, for some reason!)
 
-Music stops playing (though sound effects can continue, for some reason!)
+    And any flags that were accessed or changed by the visual novel are forcibly saved.
 
-And any flags that were accessed or changed by the visual novel are forcibly saved.
+    Anyways, I suppose that's it for now.
 
-Anyways, I suppose that's it for now.
+    Hopefully, you can use this to make some good games!
 
-Hopefully, you can use this to make some good games!
-
-Alright, bye for real this time.
+    Alright, bye for real this time.

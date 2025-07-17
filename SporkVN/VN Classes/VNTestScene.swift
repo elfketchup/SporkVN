@@ -242,7 +242,7 @@ class VNTestScene : SKScene
         }
     
         // The following's not very pretty, but it is pretty useful...
-        print("[VNTestScene] For diagnostics purporses, here's a flag dump from EKRecord:\n   \(SMRecord.flags())")
+        //print("[VNTestScene] For diagnostics purporses, here's a flag dump from SMRecord:\n   \(SMRecord.flags())")
     
         // Load saved-game records from EKRecord. The activity dictionary holds data about what the last thing the user was doing
         // (presumably, watching a scene), how far the player got, relevent data that needs to be reloaded, etc.

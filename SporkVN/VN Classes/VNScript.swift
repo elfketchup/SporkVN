@@ -138,15 +138,8 @@ let VNScriptStringSetChoiceBlinkSpeed       = ".setchoiceblinkspeed" // Sets spe
 // Script syntax
 let VNScriptSeparationString                = ":"
 let VNScriptNilValue                        = "nil"
-
-
-
-extension String {
-    // because I just love not caring about whether stuff is case sensitive or not
-    func hasPrefixIgnoringCase(_ prefix: String) -> Bool {
-        return self.range(of: prefix, options: [.anchored, .caseInsensitive]) != nil
-    }
-}
+let VNScriptCommentCharacter                = "#"
+let VNScriptLabelKeyword                    = "label"
 
 /** CLASSES **/
 
@@ -203,32 +196,41 @@ class VNScript {
         // So this loop reads text lines and tries to sort them into data structures like back when I used to read
         // scripts from .PLIST files, except now it reads it from .TXT files because that's significantly better.
         do {
-            let content = try String(contentsOfFile: filepath!) // all the text in th efile
+            let content = try String(contentsOfFile: filepath!) // get all the text in the file
             let lines = content.components(separatedBy: .newlines) // trying to break it up into individual lines
             
-            let rawScript: NSMutableDictionary = NSMutableDictionary() // IT'S RAWWWWWWWWW
+            let rawScript: NSMutableDictionary = NSMutableDictionary()
             var currentConversation: String?
             var currentArray: NSMutableArray?
             
             for line in lines {
                 let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
-                if trimmed.isEmpty { continue }
                 
-                //if trimmed.hasPrefix("label ") && trimmed.hasSuffix(":") {
-                if trimmed.hasPrefixIgnoringCase("label ") && trimmed.hasSuffix(":") {
-                    //print("hasPrefix and label is \(trimmed)")
-                    if let currentArray = currentArray, let currentConversation = currentConversation {
-                        rawScript.setObject(currentArray, forKey: currentConversation as NSCopying)
-                        //print("rawScript.setOject \(currentArray) forKey: \(currentConversation)")
-                    } else {
-                        // print("whaaaaaaaaaaat is going on with \(trimmed)") // ok never mind I figured it out
+                // Skip empty lines and comments
+                if line.isEmpty {
+                    continue
+                }
+                if trimmed.hasPrefix(VNScriptCommentCharacter) {
+                    continue
+                }
+                
+                // check if this is a label (would have the format "LABEL label_name:" or "LABEL label_name")
+                if trimmed.lowercased().hasPrefix(VNScriptLabelKeyword) {
+                    // Assumes format "label name:"
+                    var labelName = line.dropFirst(VNScriptLabelKeyword.count).trimmingCharacters(in: .whitespaces)
+                    
+                    // removes the ":" in "LABEL label_name:" (technically the  ":" is optional but I keep using it anyways)
+                    if labelName.hasSuffix(":") {
+                        labelName = String(labelName.dropLast())
                     }
                     
-                    let labelStart = trimmed.index(trimmed.startIndex, offsetBy: 6)
-                    let labelEnd = trimmed.index(trimmed.endIndex, offsetBy: -1)
-                    currentConversation = String(trimmed[labelStart..<labelEnd]).trimmingCharacters(in: .whitespaces)
+                    if let currentArray = currentArray, let currentConversation = currentConversation {
+                        rawScript.setObject(currentArray, forKey: currentConversation as NSCopying)
+                    }
                     
+                    currentConversation = labelName
                     currentArray = NSMutableArray()
+                    
                 } else if let currentArray = currentArray {
                     currentArray.add(trimmed as NSString)
                 }

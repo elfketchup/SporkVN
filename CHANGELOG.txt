@@ -1,3 +1,6 @@
+version 1.3.1 - July 17, 2025
+. Scripts can now include comments using the # character like Python comments.
+
 version 1.3.0 - July 10, 2025
 . Scripts are now loaded from .TXT files rather than .PLIST files. This was a long overdue change and it makes it much easier to edit scripts. The goofy scripting language I came up with hasn't changed though, so I'm sorry if you were hoping for something nice and easy and simple like whatever Ren'Py uses. Maybe having a more sane scripting language will be the next big feature for this project... check back in 2035, I guess. Anyway, I still need to test this stuff more, because I only KINDA tested it to see if it works. Pushing to production on a Friday (well, technically it's Thursday night) is the way to live! 
 
