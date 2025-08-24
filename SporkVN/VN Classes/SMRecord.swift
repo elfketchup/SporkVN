@@ -102,12 +102,38 @@ class SMRecord {
     // It used to be that the SMRecord was used like a normal class (and not a series of static class functions), and it had an init() function that did this.
     // Now that it's all static functions, the initial startup function was lost, so this is used in its place. Maybe this isn't actually better...?
     static func startRecordSystem() {
-        if let dictionaryFromCloudStorage = recordFromCloud() {
-            record = NSMutableDictionary(dictionary: dictionaryFromCloudStorage)
-        } else {
-            if let dictionaryFromLocalStorage = recordFromLocalStorage() {
-                record = NSMutableDictionary(dictionary: dictionaryFromLocalStorage)
+        useCloud = FileManager.default.ubiquityIdentityToken != nil
+        
+        var selectedDict: NSDictionary? = nil
+        
+        let localDate = UserDefaults.standard.object(forKey: DateSavedKey) as? Date
+        var cloudDate: Date? = nil
+        
+        if useCloud {
+            cloudDate = NSUbiquitousKeyValueStore.default.object(forKey: DateSavedKey) as? Date
+        }
+        
+        // Decide which to load... prefer cloud only if it has a strictly newer date. Keep in mind this will almost never
+        // happen normally, and the only way that I can think of for iCloud to have newer data than local storage would
+        // be if the user switches to playing on a different device (let's say they got a new phone, or they have multiple
+        // devices and they switch between them). Someone who plays on the same device all the time should never trigger
+        // the switch to loading from cloud storage... probably. 
+        if useCloud, let cDate = cloudDate, let lDate = localDate, cDate > lDate {
+            if let dictFromCloud = recordFromCloud() {
+                selectedDict = dictFromCloud
             }
+        }
+        
+        if selectedDict == nil {
+            if let dictFromLocal = recordFromLocalStorage() {
+                selectedDict = dictFromLocal
+            } else if useCloud, let dictFromCloud = recordFromCloud() {
+                selectedDict = dictFromCloud
+            }
+        }
+        
+        if let dict = selectedDict {
+            record = NSMutableDictionary(dictionary: dict)
         }
         
         started = true
@@ -489,6 +515,23 @@ class SMRecord {
         if saveCurrentRecord() == false {
             return false
         }
+        
+        // If iCloud storage is available (this was determined in startRecordSystem(), then try and save the exact same
+        // data to iCloud storage also.
+        if useCloud {
+            print("[SMRecord] Also saving to cloud.")
+            let store = NSUbiquitousKeyValueStore.default
+            let theDateToday = UserDefaults.standard.object(forKey: DateSavedKey) as? Date
+            let recordAsData = UserDefaults.standard.object(forKey: SavedDataKey) as? Data
+            if let date = theDateToday, let data = recordAsData {
+                store.set(date, forKey: DateSavedKey)
+                store.set(data, forKey: SavedDataKey)
+                store.synchronize()
+            } else {
+                print("[SMRecord] Warning: Could not retrieve date or data from local storage for cloud save.")
+            }
+        }
+        
         // Now "synchronize" the data so that everything in NSUserDefaults will be moved from RAM into the actual device memory.
         // NSUserDefaults synchronizes its data every so often, but in this case it will be done manually to ensure that SMRecord's data
         // will be moved into device memory.
