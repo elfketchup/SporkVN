@@ -1419,7 +1419,7 @@ class VNSceneNode : SKNode {
             dictToSave.setValue(localRecord, forKey: SMRecord.ActivityDataKey)
             //SMRecord.sharedRecord.setActivityDict(dictToSave)
             SMRecord.setActivityDictionary(dictionary: dictToSave)
-            if SMRecord.saveToDevice() == false {
+            if SMRecord.saveCurrentRecord() == false {
                 print("[VNSceneNode] WARNING: Attempt to save game data to device data encountered an error.")
             }
             
@@ -1451,7 +1451,7 @@ class VNSceneNode : SKNode {
         updateScriptInfo()                                              // Update all index and conversation data
         dictToSave.setValue(record, forKey:SMRecord.ActivityDataKey)    // Load into activity dictionary
         SMRecord.setActivityDictionary(dictionary: dictToSave)          // Save the activity dictionary into SMRecord
-        if SMRecord.saveToDevice() == false {                           // Save all record data to device memory
+        if SMRecord.saveCurrentRecord() == false {                           // Save all record data to device memory
             print("[VNSceneNode] WARNING: Attempt to save game data to device encountered an error.")
         }
         
@@ -1826,7 +1826,7 @@ class VNSceneNode : SKNode {
                 //print("[VNSceneNode] Remaining scene and activity data will be deleted.");
                 
                 SMRecord.addExistingFlags(fromDictionary: flags)
-                SMRecord.resetActivityInformation(inDictionary: SMRecord.record)
+                SMRecord.resetActivityInformation()
                 
                 self.isFinished = true; // Mark as finished
                 purgeDataCreatedByScene()

@@ -1,73 +1,76 @@
+version 1.4 - January 1, 2026
+- SMRecord now uses SwiftData, which has iCloud support built in (if you activate it in Xcode project settings). iOS 17 is now the minimum required iOS version, due to SwiftData. 
+
 version 1.3.2 - August 24, 2025
-. SMRecord should save automatically to iCloud (in addition to local storage) IF iCloud storage is enabled for the app.
+- SMRecord should save automatically to iCloud (in addition to local storage) IF iCloud storage is enabled for the app.
 
 version 1.3.1 - July 17, 2025
-. Scripts can now include comments using the # character like Python comments.
+- Scripts can now include comments using the # character like Python comments.
 
 version 1.3.0 - July 10, 2025
-. Scripts are now loaded from .TXT files rather than .PLIST files. This was a long overdue change and it makes it much easier to edit scripts. The goofy scripting language I came up with hasn't changed though, so I'm sorry if you were hoping for something nice and easy and simple like whatever Ren'Py uses. Maybe having a more sane scripting language will be the next big feature for this project... check back in 2035, I guess. Anyway, I still need to test this stuff more, because I only KINDA tested it to see if it works. Pushing to production on a Friday (well, technically it's Thursday night) is the way to live! 
+- Scripts are now loaded from .TXT files rather than .PLIST files. This was a long overdue change and it makes it much easier to edit scripts. The goofy scripting language I came up with hasn't changed though, so I'm sorry if you were hoping for something nice and easy and simple like whatever Ren'Py uses. Maybe having a more sane scripting language will be the next big feature for this project... check back in 2035, I guess. Anyway, I still need to test this stuff more, because I only KINDA tested it to see if it works. Pushing to production on a Friday (well, technically it's Thursday night) is the way to live! 
 
 version 1.2.5 - January 4, 2025
-. This project now uses Swift 6. Maybe this was a bad idea...?
+- This project now uses Swift 6. Maybe this was a bad idea...?
 . SMUtils has been rewritten to use static class functions instead of global functions because it looks a little neater. 
-. SMRecord has also been rewritten to use static class functions too.
+- SMRecord has also been rewritten to use static class functions too.
 
 version 1.2.4.3 - September 4, 2024
-. Added .SETCHOICEMINIMUMOPACITY and .SETCHOICEBLINKSPEED to dynamically adjust the blink speed and minimum opacity for "choicebox blinking," that is, the child nodes in a choicebox fading in and out. Usually the only child nodes would just be text, but theoretically you could add images and other things too. When the minimum opacity and blink speed are adjusted via script commands, the values will be saved and restored whenever the game is loaded from a save.
+- Added .SETCHOICEMINIMUMOPACITY and .SETCHOICEBLINKSPEED to dynamically adjust the blink speed and minimum opacity for "choicebox blinking," that is, the child nodes in a choicebox fading in and out. Usually the only child nodes would just be text, but theoretically you could add images and other things too. When the minimum opacity and blink speed are adjusted via script commands, the values will be saved and restored whenever the game is loaded from a save.
 
 version 1.2.4.2 September 1, 2024
-. Adds "choicebox blinking" feature. When the player has to make a choice in the game, there's now the option to turn on "blinking," where the text in the buttons for choices will fade to 0.5 opacity and then return to full opacity, a.k.a. "blinking." The speed and minimum opacity can be customized. You may like it, or you might think it's a cheap UI gimmick.
+- Adds "choicebox blinking" feature. When the player has to make a choice in the game, there's now the option to turn on "blinking," where the text in the buttons for choices will fade to 0.5 opacity and then return to full opacity, a.k.a. "blinking." The speed and minimum opacity can be customized. You may like it, or you might think it's a cheap UI gimmick.
 
 version 1.2.4.1 April 10, 2024
-. This update is focused mostly on making code for creating and displaying buttons during player choice segments more streamlined. If you need to tweak the formula for how buttons are displayed/positioned, you'd only have to do it from one function, instead of having to change multiple seemingly unrelated lines of code in different areas. Now if only I could remember to clean up the rest of the code!
+- This update is focused mostly on making code for creating and displaying buttons during player choice segments more streamlined. If you need to tweak the formula for how buttons are displayed/positioned, you'd only have to do it from one function, instead of having to change multiple seemingly unrelated lines of code in different areas. Now if only I could remember to clean up the rest of the code!
 
 version 1.2.4 April 9, 2024
-. Added .SHOWCHOICEANDJUMP and .SHOWCHOICEANDMODIFY commands, which are really just .JUMPONCHOICE and .MODIFYFLAGBYCHOICE, but they're "faster." By this, I mean that they display a line of dialogue AND the choice buttons at the same time, which is slighly faster than the original commands, in which dialogue would be displayed by one command, and then the command to bring up buttons for the player to choose would be done on another command. This is probably negligible unless your game includes many, many commands / choice segments for the player, in which case they'll probably notice eventually and get annoyed by that tiny delay. Maybe.
+- Added .SHOWCHOICEANDJUMP and .SHOWCHOICEANDMODIFY commands, which are really just .JUMPONCHOICE and .MODIFYFLAGBYCHOICE, but they're "faster." By this, I mean that they display a line of dialogue AND the choice buttons at the same time, which is slighly faster than the original commands, in which dialogue would be displayed by one command, and then the command to bring up buttons for the player to choose would be done on another command. This is probably negligible unless your game includes many, many commands / choice segments for the player, in which case they'll probably notice eventually and get annoyed by that tiny delay. Maybe.
 
 version 1.2.3 October 1, 2023
-. Added "fade in" UI feature for when the user needs to make a choice, as having the boxes fade in very quickly (about 0.2 seconds) looks nicer than the choices just instantly appearing on screen. 
+- Added "fade in" UI feature for when the user needs to make a choice, as having the boxes fade in very quickly (about 0.2 seconds) looks nicer than the choices just instantly appearing on screen. 
 
 version 1.2.2 Sep-2-2023
-. Added commands for comparing the numerical value of flags against other flags.
-. Added commands for modifying flags using the values stored in other flags.
+- Added commands for comparing the numerical value of flags against other flags.
+- Added commands for modifying flags using the values stored in other flags.
 
 version 1.2.1 Oct-1-2022
-. Added "Choice Sets" functionality for dynamically adding and removing entries to a user "choice" segment.
-. Also fixed a bug with choices segments where choices didn't display properly if there were too many choices (turned out this was an issue with the buttons Y coordinates).
+- Added "Choice Sets" functionality for dynamically adding and removing entries to a user "choice" segment.
+- Also fixed a bug with choices segments where choices didn't display properly if there were too many choices (turned out this was an issue with the buttons Y coordinates).
 
 version 1.2 Dec-27-2021
-. Updated for use with iOS 15.2
-. Now uses SMTextNode for text: the project is now all-Swift and no longer uses Objective-C classes
+- Updated for use with iOS 15.2
+- Now uses SMTextNode for text: the project is now all-Swift and no longer uses Objective-C classes
 
 version 1.1.2 Jul-03-2020
-. SMRecord has been streamlined, and experimental support for iCloud saving has been added.
-. SporkVN now targets iOS 12 by default.
+- SMRecord has been streamlined, and experimental support for iCloud saving has been added.
+- SporkVN now targets iOS 12 by default.
 
 version 1.1.1 Sep-14-2018
-. Updated for iOS 12.
+- Updated for iOS 12.
 
 version 1.1.0 Jan-21-2018
-. [NEW] Changed VNScene to VNSceneNode. This is mostly done for games that aren't "pure" visual novels, and where SporkVN is just used to power short dialogue sequences. Since the visual novel "scene" is now just a node, it can be added to an existing SKScene subclass, and removed when the dialogue is done. This doesn't really affect games that are purely visual novels.
+- [NEW] Changed VNScene to VNSceneNode. This is mostly done for games that aren't "pure" visual novels, and where SporkVN is just used to power short dialogue sequences. Since the visual novel "scene" is now just a node, it can be added to an existing SKScene subclass, and removed when the dialogue is done. This doesn't really affect games that are purely visual novels.
 
 Now a visual novel scene can just be dropped into an existing scene (for things like dialogue between characters, etc) instead of just requiring an entirely new SKScene instance to be made.
 
 version 1.0.4 Aug-22-2016
-. [NEW] Added .ROLLDICE and .MODIFYCHOICEBOXOFFSET script commands.
+- [NEW] Added .ROLLDICE and .MODIFYCHOICEBOXOFFSET script commands.
 
 version 1.0.3.2 Aug-17-2016
-. [MISC] Updated to run on Xcode 8 beta 6.
+- [MISC] Updated to run on Xcode 8 beta 6.
 
 version 1.0.3.1 Aug-02-2016
-. [MISC] Updated to run on Xcode 8 beta 4.
+- [MISC] Updated to run on Xcode 8 beta 4.
 
 version 1.0.3 Jul-09-2016
-. [MISC] Updated to run on Swift v3.0. Currently using Xcode 8 beta 2, which is meant for iOS 10 beta 2. This code might need to be updated for later betas (and the final version of iOS 10).
+- [MISC] Updated to run on Swift v3.0. Currently using Xcode 8 beta 2, which is meant for iOS 10 beta 2. This code might need to be updated for later betas (and the final version of iOS 10).
 
 version 1.0.2 May-05-2016
-. [FIX] Rewrote "for loops," since Xcode kept showing warnings that C-style "for loops" would be deprecated in future versions of Swift.
+- [FIX] Rewrote "for loops," since Xcode kept showing warnings that C-style "for loops" would be deprecated in future versions of Swift.
 
 version 1.0.1 Mar-21-2016
-. [NEW] Can now change speechbox color, the text color in the speechbox, and the label color in buttons, from the "vnscene view settings.plist" file.
+- [NEW] Can now change speechbox color, the text color in the speechbox, and the label color in buttons, from the "vnscene view settings.plist" file.
 
 version 1.0.0 Feb-16-2016
-. [NEW] Ported EKVN from Objective-C to Swift to create SporkVN
+- [NEW] Ported EKVN from Objective-C to Swift to create SporkVN

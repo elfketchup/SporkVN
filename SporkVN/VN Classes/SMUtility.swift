@@ -235,6 +235,15 @@ class SMUtility {
         }
     }
     
+    class Dates {
+        // Convert a NSDate value into an easily-readable string value
+        static func stringFromDate(date:Date) -> String {
+            let format          = DateFormatter()
+            format.dateFormat   = "yyyy'-'MM'-'dd',' h:mm a" // Example: "2011-11-11, 11:11 AM"
+            return format.string(from: date)
+        }
+    }
+    
     class Number {
         // These are just a bunch of very simple type conversion wrappers, and this is done in case another Swift update causes conversion functions
         // to require rewriting. Hopefully by the time you read this, the idea of Swift breaking something as simple as type conversion seems like
